@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">EVENTS</string>
+    <string name="chooseOption">CHOOSE AN OPTION</string>
+    <string name="accountOption">Account Option</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="account">Account</string>
+    <string name="home">Home</string>
+    <string name="event">Event</string>
+    <string name="elevate_your_events">ELEVATE YOUR EVENTS</string>
+    <string name="home_action">Home Action</string>
+    <string name="organizer_home">Organizer Home</string>
+    <string name="organizer_account">Organizer Account</string>
+    <string name="organizer_event">Organizer EVENT</string>
+</resources>

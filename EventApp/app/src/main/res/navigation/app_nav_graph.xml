@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_nav_graph"
+    app:startDestination="@id/acountSelection">
+    <fragment
+        android:id="@+id/acountSelection"
+        android:name="com.example.eventapp.AcountSelection"
+        android:label="fragment_acount_selection"
+        tools:layout="@layout/fragment_acount_selection" >
+        <action
+            android:id="@+id/action_acountSelection_to_attendeeActivity"
+            app:destination="@id/attendeeActivity" />
+        <action
+            android:id="@+id/action_acountSelection_to_adminActivity"
+            app:destination="@id/adminActivity" />
+        <action
+            android:id="@+id/action_acountSelection_to_organizerActivity"
+            app:destination="@id/organizerActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/attendeeActivity"
+        android:name="com.example.eventapp.attendee.AttendeeActivity"
+        android:label="activity_attendee"
+        tools:layout="@layout/activity_attendee" />
+    <activity
+        android:id="@+id/adminActivity"
+        android:name="com.example.eventapp.admin.AdminActivity"
+        android:label="activity_admin"
+        tools:layout="@layout/activity_admin" />
+    <activity
+        android:id="@+id/organizerActivity"
+        android:name="com.example.eventapp.organizer.OrganizerActivity"
+        android:label="activity_organizer"
+        tools:layout="@layout/activity_organizer" />
+</navigation>
