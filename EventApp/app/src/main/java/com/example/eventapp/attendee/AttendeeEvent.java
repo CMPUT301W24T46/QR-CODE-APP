@@ -9,6 +9,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.SearchView;
+
 
 import com.example.eventapp.R;
 
@@ -23,6 +26,9 @@ public class AttendeeEvent extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private Button showSearchButton;
+    private SearchView searchView;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -70,6 +76,22 @@ public class AttendeeEvent extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Find views
+        showSearchButton = view.findViewById(R.id.showSearchButton);
+        searchView = view.findViewById(R.id.searchView);
+
+        // Set up click listener for the button
+        showSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Toggle visibility of search view
+                if (searchView.getVisibility() == View.VISIBLE) {
+                    searchView.setVisibility(View.GONE);
+                } else {
+                    searchView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
     }
 }
