@@ -1,5 +1,7 @@
 package com.example.eventapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.eventapp.users.UserDB;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -39,11 +42,17 @@ public class AcountSelection extends Fragment {
 
     SelectOptionsAdapter accountOptionsAdapter ;
 
+    Activity activity ;
+
+    Context context ;
+
     private FirebaseAuth mAuth ;
 
     private FirebaseFirestore dbQRApp ;
 
     private CollectionReference userRef;
+
+    private UserDB userDB ;
 
     public AcountSelection() {
         // Required empty public constructor
@@ -53,12 +62,8 @@ public class AcountSelection extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
-        dbQRApp = FirebaseFirestore.getInstance();
-        userRef = dbQRApp.collection("Users");
-//        if (getArguments() != null) {
-//
-//        }
+        activity = requireActivity() ;
+        context = requireContext() ;
     }
 
     @Override
@@ -80,15 +85,23 @@ public class AcountSelection extends Fragment {
         });
     }
 
-//    This function enables navigation to the main parts of the app which is the
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+        dbQRApp = FirebaseFirestore.getInstance();
+        userRef = dbQRApp.collection("Users");
+        userDB = new UserDB(context ,activity , dbQRApp) ;
+    }
+
+    //    This function enables navigation to the main parts of the app which is the
 //    AttendeeActivity , OrganizerActivity , AdminActivity
     private void navigateToAccount(View view , AdapterView<?> parent , int position){
         String selectedAccount = (String) parent.getItemAtPosition(position) ;
         NavController selectAccountController = Navigation.findNavController(view) ;
-//        {"Attend Event" , "Organize Event" , "Admin"} ;
         if(selectedAccount.equals("Attend Event")){
-            setmAuth() ;
-            selectAccountController.navigate(R.id.action_acountSelection_to_attendeeActivity);
+            userDB.setNavController(selectAccountController);
+            userDB.getUserInfoAttendee();
         }else if(selectedAccount.equals("Organize Event")){
             selectAccountController.navigate(R.id.action_acountSelection_to_organizerActivity);
         }else if(selectedAccount.equals("Admin")){
@@ -96,55 +109,4 @@ public class AcountSelection extends Fragment {
         }
     }
 
-    private void setmAuth(){
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(requireActivity(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("TAG", "signInAnonymously:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            // You can update UI or perform other actions here
-
-                            if(task.getResult().getAdditionalUserInfo().isNewUser()){
-                                String uid = user.getUid() ;
-                                HashMap<String, String> data = new HashMap<>();
-                                data.put("id", uid);
-                                data.put("name", "");
-                                data.put("homepage", "");
-                                data.put("contactInformation", "");
-                                userRef.document(uid)
-                                        .set(data)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d("Firestore", "DocumentSnapshot successfully written!");
-                                            }});
-                            }else{
-//                                Store user information and pass on later
-                                String uid = user.getUid() ;
-                                HashMap<String, String> data = new HashMap<>();
-                                data.put("id", uid);
-                                data.put("name", "information ");
-                                data.put("homepage", "Good");
-                                data.put("contactInformation", "");
-                                userRef.document(uid)
-                                        .set(data)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Log.d("Firestore", "DocumentSnapshot successfully written!");
-                                            }});
-                            }
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("TAG", "signInAnonymously:failure", task.getException());
-                            Toast.makeText(requireContext(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
 }
