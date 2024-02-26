@@ -1,2 +1,4 @@
-package com.example.eventapp.user;public class UserSignUp {
+package com.example.eventapp.user;
+
+public class UserSignUp {
 }

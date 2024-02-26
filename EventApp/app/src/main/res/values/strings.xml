@@ -12,4 +12,10 @@
     <string name="organizer_home">Organizer Home</string>
     <string name="organizer_account">Organizer Account</string>
     <string name="organizer_event">Organizer EVENT</string>
+
+    <!-- SignUp and Login   -->
+    <string name="full_name">FULL NAME</string>
+    <string name="username">USERNAME</string>
+    <string name="password">PASSWORD</string>
+    <string name="sign_up">SIGN UP</string>
 </resources>
