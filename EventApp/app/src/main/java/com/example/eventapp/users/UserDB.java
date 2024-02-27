@@ -146,6 +146,10 @@ public class UserDB {
                             userData.put("email", email);
                             userData.put("username", userName);
                             userData.put("id", uid);
+                            userData.put("name", "");
+                            userData.put("homepage", "");
+                            userData.put("typeOfUser" , "organizer") ;
+                            userData.put("contactInformation", "");
 
                             // set user data in Users collection
                             addOrganizerInfo(uid, userData, callback);
