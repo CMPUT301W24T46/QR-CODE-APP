@@ -49,7 +49,6 @@ public class UserDB {
             // User is signed in anonymously
             uid = currentUser.getUid();
             selectAccountController.navigate(navigationPageId);
-
             Log.d("AnonymousUser", "User already signed in anonymously with UID: " + uid);
         } else {
             // No user is signed in or the signed-in user is not anonymous
@@ -89,11 +88,7 @@ public class UserDB {
                             // You can update UI or perform other actions here
                             String uid = user.getUid() ;
                             addUserInformation(uid);
-<<<<<<< HEAD
-                            selectAccountController.navigate(R.id.action_accountSelection_to_attendeeActivity);
-=======
                             selectAccountController.navigate(navigationPageId);
->>>>>>> 67013b2c558379c8ca37c41714bfeef830bac549
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInAnonymously:failure", task.getException());
@@ -123,5 +118,6 @@ public class UserDB {
                     }});
 
     }
+
 
 }

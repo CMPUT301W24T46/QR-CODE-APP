@@ -15,18 +15,13 @@
             app:destination="@id/attendeeActivity" />
 
         <action
-            android:id="@+id/action_accountSelection_to_adminActivity"
-            app:destination="@id/userLoginActivity" />
-        <action
             android:id="@+id/action_accountSelection_to_organizerActivity"
             app:destination="@id/userLoginActivity" />
 
-<!--        <action-->
-<!--            android:id="@+id/action_accountSelection_to_adminActivity"-->
-<!--            app:destination="@id/adminActivity" />-->
-<!--        <action-->
-<!--            android:id="@+id/action_accountSelection_to_organizerActivity"-->
-<!--            app:destination="@id/organizerActivity" />-->
+        <action
+            android:id="@+id/action_accountSelection_to_adminActivity"
+            app:destination="@id/adminActivity" />
+
     </fragment>
 
     <activity
@@ -48,7 +43,7 @@
     <activity
         android:id="@+id/userLoginActivity"
         android:name="com.example.eventapp.users.UserLogin"
-        android:label="activity_user_login"
-        tools:layout="@layout/activity_user_login" />
+        android:label="activity_user_login" />
+
 
 </navigation>
