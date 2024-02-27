@@ -24,6 +24,9 @@ import java.util.HashMap;
 public class UserDB {
 
     private String uid ;
+    private User user ;
+    private String typeOfUser ;
+    private int navigationPageId;
     private NavController selectAccountController ;
     private final FirebaseAuth mAuth ;
     private final FirebaseFirestore dbQRApp ;
@@ -45,7 +48,7 @@ public class UserDB {
         if (currentUser != null && currentUser.isAnonymous()) {
             // User is signed in anonymously
             uid = currentUser.getUid();
-            selectAccountController.navigate(R.id.action_acountSelection_to_attendeeActivity);
+            selectAccountController.navigate(navigationPageId);
             Log.d("AnonymousUser", "User already signed in anonymously with UID: " + uid);
         } else {
             // No user is signed in or the signed-in user is not anonymous
@@ -65,6 +68,14 @@ public class UserDB {
         this.selectAccountController = navController;
     }
 
+    public int getNavigationPageId() {
+        return navigationPageId;
+    }
+
+    public void setNavigationPageId(int navigationPageId) {
+        this.navigationPageId = navigationPageId;
+    }
+
     private void anonymousLogin(Context context , Activity activity){
         mAuth.signInAnonymously()
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
@@ -77,7 +88,7 @@ public class UserDB {
                             // You can update UI or perform other actions here
                             String uid = user.getUid() ;
                             addUserInformation(uid);
-                            selectAccountController.navigate(R.id.action_acountSelection_to_attendeeActivity);
+                            selectAccountController.navigate(navigationPageId);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInAnonymously:failure", task.getException());
@@ -94,7 +105,10 @@ public class UserDB {
         data.put("id", uid);
         data.put("name", "");
         data.put("homepage", "");
+        data.put("typeOfUser" , typeOfUser) ;
         data.put("contactInformation", "");
+        user = new User(uid , "" , "" , "" , null , typeOfUser) ;
+
         userRef.document(uid)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
