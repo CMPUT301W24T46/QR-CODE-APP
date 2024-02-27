@@ -88,6 +88,7 @@ public class UserSignUp extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
 
 
+        // Check if email, username, or password is empty
         if (TextUtils.isEmpty(email) || TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)) {
             Toast.makeText(UserSignUp.this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
             return;
@@ -102,11 +103,11 @@ public class UserSignUp extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, redirect user to organizer page
+                            // Sign in is successful
                             Log.d("TAG", "createUserWithEmail:success");
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
-                            // create new organizer
+                            // create new organizer in UserDB
                             if (firebaseUser != null) {
                                 String uid = firebaseUser.getUid();
                                 Organizer organizer = new Organizer(uid, "", userName, email, "", "", null, "organizer");
@@ -136,6 +137,7 @@ public class UserSignUp extends AppCompatActivity {
     }
 
     private void addOrganizerInfo(String uid, HashMap<String, Object> userData, Context context) {
+        // Add organizer information to database
         db.collection("Users").document(uid)
                 .set(userData)
                 .addOnSuccessListener(aVoid -> {

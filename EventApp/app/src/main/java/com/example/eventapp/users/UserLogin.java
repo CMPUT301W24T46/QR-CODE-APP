@@ -83,6 +83,7 @@ public class UserLogin extends AppCompatActivity {
 
         String redirectText = getString(R.string.redirect_to_signup);
         SpannableString ss = new SpannableString(redirectText);
+        // Clickable span for SignIn
         ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
             public void onClick(View widget) {
@@ -91,7 +92,7 @@ public class UserLogin extends AppCompatActivity {
                 startActivity(intent);
             }
 
-            // style the clickable span
+            // style the clickable text
             @Override
             public void updateDrawState(TextPaint ds) {
                 super.updateDrawState(ds);
@@ -108,6 +109,7 @@ public class UserLogin extends AppCompatActivity {
         redirectToSignUp.setMovementMethod(LinkMovementMethod.getInstance());
 
 
+        // handles back button
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +119,7 @@ public class UserLogin extends AppCompatActivity {
     }
 
     private void organizerLogin() {
+        // progress bar
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Logging In...");
         progressDialog.setCancelable(false);
@@ -124,6 +127,7 @@ public class UserLogin extends AppCompatActivity {
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
+        // check if username or password is empty
         if ( TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             Toast.makeText(UserLogin.this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
             return;
@@ -131,53 +135,48 @@ public class UserLogin extends AppCompatActivity {
 
         progressDialog.show();
 
+        // find email based on username
         db.collection("Users")
                 .whereEqualTo("username", username)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@Nonnull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                            // Assuming username is unique and there's only one document that matches
-                            DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                            String email = document.getString("email");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        String email = document.getString("email");
 
-                            // Login in using the email and password
-                            signInWithEmail(email, password);
-
-                        } else {
-                            Log.w("TAG", "Failed to find user by username", task.getException());
-                            progressDialog.dismiss();
-                            Toast.makeText(UserLogin.this, "Failed to find user by username", Toast.LENGTH_SHORT).show();
-                        }
+                        // Authenticate email and password credentials
+                        signInWithEmail(email, password);
+                    } else {
+                        // Failed to find a user with the given username
+                        progressDialog.dismiss();
+                        Log.w("TAG", "Failed to find user by username", task.getException());
+                        Toast.makeText(UserLogin.this, "Failed to find user by username", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void signInWithEmail(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@Nonnull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("TAG", "signInWithEmail:success");
-                            progressDialog.dismiss();
-
-                            Toast.makeText(UserLogin.this, "Login Successful. Redirecting...",
-                                    Toast.LENGTH_SHORT).show();
-
-                            // Redirect to OrganizerActivity
-                            Intent intent = new Intent(UserLogin.this, OrganizerActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("TAG", "signInWithEmail:failure", task.getException());
-                            Toast.makeText(UserLogin.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                            progressDialog.dismiss();
-                        }
+                .addOnCompleteListener(task -> {
+                    progressDialog.dismiss();
+                    if (task.isSuccessful()) {
+                        // inform and redirect user after a successful attempt
+                        Log.d("TAG", "signInWithEmail:success");
+                        Toast.makeText(UserLogin.this, "Login Successful. Redirecting...", Toast.LENGTH_SHORT).show();
+                        navigateToOrganizer();
+                    } else {
+                        // Invalid credentials
+                        Log.w("TAG", "Sign In Filaed", task.getException());
+                        Toast.makeText(UserLogin.this, "Wrong username or password", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void navigateToOrganizer() {
+        // Redirect to OrganizerActivity
+        Intent intent = new Intent(UserLogin.this, OrganizerActivity.class);
+        startActivity(intent);
+        finish();
     }
 
 }
