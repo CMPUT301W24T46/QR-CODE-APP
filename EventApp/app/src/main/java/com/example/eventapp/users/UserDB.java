@@ -1,5 +1,7 @@
 package com.example.eventapp.users;
 
+import android.app.ProgressDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,7 +19,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.HashMap;
 
@@ -41,6 +45,12 @@ public class UserDB {
         this.userRef = dbQRApp.collection("Users") ;
         this.context = context ;
         this.activity = activity ;
+
+        // Enable offline support
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        dbQRApp.setFirestoreSettings(settings);
     }
 
     public void  getUserInfoAttendee(){
@@ -119,5 +129,79 @@ public class UserDB {
 
     }
 
+    public interface AuthCallback {
+        void onSuccess();
+        void onFailure(String errorMessage);
+    }
 
+    // ORGANIZER SIGN UP
+    public void signUpUser(String email, String password, String userName, AuthCallback callback) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            String uid = firebaseUser.getUid();
+                            HashMap<String, Object> userData = new HashMap<>();
+                            userData.put("email", email);
+                            userData.put("username", userName);
+                            userData.put("id", uid);
+
+                            // set user data in Users collection
+                            addOrganizerInfo(uid, userData, callback);
+                        }
+                    } else {
+                        Log.w("UserSignUp", "Failed to register user", task.getException());
+                        callback.onFailure("Authentication Failed");
+                    }
+                });
+    }
+
+    private void addOrganizerInfo(String uid, HashMap<String, Object> userData, AuthCallback callback) {
+        userRef.document(uid).set(userData)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("UserSignUp", "User details successfully added!");
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("UserSignUp", "Error writing document", e);
+                    callback.onFailure("Failed to add user details to database");
+                });
+    }
+
+    // ORGANIZER LOGIN
+    public void organizerLogin(String username, String password, AuthCallback callback) {
+        // find email based on username
+        userRef
+                .whereEqualTo("username", username)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        String email = document.getString("email");
+
+                        // Authenticate email and password credentials
+                        signInWithEmail(email, password, callback);
+                    } else {
+                        // Failed to find a user with the given username
+                        Log.w("TAG", "Failed to find user by username", task.getException());
+                        callback.onFailure("Failed to find user by username");
+                    }
+                });
+    }
+
+    private void signInWithEmail(String email, String password, AuthCallback callback) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // inform user and redirect after a successful attempt
+                        Log.d("TAG", "signInWithEmail:success");
+                        callback.onSuccess();
+                    } else {
+                        // Invalid credentials
+                        Log.w("TAG", "Sign In Filaed", task.getException());
+                        callback.onFailure("Authentication failed.");
+                    }
+                });
+    }
 }

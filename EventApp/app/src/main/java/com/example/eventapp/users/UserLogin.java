@@ -36,16 +36,12 @@ import javax.annotation.Nonnull;
 
 public class UserLogin extends AppCompatActivity {
 
-    private EditText usernameEditText;
-    private EditText passwordEditText;
+    private EditText usernameEditText, passwordEditText;
     private Button loginButton;
-    private TextView forgotPassword;
-    private TextView redirectToSignUp;
+    private TextView forgotPassword, redirectToSignUp;
     private ImageView backButton;
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
+    private UserDB userDB;
     private ProgressDialog progressDialog;
-
 
 
     @Override
@@ -54,23 +50,17 @@ public class UserLogin extends AppCompatActivity {
         setContentView(R.layout.activity_user_login);
 
         // Firebase
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        userDB = new UserDB(this, UserLogin.this, FirebaseFirestore.getInstance());
 
 
         // Initialize views
-        usernameEditText = findViewById(R.id.loginUsername);
-        passwordEditText = findViewById(R.id.loginPassword);
-        loginButton = findViewById(R.id.loginButton);
-        forgotPassword = findViewById(R.id.forgotPassword);
-        redirectToSignUp = findViewById(R.id.redirectToSignUp);
-        backButton = findViewById(R.id.loginBackButton);
+        InitializeViews();
 
         // Set click listeners
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                organizerLogin();
+                userLogin();
             }
         });
 
@@ -118,12 +108,17 @@ public class UserLogin extends AppCompatActivity {
         });
     }
 
-    private void organizerLogin() {
-        // progress bar
+    private void InitializeViews() {
+        usernameEditText = findViewById(R.id.loginUsername);
+        passwordEditText = findViewById(R.id.loginPassword);
+        loginButton = findViewById(R.id.loginButton);
+        forgotPassword = findViewById(R.id.forgotPassword);
+        redirectToSignUp = findViewById(R.id.redirectToSignUp);
+        backButton = findViewById(R.id.loginBackButton);
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Logging In...");
-        progressDialog.setCancelable(false);
+    }
 
+    private void userLogin() {
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
@@ -133,44 +128,27 @@ public class UserLogin extends AppCompatActivity {
             return;
         }
 
+        // progress bar
+        progressDialog.setMessage("Logging In...");
+        progressDialog.setCancelable(false);
         progressDialog.show();
 
-        // find email based on username
-        db.collection("Users")
-                .whereEqualTo("username", username)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                        String email = document.getString("email");
+        userDB.organizerLogin(username, password, new UserDB.AuthCallback() {
+            @Override
+            public void onSuccess() {
+                progressDialog.dismiss();
+                Toast.makeText(UserLogin.this, "Login Successful. Redirecting...", Toast.LENGTH_SHORT).show();
+                navigateToOrganizer();
+            }
 
-                        // Authenticate email and password credentials
-                        signInWithEmail(email, password);
-                    } else {
-                        // Failed to find a user with the given username
-                        progressDialog.dismiss();
-                        Log.w("TAG", "Failed to find user by username", task.getException());
-                        Toast.makeText(UserLogin.this, "Failed to find user by username", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(String errorMessage) {
+                progressDialog.dismiss();
+                Toast.makeText(UserLogin.this, errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void signInWithEmail(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    progressDialog.dismiss();
-                    if (task.isSuccessful()) {
-                        // inform and redirect user after a successful attempt
-                        Log.d("TAG", "signInWithEmail:success");
-                        Toast.makeText(UserLogin.this, "Login Successful. Redirecting...", Toast.LENGTH_SHORT).show();
-                        navigateToOrganizer();
-                    } else {
-                        // Invalid credentials
-                        Log.w("TAG", "Sign In Filaed", task.getException());
-                        Toast.makeText(UserLogin.this, "Wrong username or password", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
 
     private void navigateToOrganizer() {
         // Redirect to OrganizerActivity
