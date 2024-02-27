@@ -9,7 +9,7 @@ public class User {
     private byte[] imageData ;
 
     private String contactInformation ;
-    public User(String id ,String name , String contactInformation , String homepage , byte[] imageData){
+    public User(String id ,String name , String contactInformation ,String homepage , byte[] imageData , String typeOfUser){
         this.id = id ;
         this.name = name ;
         this.contactInformation = contactInformation ;

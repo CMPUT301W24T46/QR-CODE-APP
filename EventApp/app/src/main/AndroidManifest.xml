@@ -22,6 +22,10 @@
         <activity
             android:name=".attendee.AttendeeActivity"
             android:exported="false" />
+        <activity android:name=".users.UserLogin"
+            android:exported="false" />
+        <activity android:name=".users.UserSignUp"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
