@@ -84,7 +84,7 @@ public class AttendeeEvent extends Fragment {
         showSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Toggle visibility of search view
+                // Toggle visibility
                 if (searchView.getVisibility() == View.VISIBLE) {
                     searchView.setVisibility(View.GONE);
                 } else {
