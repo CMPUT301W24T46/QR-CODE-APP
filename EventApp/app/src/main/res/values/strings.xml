@@ -16,4 +16,10 @@
     <string name="Search_Events">Search Your Event</string>
     <string name="edit_profile">Customize Profile</string>
     <string name="Setting">Privacy Setting</string>
+    <string name="customize_profile">Customize Profile</string>
+    <string name="Username">Username</string>
+    <string name="Password">Password</string>
+    <string name="Description">Description</string>
+    <string name="AttendeeCancel">Cancel</string>
+    <string name="AttendeeSave">Save</string>
 </resources>
