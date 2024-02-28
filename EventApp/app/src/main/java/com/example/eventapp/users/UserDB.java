@@ -120,30 +120,5 @@ public class UserDB {
 
     }
 
-    public void updateUserInformation(String Username, String Contact, String Homepage) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String uid = currentUser.getUid();
-            HashMap<String, Object> data = new HashMap<>();
-            data.put("Username", Username);
-            data.put("Contact", Contact);
-            data.put("Homepage", Homepage);
-            userRef.document(uid)
-                    .update(data)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("Firestore", "User info updated");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception error) {
-                            Log.e("Firestore", "Error", error);
-                        }
-                    });
-        }
-    }
-
 
 }
