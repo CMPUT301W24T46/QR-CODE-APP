@@ -82,11 +82,10 @@ public class CustomizeProfile extends AppCompatActivity {
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
 
-            userRef.set(updates, SetOptions.merge());
-            //go back to AttendeeAccount page
-            finish();
+            userRef.update(updates);
         }
     }
+
     public void onCustomizeProfileSaveClicked(View view) {
         // Implementation for saving profile changes
     }
