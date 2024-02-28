@@ -6,15 +6,35 @@
     android:layout_height="match_parent"
     tools:context=".attendee.AttendeeAccount">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="@string/account"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Button
+        android:id="@+id/btnCustomizeProfile"
+        android:layout_width="375dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="96dp"
+        android:background="@drawable/rounded_button_background"
+        android:onClick="onCustomizeProfileClicked"
+        android:padding="20dp"
+        android:text="@string/edit_profile"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnSetting"
+        android:layout_width="375dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="96dp"
+        android:background="@drawable/rounded_button_background"
+        android:onClick="onSettingClicked"
+        android:padding="20dp"
+        android:text="@string/Setting"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

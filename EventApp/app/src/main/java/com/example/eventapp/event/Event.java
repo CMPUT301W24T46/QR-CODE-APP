@@ -11,7 +11,6 @@ public class Event {
         this.imageDescription = imageDescription ;
         this.imagePhoto = imagePhoto ;
     }
-
     public String getEventName() {
         return eventName;
     }

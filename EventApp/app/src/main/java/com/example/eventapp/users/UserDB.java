@@ -13,6 +13,7 @@ import android.app.Activity;
 
 import com.example.eventapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -129,6 +130,32 @@ public class UserDB {
 
     }
 
+
+    public void updateUserInformation(String Username, String Contact, String Homepage) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("Username", Username);
+            data.put("Contact", Contact);
+            data.put("Homepage", Homepage);
+            userRef.document(uid)
+                    .update(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Firestore", "User info updated");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception error) {
+                            Log.e("Firestore", "Error", error);
+                        }
+                    });
+        }
+    }
+
     public interface AuthCallback {
         void onSuccess();
         void onFailure(String errorMessage);
@@ -208,4 +235,6 @@ public class UserDB {
                     }
                 });
     }
+
 }
+
