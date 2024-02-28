@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--This is the adminActivity it contains a NavHostFragment Attached to the admnin_nav_graph(Check navigation folder)
+    this handles the switching of fragments the other part is the bottom navigation which just switches from the head of the admin_nav_graph-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".admin.AdminActivity">
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationAdminView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:itemBackground="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu_admin" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerAdminView"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="391dp"
+        android:layout_height="749dp"
+        app:defaultNavHost="true"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationAdminView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/admin_nav_graph" />
+</androidx.constraintlayout.widget.ConstraintLayout>

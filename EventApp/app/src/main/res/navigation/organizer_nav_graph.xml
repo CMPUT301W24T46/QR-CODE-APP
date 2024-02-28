@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/organizer_nav_graph"
+    app:startDestination="@id/organizerHome">
+
+    <fragment
+        android:id="@+id/organizerHome"
+        android:name="com.example.eventapp.organizer.OrganizerHome"
+        android:label="fragment_organizer_home"
+        tools:layout="@layout/fragment_organizer_home" />
+    <fragment
+        android:id="@+id/organizerAccount"
+        android:name="com.example.eventapp.organizer.OrganizerAccount"
+        android:label="fragment_organizer_account"
+        tools:layout="@layout/fragment_organizer_account" />
+    <fragment
+        android:id="@+id/organizerEvent"
+        android:name="com.example.eventapp.organizer.OrganizerEvent"
+        android:label="fragment_organizer_event"
+        tools:layout="@layout/fragment_organizer_event" />
+</navigation>
