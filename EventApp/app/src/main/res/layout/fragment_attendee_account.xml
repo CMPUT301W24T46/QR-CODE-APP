@@ -7,12 +7,12 @@
     tools:context=".attendee.AttendeeAccount">
 
     <Button
-        android:id="@+id/btnEditProfile"
+        android:id="@+id/btnCustomizeProfile"
         android:layout_width="375dp"
         android:layout_height="200dp"
         android:layout_marginTop="96dp"
         android:background="@drawable/rounded_button_background"
-        android:onClick="onEditProfileClicked"
+        android:onClick="onCustomizeProfileClicked"
         android:padding="20dp"
         android:text="@string/edit_profile"
         android:textColor="#FFFFFF"

@@ -23,6 +23,9 @@
             android:name=".attendee.AttendeeActivity"
             android:exported="false" />
         <activity
+            android:name=".attendee.CustomizeProfile"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
