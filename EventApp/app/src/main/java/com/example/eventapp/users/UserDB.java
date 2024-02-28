@@ -145,12 +145,10 @@ public class UserDB {
                     });
         }
     }
-
-public interface AuthCallback {
-    void onSuccess();
-    void onFailure(String errorMessage);
-}
-
+    public interface AuthCallback {
+        void onSuccess();
+        void onFailure(String errorMessage);
+    }
     // ORGANIZER SIGN UP
     public void signUpUser(String email, String password, String userName, AuthCallback callback) {
         mAuth.createUserWithEmailAndPassword(email, password)
