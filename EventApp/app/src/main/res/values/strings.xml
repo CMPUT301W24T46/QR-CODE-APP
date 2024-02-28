@@ -14,4 +14,6 @@
     <string name="organizer_event">Organizer EVENT</string>
     <string name="Search_Event">Search Your Event</string>
     <string name="Search_Events">Search Your Event</string>
+    <string name="edit_profile">Customize Profile</string>
+    <string name="Setting">Privacy Setting</string>
 </resources>
