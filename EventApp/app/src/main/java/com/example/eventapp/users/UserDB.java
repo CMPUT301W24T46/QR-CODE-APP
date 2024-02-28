@@ -1,5 +1,7 @@
 package com.example.eventapp.users;
 
+import android.app.ProgressDialog;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import java.util.HashMap;
 
@@ -43,6 +46,12 @@ public class UserDB {
         this.userRef = dbQRApp.collection("Users") ;
         this.context = context ;
         this.activity = activity ;
+
+        // Enable offline support
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        dbQRApp.setFirestoreSettings(settings);
     }
 
     public void  getUserInfoAttendee(){
@@ -121,6 +130,7 @@ public class UserDB {
 
     }
 
+
     public void updateUserInformation(String Username, String Contact, String Homepage) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
@@ -145,10 +155,12 @@ public class UserDB {
                     });
         }
     }
+
     public interface AuthCallback {
         void onSuccess();
         void onFailure(String errorMessage);
     }
+
     // ORGANIZER SIGN UP
     public void signUpUser(String email, String password, String userName, AuthCallback callback) {
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -223,4 +235,6 @@ public class UserDB {
                     }
                 });
     }
+
 }
+
