@@ -1,17 +1,26 @@
 package com.example.eventapp.attendee;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-
 import com.example.eventapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +40,8 @@ public class AttendeeHome extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private TextView welcomeMessageText;
+    private CollectionReference userRef;
 
     public AttendeeHome() {
         // Required empty public constructor
@@ -61,6 +72,8 @@ public class AttendeeHome extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        //initialize user
+        userRef = FirebaseFirestore.getInstance().collection("Users");
 
     }
 
@@ -68,15 +81,39 @@ public class AttendeeHome extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_attendee_home, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_attendee_home, container, false);
+
+        // Initialize welcome message
+        welcomeMessageText = rootView.findViewById(R.id.welcome_message);
+
+        // Set the welcome message
+        setWelcomeMessage();
+
+        return rootView;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        homepageOptionsListView = view.findViewById(R.id.homepageListView) ;
-        homePageAdapter = new HomePageAdapter(requireContext() , homepageOptionsData) ;
-        homepageOptionsListView.setAdapter(homePageAdapter);
+    private void setWelcomeMessage() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            userRef.document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            String username = document.getString("name");
+                            if (username != null && !username.isEmpty()) {
+                                welcomeMessageText.setText(getString(R.string.welcome_message, username));
+                            } else {
+                                welcomeMessageText.setText(getString(R.string.default_attendee_home_text));
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
+
 
 }

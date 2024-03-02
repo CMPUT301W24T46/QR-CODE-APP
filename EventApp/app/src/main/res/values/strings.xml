@@ -39,4 +39,8 @@
     <string name="join_event">JOIN EVENT</string>
     <string name="create_event">CREATE EVENT</string>
     <string name="View">View</string>
+    <string name="notification_text">NOTIFICATION</string>
+    <string name="join_event_text">JOIN EVENTS</string>
+    <string name="default_attendee_home_text">Welcome, Anonymous</string>
+    <string name="welcome_message">Welcome, %s</string>
 </resources>
