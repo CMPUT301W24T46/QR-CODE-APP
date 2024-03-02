@@ -92,8 +92,9 @@ public class AccountSelection extends Fragment {
         NavController selectAccountController = Navigation.findNavController(view) ;
         if(selectedAccount.equals("Attend Event")){
             userDB.setNavController(selectAccountController);
-//            userDB.getUserInfoAttendee();
-            selectAccountController.navigate(R.id.action_accountSelection_to_attendeeActivity);
+            userDB.setNavigationPageId(R.id.action_accountSelection_to_attendeeActivity) ;
+            userDB.getUserInfoAttendee();
+//            selectAccountController.navigate(R.id.action_accountSelection_to_attendeeActivity);
 
         }else if(selectedAccount.equals("Organize Event")){
             selectAccountController.navigate(R.id.action_accountSelection_to_organizerActivity);
