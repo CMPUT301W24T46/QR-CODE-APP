@@ -6,69 +6,57 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.SearchView;
 
 
 import com.example.eventapp.R;
+import com.example.eventapp.event.Event;
+import com.example.eventapp.event.EventAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.StorageReference;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AttendeeEvent#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
 public class AttendeeEvent extends Fragment {
+    private FirebaseFirestore db;
+    private SearchView searchView ;
+    private CollectionReference eventsRef;
+    private ArrayList<Event> eventDataList  ;
+    private ListView eventList ;
+    private EventAdapter eventListArrayAdapter ;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private Button showSearchButton;
-    private SearchView searchView;
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public AttendeeEvent() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AttendeeEvent.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AttendeeEvent newInstance(String param1, String param2) {
-        AttendeeEvent fragment = new AttendeeEvent();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+        db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("Events") ;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_attendee_event, container, false);
     }
 
@@ -76,22 +64,85 @@ public class AttendeeEvent extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Find views
-        showSearchButton = view.findViewById(R.id.showSearchButton);
-        searchView = view.findViewById(R.id.searchView);
+        searchView = view.findViewById(R.id.eventSearcher);
+        eventList = view.findViewById(R.id.eventListView) ;
 
-        // Set up click listener for the button
-        showSearchButton.setOnClickListener(new View.OnClickListener() {
+        eventDataList = new ArrayList<>() ;
+        eventListArrayAdapter = new EventAdapter(getContext() , eventDataList) ;
+        eventList.setAdapter(eventListArrayAdapter);
+
+        eventsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
-            public void onClick(View v) {
-                // Toggle visibility
-                if (searchView.getVisibility() == View.VISIBLE) {
-                    searchView.setVisibility(View.GONE);
-                } else {
-                    searchView.setVisibility(View.VISIBLE);
+            public void onEvent(@Nullable QuerySnapshot querySnapshots,
+                                @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.e("Firestore", error.toString());
+                    return;
+                }
+                if (querySnapshots != null) {
+                    eventDataList.clear();
+                    for (QueryDocumentSnapshot doc: querySnapshots) {
+                        String eventId = doc.getId();
+                        String eventName = doc.getString("Name");
+                        String imageURL = doc .getString("URL") ;
+                        Log.d("Firestore", String.format("Name(%s, %s) fetched", eventId, eventName));
+                        eventDataList.add(new Event(eventName , imageURL));
+                    }
+                    eventListArrayAdapter.notifyDataSetChanged();
                 }
             }
         });
 
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Perform search action here
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter your data based on newText
+                if(TextUtils.isEmpty(newText)){
+                    getCurrentEvenList("" , false);
+                }else{
+                    getCurrentEvenList(newText , true);
+                }
+                return false;
+            }
+        });
+    }
+
+    public void getCurrentEvenList(String searchText, boolean queryOrDisplay){
+        eventsRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                eventDataList.clear();
+                ArrayList<Event> searchResults = new ArrayList<>();
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    // Retrieve data from each document
+                    String eventName = documentSnapshot.getString("Name");
+                    String URL = documentSnapshot.getString("URL");
+                    if(!queryOrDisplay){
+                        searchResults.add(new Event(eventName, URL));
+                        continue;
+                    }
+
+                    if (eventName.toLowerCase().contains(searchText.toLowerCase())) {
+                        searchResults.add(new Event(eventName, URL));
+                    }
+                }
+
+                eventListArrayAdapter.setFilter(searchResults);
+                eventListArrayAdapter.notifyDataSetChanged();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Handle failure
+                Log.e("TAG", "Error getting documents: " + e);
+            }
+        });
     }
 }

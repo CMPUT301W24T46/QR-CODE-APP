@@ -35,4 +35,5 @@
     <string name="HomepageDescription">Homepage Description</string>
     <string name="DeleteImage">Delete Image</string>
     <string name="CustomizeImage">Edit Image</string>
+    <string name="View">View</string>
 </resources>

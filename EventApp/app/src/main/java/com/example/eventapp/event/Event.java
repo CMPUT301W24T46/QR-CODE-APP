@@ -4,12 +4,18 @@ public class Event {
     String eventName ;
     String imageDescription ;
 
-    byte[] imagePhoto ;
+    String imageURL ;
 
-    public Event(String eventName , String imageDescription , byte[] imagePhoto){
+    public Event(String eventName , String imageDescription , String imageURL){
         this.eventName = eventName ;
         this.imageDescription = imageDescription ;
-        this.imagePhoto = imagePhoto ;
+        this.imageURL = imageURL ;
+    }
+
+    public Event(String eventName, String imageURL){
+
+        this.eventName = eventName ;
+        this.imageURL = imageURL ;
     }
     public String getEventName() {
         return eventName;
@@ -27,11 +33,11 @@ public class Event {
         this.imageDescription = imageDescription;
     }
 
-    public byte[] getImagePhoto() {
-        return imagePhoto;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setImagePhoto(byte[] imagePhoto) {
-        this.imagePhoto = imagePhoto;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }
