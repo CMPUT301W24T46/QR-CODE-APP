@@ -39,8 +39,6 @@ public class AttendeeEvent extends Fragment {
     private ArrayList<Event> eventDataList  ;
     private ListView eventList ;
     private EventAdapter eventListArrayAdapter ;
-
-
     public AttendeeEvent() {
         // Required empty public constructor
     }
@@ -70,6 +68,7 @@ public class AttendeeEvent extends Fragment {
         eventDataList = new ArrayList<>() ;
         eventListArrayAdapter = new EventAdapter(getContext() , eventDataList) ;
         eventList.setAdapter(eventListArrayAdapter);
+
 
         eventsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -112,6 +111,7 @@ public class AttendeeEvent extends Fragment {
                 return false;
             }
         });
+
     }
 
     public void getCurrentEvenList(String searchText, boolean queryOrDisplay){

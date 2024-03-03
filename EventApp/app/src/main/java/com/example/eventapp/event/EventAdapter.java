@@ -1,14 +1,17 @@
 package com.example.eventapp.event;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
@@ -38,6 +41,18 @@ public class EventAdapter extends ArrayAdapter<Event> {
         Event event = events.get(position) ;
         TextView eventName= view.findViewById(R.id.eventDescription);
         ImageView eventImageView = view.findViewById(R.id.eventImageList) ;
+        Button viewEventButton = view.findViewById(R.id.viewEvent) ;
+
+//        Sets navigations for each list item.
+        viewEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("EventName", event.getEventName());
+                bundle.putString("ImageURL", event.getImageURL());
+                Navigation.findNavController(v).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
+            }
+        });
 
         Glide.with(context).load(event.getImageURL()).centerCrop().into(eventImageView) ;
         eventName.setText(event.getEventName());
