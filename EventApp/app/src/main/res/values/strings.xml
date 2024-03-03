@@ -35,5 +35,8 @@
     <string name="HomepageDescription">Homepage Description</string>
     <string name="DeleteImage">Delete Image</string>
     <string name="CustomizeImage">Edit Image</string>
+    <string name="notification">NOTIFICATION</string>
+    <string name="join_event">JOIN EVENT</string>
+    <string name="create_event">CREATE EVENT</string>
     <string name="View">View</string>
 </resources>
