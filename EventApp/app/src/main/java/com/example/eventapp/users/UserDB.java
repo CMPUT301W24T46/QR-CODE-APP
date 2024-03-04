@@ -99,7 +99,6 @@ public class UserDB {
                             // You can update UI or perform other actions here
                             String uid = user.getUid() ;
                             addUserInformation(uid);
-                            selectAccountController.navigate(navigationPageId);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInAnonymously:failure", task.getException());
@@ -116,15 +115,16 @@ public class UserDB {
         data.put("id", uid);
         data.put("name", "");
         data.put("homepage", "");
-        data.put("typeOfUser" , typeOfUser) ;
+//        data.put("typeOfUser" , typeOfUser) ;
         data.put("contactInformation", "");
-        user = new User(uid , "" , "" , "" , null , typeOfUser) ;
+//        user = new User(uid , "" , "" , "" , null , typeOfUser) ;
 
         userRef.document(uid)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        selectAccountController.navigate(navigationPageId);
                         Log.d("Firestore", "DocumentSnapshot successfully written!");
                     }});
 

@@ -10,15 +10,15 @@
         android:id="@+id/btnCustomizeProfile"
         android:layout_width="375dp"
         android:layout_height="200dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="124dp"
         android:background="@drawable/rounded_button_background"
+        android:drawableStart="@drawable/ic_person"
         android:onClick="onCustomizeProfileClicked"
-        android:padding="20dp"
+        android:padding="30dp"
         android:text="@string/edit_profile"
         android:textColor="#FFFFFF"
-        android:textSize="30sp"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,13 +28,16 @@
         android:layout_height="200dp"
         android:layout_marginBottom="96dp"
         android:background="@drawable/rounded_button_background"
+        android:drawableStart="@drawable/ic_lock"
         android:onClick="onSettingClicked"
-        android:padding="20dp"
+        android:padding="30dp"
         android:text="@string/Setting"
         android:textColor="#FFFFFF"
-        android:textSize="30sp"
+        android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnCustomizeProfile" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

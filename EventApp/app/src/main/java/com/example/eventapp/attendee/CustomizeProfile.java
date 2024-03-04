@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.eventapp.R;
@@ -16,6 +17,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -39,6 +41,7 @@ public class CustomizeProfile extends AppCompatActivity {
         contact = findViewById(R.id.editTextPhone);
         description = findViewById(R.id.editTextTextMultiLine);
         btnAttendeeSave = findViewById(R.id.AttendeeAccountSave);
+        fetchDataFromFirestore();
 
         btnAttendeeSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +50,40 @@ public class CustomizeProfile extends AppCompatActivity {
             }
         });
     }
+
+    private void fetchDataFromFirestore() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            String userId = user.getUid();
+
+            DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(userId);
+            userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        // Retrieve data from Firestore document
+                        String usernameText = documentSnapshot.getString("name");
+                        String contactText = documentSnapshot.getString("contactInformation");
+                        String descriptionText = documentSnapshot.getString("homepage");
+
+                        // Set data to EditText views
+                        username.setText(usernameText);
+                        contact.setText(contactText);
+                        description.setText(descriptionText);
+                    } else {
+                        Log.d("CustomizeProfile", "document doesn't exist");
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e("CustomizeProfile", "Error getting document", e);
+                }
+            });
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -82,11 +119,10 @@ public class CustomizeProfile extends AppCompatActivity {
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
 
-            userRef.set(updates, SetOptions.merge());
-            //go back to AttendeeAccount page
-            finish();
+            userRef.update(updates);
         }
     }
+
     public void onCustomizeProfileSaveClicked(View view) {
         // Implementation for saving profile changes
     }
