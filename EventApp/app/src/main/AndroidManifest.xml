@@ -14,6 +14,9 @@
         android:theme="@style/Theme.EVENTAPP"
         tools:targetApi="31">
         <activity
+            android:name=".attendee.AttendEventActivity"
+            android:exported="false" />
+        <activity
             android:name=".admin.AdminActivity"
             android:exported="false" />
         <activity
@@ -22,9 +25,11 @@
         <activity
             android:name=".attendee.AttendeeActivity"
             android:exported="false" />
-        <activity android:name=".users.UserLogin"
+        <activity
+            android:name=".users.UserLogin"
             android:exported="false" />
-        <activity android:name=".users.UserSignUp"
+        <activity
+            android:name=".users.UserSignUp"
             android:exported="false" />
         <activity
             android:name=".attendee.CustomizeProfile"
