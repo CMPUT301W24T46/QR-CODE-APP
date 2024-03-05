@@ -2,6 +2,7 @@ package com.example.eventapp.organizer;
 
 import android.os.Bundle;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -72,7 +73,9 @@ public class OrganizerHome extends Fragment {
         Button buttonCreateEvent = view.findViewById(R.id.button_createEvent);
         buttonCreateEvent.setOnClickListener(v -> {
             // Navigate to the OrganizerEvent fragment
-            Navigation.findNavController(view).navigate(R.id.action_organizerHome_to_organizerAccount);
+            // Show the create event dialog
+            CreateEventFragment dialogFragment = new CreateEventFragment();
+            dialogFragment.show(getParentFragmentManager(), "CreateEventFragment");
         });
     }
 }
