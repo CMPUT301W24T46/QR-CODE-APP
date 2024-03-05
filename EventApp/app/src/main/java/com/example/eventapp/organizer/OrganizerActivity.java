@@ -8,12 +8,13 @@ import androidx.navigation.ui.NavigationUI;
 import android.os.Bundle;
 
 import com.example.eventapp.R;
+import com.example.eventapp.event.Event;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class OrganizerActivity extends AppCompatActivity {
+public class OrganizerActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,5 +51,10 @@ public class OrganizerActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle("Event");
             }
         });
+
+    }
+    @Override
+    public void onEventCreated(Event event) {
+        // Handle the event
     }
 }

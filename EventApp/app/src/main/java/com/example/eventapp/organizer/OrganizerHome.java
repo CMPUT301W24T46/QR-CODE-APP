@@ -2,6 +2,7 @@ package com.example.eventapp.organizer;
 
 import android.os.Bundle;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -62,5 +63,18 @@ public class OrganizerHome extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_organizer_home, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Button buttonCreateEvent = view.findViewById(R.id.button_createEvent);
+        buttonCreateEvent.setOnClickListener(v -> {
+            // Navigate to the OrganizerEvent fragment
+            // Show the create event dialog
+            CreateEventFragment dialogFragment = new CreateEventFragment();
+            dialogFragment.show(getChildFragmentManager(), "CreateEventFragment");
+        });
     }
 }
