@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,31 +44,38 @@ public class CreateEventFragment extends DialogFragment {
 
         EditText eventNameEditText = view.findViewById(R.id.EditEventName);
         EditText eventDateEditText = view.findViewById(R.id.EditEventDate);
+        Button buttonConfirm = view.findViewById(R.id.buttonConfirm); // Confirm Button
+        ImageButton buttonArrow = view.findViewById(R.id.buttonArrow); // Previous Button
+
+        // Setting up the Confirm button
+        buttonConfirm.setOnClickListener(view1 -> {
+            String eventName = eventNameEditText.getText().toString();
+            String eventDate = eventDateEditText.getText().toString();
+
+            if(!eventName.isEmpty() && !eventDate.isEmpty()) {
+                Event event = new Event(eventName, eventDate);
+                if (listener != null) {
+                    listener.onEventCreated(event);
+                }
+                dismiss(); // Dismiss the dialog
+            } else {
+                Toast.makeText(getContext(), "Please fill in all fields.", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Setting up the Previous button
+        buttonArrow.setOnClickListener(view12 -> {
+            dismiss(); // Dismiss the dialog
+        });
 
         builder.setView(view)
-                .setTitle("Create Event")
-                .setPositiveButton("Confirm", null) // Placeholder to later override
-                .setNegativeButton("Previous", (dialog, id) -> dialog.dismiss());
+                .setTitle("Create Event");
 
         AlertDialog dialog = builder.create();
-
-        dialog.setOnShowListener(dialogInterface -> {
-            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            button.setOnClickListener(view1 -> {
-                String eventName = eventNameEditText.getText().toString();
-                String eventDate = eventDateEditText.getText().toString();
-
-                if(!eventName.isEmpty() && !eventDate.isEmpty()) {
-                    // Assuming Event has a constructor that takes a name and a date
-                    Event event = new Event(eventName, eventDate);
-                    listener.onEventCreated(event);
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(getContext(), "Please fill in all fields.", Toast.LENGTH_LONG).show();
-                }
-            });
-        });
+        // Auto-closing when the area outside the dialog is clicked.
+        dialog.setCanceledOnTouchOutside(false);
 
         return dialog;
     }
+
 }

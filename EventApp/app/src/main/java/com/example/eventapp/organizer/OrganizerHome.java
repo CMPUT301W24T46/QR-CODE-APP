@@ -75,7 +75,7 @@ public class OrganizerHome extends Fragment {
             // Navigate to the OrganizerEvent fragment
             // Show the create event dialog
             CreateEventFragment dialogFragment = new CreateEventFragment();
-            dialogFragment.show(getParentFragmentManager(), "CreateEventFragment");
+            dialogFragment.show(getChildFragmentManager(), "CreateEventFragment");
         });
     }
 }
