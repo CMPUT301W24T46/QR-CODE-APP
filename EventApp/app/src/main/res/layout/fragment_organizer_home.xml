@@ -7,47 +7,14 @@
     tools:context=".organizer.OrganizerHome">
 
     <!-- TODO: Update blank fragment layout -->
-
-    <Button
-        android:id="@+id/button_createEvent"
-        android:layout_width="390dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="125dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/rounded_button_background"
-        android:drawableEnd="@drawable/ic_plus"
-        android:onClick="onCustomizeProfileClicked"
-        android:padding="20dp"
-        android:text="@string/create_event"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/button_notification"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.238"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button_notification"
-        android:layout_width="390dp"
-        android:layout_height="220dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="125dp"
-        android:background="@drawable/rounded_button_background"
-        android:drawableEnd="@drawable/ic_bell"
-        android:onClick="onSettingClicked"
-        android:padding="20dp"
-        android:text="@string/notification"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="@string/organizer_home"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_createEvent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

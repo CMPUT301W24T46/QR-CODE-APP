@@ -9,14 +9,7 @@
         android:id="@+id/organizerHome"
         android:name="com.example.eventapp.organizer.OrganizerHome"
         android:label="fragment_organizer_home"
-        tools:layout="@layout/fragment_organizer_home" >
-        <action
-            android:id="@+id/action_organizerHome_to_organizerAccount"
-            app:destination="@id/organizerAccount" />
-        <action
-            android:id="@+id/action_organizerHome_to_organizerEvent"
-            app:destination="@id/organizerEvent" />
-    </fragment>
+        tools:layout="@layout/fragment_organizer_home" />
     <fragment
         android:id="@+id/organizerAccount"
         android:name="com.example.eventapp.organizer.OrganizerAccount"
