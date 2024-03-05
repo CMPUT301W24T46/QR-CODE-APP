@@ -43,4 +43,9 @@
     <string name="join_event_text">JOIN EVENTS</string>
     <string name="default_attendee_home_text">Welcome, Anonymous</string>
     <string name="welcome_message">Welcome, %s</string>
+    <string name="UploadImage">UPLOAD IMAGE</string>
+    <string name="Save">Save</string>
+    <string name="hint_email">superman123@gmail.com</string>
+    <string name="hint_homepage_description">I am from Edmonton</string>
+    <string name="hint_phone">+1 789 233 233</string>
 </resources>

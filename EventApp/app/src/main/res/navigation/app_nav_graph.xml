@@ -15,12 +15,14 @@
             app:destination="@id/attendeeActivity" />
 
         <action
-            android:id="@+id/action_accountSelection_to_organizerActivity"
-            app:destination="@id/userLoginActivity" />
-
-        <action
             android:id="@+id/action_accountSelection_to_adminActivity"
             app:destination="@id/adminActivity" />
+        <action
+            android:id="@+id/action_accountSelection_to_userLoginActivity"
+            app:destination="@id/userLoginActivity" />
+        <action
+            android:id="@+id/action_accountSelection_to_organizerActivity"
+            app:destination="@id/organizerActivity" />
 
     </fragment>
 
