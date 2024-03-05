@@ -99,7 +99,6 @@ public class AccountSelection extends Fragment {
 //            selectAccountController.navigate(R.id.action_accountSelection_to_attendeeActivity);
 
         }else if(selectedAccount.equals("Organize Event")){
-
             selectAccountController.navigate(R.id.action_accountSelection_to_organizerActivity);
         }else if(selectedAccount.equals("Admin")){
             selectAccountController.navigate(R.id.action_accountSelection_to_adminActivity);
