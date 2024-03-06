@@ -43,6 +43,7 @@ public class AttendeeHome extends Fragment {
     private TextView welcomeMessageText;
     private CollectionReference userRef;
 
+
     public AttendeeHome() {
         // Required empty public constructor
     }
@@ -65,6 +66,13 @@ public class AttendeeHome extends Fragment {
         return fragment;
     }
 
+    /**
+     * Called to do initial creation of the fragment. This is called after onAttach(Activity)
+     * and before onCreateView(LayoutInflater, ViewGroup, Bundle).
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state,
+     *                             this is the state. This value may be null.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +85,18 @@ public class AttendeeHome extends Fragment {
 
     }
 
+    /**
+     * Called to create the view hierarchy associated with the fragment.
+     * This method is called when the fragment is instantiated and its UI needs to be created.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     *                           The fragment should not add the view itself, but this can be used to generate
+     *                           the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state
+     *                           as given here.
+     * @return The root View of the inflated layout, or null if the fragment has no UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -92,6 +112,10 @@ public class AttendeeHome extends Fragment {
         return rootView;
     }
 
+    /**
+     * Set welcome message to anonymous when user not yet input username.
+     * Update welcome message to "Welcome, (User Username)" after user input username.
+     */
     private void setWelcomeMessage() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
