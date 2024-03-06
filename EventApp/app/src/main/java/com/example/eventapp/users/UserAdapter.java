@@ -46,7 +46,7 @@ public class UserAdapter extends ArrayAdapter<User> {
         if (user != null) {
             TextView profileName = view.findViewById(R.id.profileName);
             TextView profileRole = view.findViewById(R.id.profileRole);
-            ImageView eventImageView = view.findViewById(R.id.profileImage);
+            ImageView profileImageView = view.findViewById(R.id.profileImage);
             Button viewEventButton = view.findViewById(R.id.viewProfileButton);
 
             String username = user.getName();
@@ -77,7 +77,9 @@ public class UserAdapter extends ArrayAdapter<User> {
 
             profileName.setText(username);
             profileRole.setText(user.getRole());
-            eventImageView.setImageResource(R.drawable.ic_home);
+
+            // TODO: Replace icon with profile image
+            profileImageView.setImageResource(R.drawable.ic_home);
 
         }
 

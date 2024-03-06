@@ -37,6 +37,7 @@ public class AdminBrowseProfile extends AppCompatActivity {
         // Required empty public constructor
     }
 
+    // TODO: Replace icon with profile image
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,7 @@ public class AdminBrowseProfile extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
         setUpSearchView();
+        subscribeToFireStore();
 
     }
 
@@ -81,7 +83,10 @@ public class AdminBrowseProfile extends AppCompatActivity {
                 return true;
             }
         });
+    }
 
+
+    private void subscribeToFireStore() {
         userRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot querySnapshots,
@@ -102,7 +107,6 @@ public class AdminBrowseProfile extends AppCompatActivity {
                 }
             }
         });
-
     }
 
 
@@ -136,14 +140,14 @@ public class AdminBrowseProfile extends AppCompatActivity {
 
 
 
-    // This method is called when the up button is pressed. Just return true if you want the NavController to handle it
+    // This method is called when the up button is pressed
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
-    // This method is used if you have an options menu and you handle the action bar's back button here
+    // This method is used if you have an options menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Check if the correct item was clicked

@@ -128,14 +128,14 @@ public class AdminBrowseEvent extends AppCompatActivity {
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
 
-    // This method is called when the up button is pressed. Just return true if you want the NavController to handle it
+    // This method is called when the up button is pressed
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
-    // This method is used if you have an options menu and you handle the action bar's back button here
+    // This method is used if you have an options menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Check if the correct item was clicked

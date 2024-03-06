@@ -42,6 +42,8 @@ public class AdminBrowseImage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_browse_image);
 
+        // TODO: Add search functionality (optional)
+
         db = FirebaseFirestore.getInstance();
         imageRef = db.collection("Image");
 
@@ -100,14 +102,14 @@ public class AdminBrowseImage extends AppCompatActivity {
     }
 
 
-    // Handles back button press
+    // This method is called when the up button is pressed
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
-    // Handles option menu back navigation
+    // This method is used if you have an options menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Check if the correct item was clicked

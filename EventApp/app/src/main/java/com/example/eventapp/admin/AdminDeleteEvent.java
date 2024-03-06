@@ -13,10 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AdminDeleteEvent extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference eventRef = db.collection("Events");
 
     private ImageView bigEventImageView;
     private TextView eventNameView;
@@ -61,12 +63,12 @@ public class AdminDeleteEvent extends AppCompatActivity {
                     .setMessage("Are you sure you want to delete this event?")
                     .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                         // Query to find the event with the matching name
-                        db.collection("Events").whereEqualTo("Name", eventName)
+                        eventRef.whereEqualTo("Name", eventName)
                                 .get()
                                 .addOnSuccessListener(queryDocumentSnapshots -> {
                                     if (!queryDocumentSnapshots.isEmpty()) {
                                         String documentId = queryDocumentSnapshots.getDocuments().get(0).getId();
-                                        db.collection("Events").document(documentId)
+                                        eventRef.document(documentId)
                                                 .delete()
                                                 .addOnSuccessListener(aVoid -> {
                                                     Toast.makeText(AdminDeleteEvent.this, "Event deleted successfully", Toast.LENGTH_SHORT).show();

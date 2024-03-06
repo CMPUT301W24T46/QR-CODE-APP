@@ -9,12 +9,15 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.eventapp.R;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 
 public class AdminDeleteProfile extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference userRef = db.collection("Users");
+
     private String userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class AdminDeleteProfile extends AppCompatActivity {
                     .setMessage("Are you sure you want to delete this user?")
                     .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                         // Continue with delete operation
-                        db.collection("Users").document(userId)
+                        userRef.document(userId)
                                 .delete()
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(this, "User deleted successfully", Toast.LENGTH_SHORT).show();
