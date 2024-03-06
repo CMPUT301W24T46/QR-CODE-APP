@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,12 +71,22 @@ public class OrganizerHome extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Pop up create event window
         Button buttonCreateEvent = view.findViewById(R.id.button_createEvent);
         buttonCreateEvent.setOnClickListener(v -> {
             // Navigate to the OrganizerEvent fragment
             // Show the create event dialog
             CreateEventFragment dialogFragment = new CreateEventFragment();
             dialogFragment.show(getChildFragmentManager(), "CreateEventFragment");
+        });
+
+        // Display notification page
+        Button notificationButton = view.findViewById(R.id.button_notification);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.action_organizerHome_to_organizerNotification);
+            }
         });
     }
 }

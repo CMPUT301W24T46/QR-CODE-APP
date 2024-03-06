@@ -4,114 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".organizer.OrganizerAccount">
-    <!-- TODO: ImageView will be added here -->
+    tools:context=".attendee.AttendeeAccount">
 
-    <TextView
-        android:id="@+id/UsernameLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="170dp"
-        android:text="@string/Username"
+    <Button
+        android:id="@+id/organizer_btnCustomizeProfile"
+        android:layout_width="375dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="124dp"
+        android:layout_marginBottom="56dp"
+        android:background="@drawable/rounded_button_background"
+        android:drawableStart="@drawable/ic_person"
+        android:onClick="onCustomizeProfileClicked"
+        android:padding="30dp"
+        android:text="@string/edit_profile"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/organizer_btnSetting"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editTextTextEmailAddress"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:background="@drawable/edittext_frame"
-        android:hint="@string/hint_email"
-        android:inputType="textEmailAddress"
-        app:layout_constraintTop_toBottomOf="@+id/UsernameLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/Contact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/Contact"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextEmailAddress"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
-
-    <EditText
-        android:id="@+id/editTextPhone"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:background="@drawable/edittext_frame"
-        android:hint="@string/hint_phone"
-        android:inputType="phone"
-        app:layout_constraintTop_toBottomOf="@+id/Contact"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/HomepageDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/HomepageDescription"
-        app:layout_constraintStart_toStartOf="@+id/editTextPhone"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPhone" />
-
-    <EditText
-        android:id="@+id/editTextTextMultiLine"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:background="@drawable/edittext_frame"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="@string/hint_homepage_description"
-        android:inputType="textMultiLine"
-        app:layout_constraintTop_toBottomOf="@+id/HomepageDescription"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <Button
-        android:id="@+id/buttonCustomizeImage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="40dp"
+        android:id="@+id/organizer_btnSetting"
+        android:layout_width="375dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="96dp"
         android:background="@drawable/rounded_button_background"
-        android:text="@string/UploadImage"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toStartOf="@+id/buttonDeleteImage"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
-
-    <Button
-        android:id="@+id/buttonDeleteImage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="5dp"
-        android:background="@drawable/rounded_button_background"
-        android:text="@string/DeleteImage"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/buttonCustomizeImage"
-        app:layout_constraintTop_toTopOf="@+id/buttonCustomizeImage" />
-
-    <Button
-        android:id="@+id/buttonSave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/rounded_button_background"
-        android:text="@string/Save"
-        android:textColor="@color/white"
+        android:drawableStart="@drawable/ic_lock"
+        android:onClick="onSettingClicked"
+        android:padding="30dp"
+        android:text="@string/Setting"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonCustomizeImage"
-        app:layout_constraintVertical_bias="0.247" />
+        app:layout_constraintTop_toBottomOf="@+id/organizer_btnCustomizeProfile" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,15 +16,37 @@
         <action
             android:id="@+id/action_organizerHome_to_organizerEvent"
             app:destination="@id/organizerEvent" />
+        <action
+            android:id="@+id/action_organizerHome_to_organizerNotification"
+            app:destination="@id/organizerNotification" />
     </fragment>
     <fragment
         android:id="@+id/organizerAccount"
         android:name="com.example.eventapp.organizer.OrganizerAccount"
         android:label="fragment_organizer_account"
-        tools:layout="@layout/fragment_organizer_account" />
+        tools:layout="@layout/fragment_organizer_account" >
+        <action
+            android:id="@+id/action_organizerAccount_to_organizerHome"
+            app:destination="@id/organizerHome" />
+    </fragment>
     <fragment
         android:id="@+id/organizerEvent"
         android:name="com.example.eventapp.organizer.OrganizerEvent"
         android:label="fragment_organizer_event"
-        tools:layout="@layout/fragment_organizer_event" />
+        tools:layout="@layout/fragment_organizer_event" >
+        <action
+            android:id="@+id/action_organizerEvent_to_organizerHome"
+            app:destination="@id/organizerHome" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/organizerNotification"
+        android:name="com.example.eventapp.organizer.OrganizerNotification"
+        android:label="fragment_organizer_notification"
+        tools:layout="@layout/fragment_organizer_notification" >
+        <action
+            android:id="@+id/action_organizerNotification_to_organizerHome"
+            app:destination="@id/organizerHome" />
+    </fragment>
+
 </navigation>
