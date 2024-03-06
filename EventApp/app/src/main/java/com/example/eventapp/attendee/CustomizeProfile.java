@@ -25,12 +25,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * The Activity after customize profile button is pressed
+ */
 public class CustomizeProfile extends AppCompatActivity {
 
     private EditText username;
     private EditText contact;
     private EditText description;
     private Button btnAttendeeSave;
+
+    /**
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +62,10 @@ public class CustomizeProfile extends AppCompatActivity {
         });
     }
 
+    /**
+     * Fetches user data from Firestore and populates the EditText views with data.
+     *
+     */
     private void fetchDataFromFirestore() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -84,6 +99,12 @@ public class CustomizeProfile extends AppCompatActivity {
         }
     }
 
+    /**
+     *Handles the selection of menu items in the activity's options menu.
+     * @param item The menu item that was selected.
+     *
+     * @return super.onOptionsItemSelected(item);
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -93,6 +114,11 @@ public class CustomizeProfile extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * Saves changes made to the user profile by updating the database with the new information.
+     * Displays a toast message indicating whether the changes were saved successfully.
+     */
     private void saveChanges() {
         String usernameText = username.getText().toString().trim();
         String contactText = contact.getText().toString().trim();
@@ -105,6 +131,15 @@ public class CustomizeProfile extends AppCompatActivity {
         updateProfileInDatabase(usernameText, contactText, descriptionText);
         Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
     }
+
+    /**
+     * Updates the user profile information in the Firestore database.
+     *
+     * @param username    The new username to be updated.
+     * @param contact     The new contact information to be updated.
+     * @param description The new description or homepage to be updated.
+     *
+     */
     private void updateProfileInDatabase(String username, String contact, String description) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
