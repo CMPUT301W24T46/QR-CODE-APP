@@ -10,13 +10,22 @@ public class User {
     private byte[] imageData ;
 
     private String contactInformation ;
-    public User(String id ,String name , String contactInformation ,String homepage , byte[] imageData , String typeOfUser){
+
+    private String role;
+
+    public User() {
+
+    };
+
+    public User(String id ,String name , String contactInformation ,String homepage , byte[] imageData , String role){
         this.id = id ;
         this.name = name ;
         this.contactInformation = contactInformation ;
         this.homepage = homepage ;
         this.imageData = imageData ;
+        this.role = role;
     }
+
 
     public String getId() {
         return id;
@@ -54,4 +63,9 @@ public class User {
     public void setContactInformation(String contactInformation) {
         this.contactInformation = contactInformation;
     }
+
+    public String getRole() {
+        return this.role;
+    }
+
 }

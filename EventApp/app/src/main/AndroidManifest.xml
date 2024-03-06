@@ -34,6 +34,9 @@
         <activity
             android:name=".attendee.CustomizeProfile"
             android:exported="false" />
+        <!--  ADMIN        -->
+        <activity android:name=".admin.AdminProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".organizer.OrganizerCustomizeProfile">
         </activity>
@@ -43,6 +46,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

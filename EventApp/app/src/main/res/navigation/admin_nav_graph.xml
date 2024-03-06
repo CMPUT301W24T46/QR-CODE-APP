@@ -9,10 +9,32 @@
         android:id="@+id/adminHome"
         android:name="com.example.eventapp.admin.AdminHome"
         android:label="fragment_admin_home"
-        tools:layout="@layout/fragment_admin_home" />
+        tools:layout="@layout/fragment_admin_home">
+
+        <action
+            android:id="@+id/action_adminHome_to_adminProfiles"
+            app:destination="@id/adminProfiles" />
+    </fragment>
+
     <fragment
         android:id="@+id/adminAccount"
         android:name="com.example.eventapp.admin.AdminAccount"
         android:label="fragment_admin_account"
         tools:layout="@layout/fragment_admin_account" />
+
+    <activity
+        android:id="@+id/adminProfiles"
+        android:name="com.example.eventapp.admin.AdminProfileActivity"
+        android:label="activity_admin_profile"
+        tools:layout="@layout/activity_admin_profile" />
+
+    <activity
+        android:id="@+id/adminCustomizeProfile"
+        android:name="com.example.eventapp.attendee.CustomizeProfile"
+        android:label="activity_admin_customize_profile"
+        tools:layout="@layout/customize_attendee_profile"/>
+
+
+
+
 </navigation>
