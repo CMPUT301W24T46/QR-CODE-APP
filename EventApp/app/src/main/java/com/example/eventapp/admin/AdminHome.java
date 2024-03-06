@@ -100,7 +100,7 @@ public class AdminHome extends Fragment {
         }else if(selectedPage.equals("Browse Events")){
             adminNavController.navigate(R.id.action_adminHome_to_adminEvents);
         }else if(selectedPage.equals("Browse Images")){
-//            adminNavController.navigate(R.id.action_accountSelection_to_adminActivity);
+            adminNavController.navigate(R.id.action_adminHome_to_adminImages);
         }
     }
 

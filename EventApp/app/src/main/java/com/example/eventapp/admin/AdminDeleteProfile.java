@@ -34,7 +34,7 @@ public class AdminDeleteProfile extends AppCompatActivity {
         // Try-catch block to handle a potential NullPointerException
         try {
             HashMap<String, String> userData = (HashMap<String, String>) getIntent().getSerializableExtra("userData");
-
+            // TODO: Display details of user
             if (userData != null) {
                 userId = userData.get("id");
                 tvUserId.setText(userId);

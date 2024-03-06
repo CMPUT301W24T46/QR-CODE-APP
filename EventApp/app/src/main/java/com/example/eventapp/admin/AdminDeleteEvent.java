@@ -31,7 +31,7 @@ public class AdminDeleteEvent extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("Event Information");
+            actionBar.setTitle("View/Delete Event");
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
 
