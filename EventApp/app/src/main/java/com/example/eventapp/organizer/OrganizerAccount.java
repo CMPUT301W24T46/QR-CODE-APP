@@ -1,5 +1,6 @@
 package com.example.eventapp.organizer;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,8 +8,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.eventapp.R;
+import com.example.eventapp.attendee.CustomizeProfile;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +64,20 @@ public class OrganizerAccount extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_organizer_account, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_organizer_account, container, false);
+
+        Button btnCustomizeProfile = rootView.findViewById(R.id.organizer_btnCustomizeProfile);
+
+        btnCustomizeProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Change this to navigate to the OrganizerCustomizeProfile activity
+                Intent intent = new Intent(getActivity(), OrganizerCustomizeProfile.class);
+                startActivity(intent);
+            }
+        });
+
+        return rootView;
     }
+
 }
