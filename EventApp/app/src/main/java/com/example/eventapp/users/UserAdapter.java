@@ -1,5 +1,6 @@
 package com.example.eventapp.users;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,13 +13,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.navigation.Navigation;
 
-import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
+import com.example.eventapp.admin.AdminDeleteProfile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class UserAdapter extends ArrayAdapter<User> {
 
@@ -54,14 +55,21 @@ public class UserAdapter extends ArrayAdapter<User> {
                 username = user.getId();
             }
 
-//        Sets navigations for each list item.
             viewEventButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Bundle bundle = new Bundle();
                     bundle.putString("UserName", user.getName());
                     bundle.putString("ImageURL", Arrays.toString(user.getImageData()));
-                Navigation.findNavController(v).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
+
+                    Intent intent = new Intent(context, AdminDeleteProfile.class);
+                    HashMap <String, String> userData = new HashMap<>();
+                    userData.put("id", user.getId());
+                    userData.put("name", user.getName());
+                    userData.put("contact", user.getContactInformation());
+                    userData.put("homepage", user.getHomepage());
+                    intent.putExtra("userData", userData);
+                    context.startActivity(intent);
                 }
             });
 
@@ -70,6 +78,7 @@ public class UserAdapter extends ArrayAdapter<User> {
             profileName.setText(username);
             profileRole.setText(user.getRole());
             eventImageView.setImageResource(R.drawable.ic_home);
+
         }
 
         return view;

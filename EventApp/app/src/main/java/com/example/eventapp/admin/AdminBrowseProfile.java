@@ -26,14 +26,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-public class AdminProfileActivity extends AppCompatActivity {
+public class AdminBrowseProfile extends AppCompatActivity {
     private FirebaseFirestore db;
     private SearchView searchView ;
     private CollectionReference userRef;
     private ArrayList<User> userDataList  ;
     private ListView profileList ;
     private UserAdapter userAdapter;
-    public AdminProfileActivity() {
+    public AdminBrowseProfile() {
         // Required empty public constructor
     }
 
@@ -41,7 +41,7 @@ public class AdminProfileActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_profile);
+        setContentView(R.layout.activity_admin_browse_profile);
 
         db = FirebaseFirestore.getInstance();
         userRef = db.collection("Users");
@@ -55,7 +55,7 @@ public class AdminProfileActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("Browse Profile");
+            actionBar.setTitle("Browse Profiles");
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
         setUpSearchView();

@@ -5,13 +5,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -25,14 +25,13 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
 public class AttendeeEvent extends Fragment {
+    private View rootView;
     private FirebaseFirestore db;
     private SearchView searchView ;
     private CollectionReference eventsRef;
@@ -61,12 +60,25 @@ public class AttendeeEvent extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        this.rootView = view;
 
         searchView = view.findViewById(R.id.eventSearcher);
         eventList = view.findViewById(R.id.eventListView) ;
 
         eventDataList = new ArrayList<>() ;
-        eventListArrayAdapter = new EventAdapter(getContext() , eventDataList) ;
+
+        // Implement the OnEventClickListener
+        EventAdapter.OnEventClickListener eventClickListener = new EventAdapter.OnEventClickListener() {
+            @Override
+            public void onEventClick(Event event) {
+                Bundle bundle = new Bundle();
+                bundle.putString("EventName", event.getEventName());
+                bundle.putString("ImageURL", event.getImageURL());
+                Navigation.findNavController(rootView).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
+            }
+        };
+
+        eventListArrayAdapter = new EventAdapter(getContext() , eventDataList, eventClickListener) ;
         eventList.setAdapter(eventListArrayAdapter);
 
 

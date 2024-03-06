@@ -97,9 +97,9 @@ public class AdminHome extends Fragment {
         NavController adminNavController = Navigation.findNavController(view) ;
         if(selectedPage.equals("Browse Profiles")){
             adminNavController.navigate(R.id.action_adminHome_to_adminProfiles);
-        }else if(selectedPage.equals("Organize Event")){
-//            adminNavController.navigate(R.id.action_accountSelection_to_organizerActivity);
-        }else if(selectedPage.equals("Admin")){
+        }else if(selectedPage.equals("Browse Events")){
+            adminNavController.navigate(R.id.action_adminHome_to_adminEvents);
+        }else if(selectedPage.equals("Browse Images")){
 //            adminNavController.navigate(R.id.action_accountSelection_to_adminActivity);
         }
     }
