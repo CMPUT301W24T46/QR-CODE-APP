@@ -46,7 +46,6 @@ public class AdminBrowseProfile extends AppCompatActivity {
         // Required empty public constructor
     }
 
-    // TODO: Replace icon with profile image
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,9 +94,6 @@ public class AdminBrowseProfile extends AppCompatActivity {
             }
         });
     }
-
-
-
 
 
     public void getCurrentUserList(String searchText, boolean queryOrDisplay){
@@ -175,27 +171,28 @@ public class AdminBrowseProfile extends AppCompatActivity {
         }
 
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
-        for (DocumentReference imageRef : userImageRefMap.values()) {
-            tasks.add(imageRef.get());
-        }
-
-        Task<List<DocumentSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
-        allTasks.addOnSuccessListener(documentSnapshots -> {
-            for (DocumentSnapshot snapshot : documentSnapshots) {
+        for (Map.Entry<String, DocumentReference> entry : userImageRefMap.entrySet()) {
+            String userId = entry.getKey();
+            DocumentReference imageRef = entry.getValue();
+            Task<DocumentSnapshot> imageTask = imageRef.get().continueWith(task -> {
+                DocumentSnapshot snapshot = task.getResult();
                 if (snapshot.exists()) {
                     String imageUrl = snapshot.getString("URL");
-                    // Update the imageURL for all users with this image reference
+                    // Update the imageURL for this specific user
                     for (User user : userDataList) {
-                        DocumentReference userImageRef = userImageRefMap.get(user.getId());
-
-                        if (userImageRef != null && userImageRef.equals(snapshot.getReference())) {
+                        if (user.getId().equals(userId)) {
                             user.setImageURL(imageUrl);
+                            break;
                         }
                     }
-                } else {
-                    Log.e("AdminBrowseProfile", "Invalid image reference encountered");
                 }
-            }
+                return null; // You can return something else if needed
+            });
+            tasks.add(imageTask);
+        }
+
+        Task<Void> allTasks = Tasks.whenAll(tasks);
+        allTasks.addOnSuccessListener(voids -> {
             userAdapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> Log.e("TAG", "Error loading images", e));
     }
