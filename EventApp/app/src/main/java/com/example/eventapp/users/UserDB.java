@@ -117,6 +117,7 @@ public class UserDB {
         data.put("homepage", "");
 //        data.put("typeOfUser" , typeOfUser) ;
         data.put("contactInformation", "");
+        data.put("imageUrl" , "") ;
 //        user = new User(uid , "" , "" , "" , null , typeOfUser) ;
 
         userRef.document(uid)
