@@ -7,30 +7,38 @@ public class User {
     private String email;
 
     private String homepage ;
-    private byte[] imageData ;
+    private String imageURL ;
+
+    private String typeOfUser ;
 
     private String contactInformation ;
-
     private String role;
-
+    private String imageData;
+  
     public User() {
 
     };
-
     public User(String id ,String name , String contactInformation ,String homepage , byte[] imageData , String role){
-        this.id = id ;
-        this.name = name ;
-        this.contactInformation = contactInformation ;
-        this.homepage = homepage ;
-        this.imageData = imageData ;
-        this.role = role;
+      this.id = id ;
+      this.name = name ;
+      this.contactInformation = contactInformation ;
+      this.homepage = homepage ;
+      this.imageData = imageData ;
+      this.role = role;
     }
-
+  
+    public User(String id ,String name , String contactInformation ,String homepage , String imageURL , String typeOfUser){
+      this.id = id ;
+      this.name = name ;
+      this.contactInformation = contactInformation ;
+      this.homepage = homepage ;
+      this.imageURL= imageURL ;
+      this.typeOfUser = typeOfUser ;
+    }
 
     public String getId() {
         return id;
     }
-
 
     public String getName() {
         return name;
@@ -48,14 +56,6 @@ public class User {
         this.homepage = homepage;
     }
 
-    public byte[] getImageData() {
-        return imageData;
-    }
-
-    public void setImageData(byte[] imageData) {
-        this.imageData = imageData;
-    }
-
     public String getContactInformation() {
         return contactInformation;
     }
@@ -64,8 +64,33 @@ public class User {
         this.contactInformation = contactInformation;
     }
 
+
     public String getRole() {
         return this.role;
+    }
+     
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public String getTypeOfUser() {
+        return typeOfUser;
+    }
+
+    public void setTypeOfUser(String typeOfUser) {
+        this.typeOfUser = typeOfUser;
     }
 
 }
