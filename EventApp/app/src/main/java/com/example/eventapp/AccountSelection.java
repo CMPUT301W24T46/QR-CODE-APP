@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,7 +100,11 @@ public class AccountSelection extends Fragment {
 //            selectAccountController.navigate(R.id.action_accountSelection_to_attendeeActivity);
 
         }else if(selectedAccount.equals("Organize Event")){
-            selectAccountController.navigate(R.id.action_accountSelection_to_organizerActivity);
+            Log.d("Organizer" , "Page Clicked") ;
+            userDB.setNavController(selectAccountController);
+            userDB.setNavigationPageId(R.id.action_accountSelection_to_organizerActivity) ;
+            userDB.getUserInfoAttendee();
+//            selectAccountController.navigate(R.id.action_accountSelection_to_organizerActivity);
         }else if(selectedAccount.equals("Admin")){
             selectAccountController.navigate(R.id.action_accountSelection_to_adminActivity);
         }
