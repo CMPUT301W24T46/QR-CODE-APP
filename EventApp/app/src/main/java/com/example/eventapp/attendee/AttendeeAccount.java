@@ -13,6 +13,7 @@ import android.widget.Button;
 import com.example.eventapp.R;
 
 /**
+ * Account page for Attendee to access profile editing function and others.
  * A simple {@link Fragment} subclass.
  * Use the {@link AttendeeAccount#newInstance} factory method to
  * create an instance of this fragment.
@@ -50,6 +51,12 @@ public class AttendeeAccount extends Fragment {
         return fragment;
     }
 
+    /**
+     * Called to do initial creation of the fragment.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state,
+     *                           this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +66,15 @@ public class AttendeeAccount extends Fragment {
         }
     }
 
+    /**
+     * Inflates the layout for the attendee account fragment and initializes UI components.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState A Bundle containing the fragment's previously saved state, if any.
+     * @return The root View of the inflated layout for the fragment.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
