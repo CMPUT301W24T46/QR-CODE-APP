@@ -139,9 +139,22 @@ public class CustomizeProfile extends AppCompatActivity {
                         contact.setText(attendeeUser.getContactInformation());
                         description.setText(attendeeUser.getContactInformation());
 
-                        // Retrieve the reference to the image document
-                        DocumentReference imageRef = documentSnapshot.getDocumentReference("imageUrl");
-                        getImageFromFireStore(imageRef ,usernameText , contactText , descriptionText);
+                        // Check if 'imageUrl' field is present and of type DocumentReference
+                        Object imageUrlObject = documentSnapshot.get("imageUrl");
+                        if (imageUrlObject instanceof DocumentReference) {
+                            DocumentReference imageRef = (DocumentReference) imageUrlObject;
+                            getImageFromFireStore(imageRef, usernameText, contactText, descriptionText);
+                        } else if (imageUrlObject != null) {
+                            // Handle cases where 'imageUrl' field is present but not a DocumentReference
+                            Log.e("CustomizeProfile", "'imageUrl' field is not a DocumentReference, it is: " + imageUrlObject.toString());
+                            // Handle this case as necessary, such as displaying a default image or clearing the existing image
+                        } else {
+                            // Handle cases where 'imageUrl' field is not present
+                            Log.e("CustomizeProfile", "'imageUrl' field is not present");
+                            // Handle this case as necessary, such as displaying a default image or clearing the existing image
+                        }
+
+
                     } else {
                         Log.d("CustomizeProfile", "document doesn't exist");
                     }

@@ -148,9 +148,15 @@ public class AdminBrowseProfile extends AppCompatActivity {
                     String homepage = doc.getString("homepage");
                     String typeOfUser = doc.getString("typeOfUser");
 
-                    DocumentReference imageRef = doc.getDocumentReference("imageUrl");
-                    if (imageRef != null) {
+                    // Check if 'imageUrl' field is present and of type DocumentReference
+                    Object imageUrlObject = doc.get("imageUrl");
+                    if (imageUrlObject instanceof DocumentReference) {
+                        DocumentReference imageRef = (DocumentReference) imageUrlObject;
                         userImageRefMap.put(userID, imageRef);
+                    } else if (imageUrlObject != null) {
+                        // Handle cases where 'imageUrl' field is present but not a DocumentReference
+                        Log.e("Firestore", "'imageUrl' field is not a DocumentReference for user: " + userID);
+                        // Handle this case as necessary
                     }
 
                     User user = new User(userID, name, contactInfo, homepage, "", typeOfUser);
@@ -161,6 +167,7 @@ public class AdminBrowseProfile extends AppCompatActivity {
             }
         });
     }
+
 
     private void loadProfileImages() {
         if (userImageRefMap.isEmpty()) {
@@ -175,20 +182,23 @@ public class AdminBrowseProfile extends AppCompatActivity {
         Task<List<DocumentSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
         allTasks.addOnSuccessListener(documentSnapshots -> {
             for (DocumentSnapshot snapshot : documentSnapshots) {
-                String imageUrl = snapshot.getString("URL");
+                if (snapshot.exists()) {
+                    String imageUrl = snapshot.getString("URL");
+                    // Update the imageURL for all users with this image reference
+                    for (User user : userDataList) {
+                        DocumentReference userImageRef = userImageRefMap.get(user.getId());
 
-                // Update the imageURL for all users with this image reference
-                for (User user : userDataList) {
-                    DocumentReference userImageRef = userImageRefMap.get(user.getId());
-                    if (userImageRef != null && userImageRef.equals(snapshot.getReference())) {
-                        user.setImageURL(imageUrl);
+                        if (userImageRef != null && userImageRef.equals(snapshot.getReference())) {
+                            user.setImageURL(imageUrl);
+                        }
                     }
+                } else {
+                    Log.e("AdminBrowseProfile", "Invalid image reference encountered");
                 }
             }
             userAdapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> Log.e("TAG", "Error loading images", e));
     }
-
 
 
     private String findUserIdByImageRef(DocumentReference imageRef) {
