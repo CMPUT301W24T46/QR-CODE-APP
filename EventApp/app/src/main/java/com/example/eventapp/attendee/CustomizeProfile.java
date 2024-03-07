@@ -212,6 +212,8 @@ public class CustomizeProfile extends AppCompatActivity {
         attendeeUser.setName(usernameText);
         attendeeUser.setContactInformation(contactText);
         attendeeUser.setHomepage(descriptionText);
+        attendeeUser.setTypeOfUser("Attendee");
+
         if (usernameText.isEmpty() || contactText.isEmpty() || descriptionText.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -232,7 +234,7 @@ public class CustomizeProfile extends AppCompatActivity {
             updates.put("name", username);
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
-            updates.put("typeOfUser", "Attendee");
+            updates.put("typeOfUser", attendeeUser.getTypeOfUser());
 
             userRef.update(updates);
         }
