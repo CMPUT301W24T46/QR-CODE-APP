@@ -15,7 +15,7 @@ import com.example.eventapp.R;
 /**
  * Account page for Attendee to access profile editing function and others.
  * A simple {@link Fragment} subclass.
- * Use the {@link AttendeeAccount#newInstance} factory method to
+ * Use the {@link AttendeeAccount} factory method to
  * create an instance of this fragment.
  */
 public class AttendeeAccount extends Fragment {
@@ -25,22 +25,6 @@ public class AttendeeAccount extends Fragment {
      */
     public AttendeeAccount() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AttendeeAccount.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AttendeeAccount newInstance(String param1, String param2) {
-        AttendeeAccount fragment = new AttendeeAccount();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     /**
