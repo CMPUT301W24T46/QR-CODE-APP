@@ -24,9 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link OrganizerHome#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment for the organizer's home screen, displaying welcome messages and navigation options.
  */
 public class OrganizerHome extends Fragment {
 

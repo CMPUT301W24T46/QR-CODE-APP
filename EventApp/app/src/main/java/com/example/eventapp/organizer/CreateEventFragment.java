@@ -17,14 +17,25 @@ import androidx.fragment.app.DialogFragment;
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
 
+/**
+ * DialogFragment for creating a new event. It prompts the user to enter event details and passes the event back to the hosting activity.
+ */
 public class CreateEventFragment extends DialogFragment {
 
+    /**
+     * Listener interface for event creation actions.
+     */
     interface CreateEventListener {
         void onEventCreated(Event event);
     }
 
     private CreateEventListener listener;
 
+    /**
+     * Attaches the context as a listener for event creation.
+     * @param context The activity context.
+     * @throws ClassCastException if context does not implement CreateEventListener.
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -35,6 +46,11 @@ public class CreateEventFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Creates and returns the dialog for event creation with input fields and confirmation.
+     * @param savedInstanceState The last saved instance state of the Fragment, or null if this is a freshly created Fragment.
+     * @return A new dialog instance.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
