@@ -61,6 +61,10 @@ public class CustomizeProfile extends AppCompatActivity {
     private ImageView profilePhotView ;
     private Context context ;
     /**
+     * Called when the activity is first created. Responsible for initializing the activity's UI components,
+     * setting up action bar title and back button, registering click listeners for buttons,
+     * fetching existing user data from firebase, and register activity result for
+     * upload/delete images.
      *
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
@@ -129,6 +133,9 @@ public class CustomizeProfile extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Launches pick media that helps user to choose image
+     */
     private void uploadImage() {
         // Launch the photo picker and let the user choose images and videos.
         pickMedia.launch(new PickVisualMediaRequest.Builder()
@@ -136,6 +143,10 @@ public class CustomizeProfile extends AppCompatActivity {
                 .build());
     }
 
+    /**
+     * Deletes the user's profile image by updating the firebase entry with a reference to the default image.
+     * after image deleted successfully, fetches the updated user data from firebase.
+     */
     public void deleteImage(){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -275,6 +286,15 @@ public class CustomizeProfile extends AppCompatActivity {
         }
     }
 
+    /**
+     * Retrieves the image URL from firebase based on the provided document reference,
+     * and updates the user's profile information accordingly.
+     *
+     * @param imageRef       The document reference pointing to the image in Firestore.
+     * @param usernameText   The username of the attendee.
+     * @param contactText    The contact information of the attendee.
+     * @param descriptionText The description of the attendee.
+     */
     private void getImageFromFireStore(DocumentReference imageRef , String usernameText , String contactText , String descriptionText){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;

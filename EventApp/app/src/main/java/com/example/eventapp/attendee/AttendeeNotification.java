@@ -31,6 +31,9 @@ public class AttendeeNotification extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    /**
+     * Constructor of an instance of AttendeeNotification
+     */
     public AttendeeNotification() {
         // Required empty public constructor
     }
@@ -53,6 +56,12 @@ public class AttendeeNotification extends Fragment {
         return fragment;
     }
 
+    /**
+     * Called at initial creation of this fragment
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +71,13 @@ public class AttendeeNotification extends Fragment {
         }
     }
 
+    /**
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -72,6 +88,12 @@ public class AttendeeNotification extends Fragment {
         }
     }
 
+    /**
+     * Handles options menu item selections for the fragment.
+     *
+     * @param item The selected MenuItem.
+     * @return True if the item selection was handled, false otherwise.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

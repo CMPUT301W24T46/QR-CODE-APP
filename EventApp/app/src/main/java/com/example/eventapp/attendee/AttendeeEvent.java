@@ -30,6 +30,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+/**
+ * Fragment representing the attendee's view of events.
+ */
 public class AttendeeEvent extends Fragment {
     private View rootView;
     private FirebaseFirestore db;
@@ -43,6 +46,12 @@ public class AttendeeEvent extends Fragment {
     }
 
 
+    /**
+     * called at initial creation of fragment.
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +60,31 @@ public class AttendeeEvent extends Fragment {
         eventsRef = db.collection("Events") ;
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to. The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_attendee_event, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned,
+     * but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -126,6 +154,12 @@ public class AttendeeEvent extends Fragment {
 
     }
 
+    /**
+     * Retrieves the current list of events from firebase based on a search query.
+     *
+     * @param searchText     The text to search for in event names.
+     * @param queryOrDisplay A boolean indicating whether to perform a query or display all events.
+     */
     public void getCurrentEvenList(String searchText, boolean queryOrDisplay){
         eventsRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override

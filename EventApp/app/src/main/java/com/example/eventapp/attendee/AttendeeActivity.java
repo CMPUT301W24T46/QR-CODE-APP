@@ -19,8 +19,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 //Attached to activity_attendee
+/**
+ * The AttendeeActivity class represents the main activity for the attendee user.
+ * It handles navigation between different fragments such as the home, account, and event pages
+ * using a bottom navigation bar.
+ */
 public class AttendeeActivity extends AppCompatActivity {
     private NavController backNavigation ;
+    /**
+     * Called when the activity is starting.
+     * Initializes the activity's UI and sets up navigation.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously
+     *                           being shut down then this Bundle contains the data it most
+     *                           recently supplied in onSaveInstanceState(Bundle).
+     *                           Note: Otherwise, it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +99,12 @@ public class AttendeeActivity extends AppCompatActivity {
     }
 
 //    Navigates to the right page depending on instance and back button pressed
+    /**
+     * Called when a menu item is selected.
+     *
+     * @param item The selected menu item
+     * @return true if the event has been consumed, false otherwise
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

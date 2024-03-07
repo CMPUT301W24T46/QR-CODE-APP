@@ -29,6 +29,9 @@ public class AttendeeAccount extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    /**
+     * Constructor of an instance of AttendeeAccount
+     */
     public AttendeeAccount() {
         // Required empty public constructor
     }
