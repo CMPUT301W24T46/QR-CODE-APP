@@ -6,6 +6,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.example.eventapp.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 //This class is attached to activity_admin
 public class AdminActivity extends AppCompatActivity {
+    private NavController adminController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +27,14 @@ public class AdminActivity extends AppCompatActivity {
         topLevelDestinations.add(R.id.adminHome) ;
         topLevelDestinations.add(R.id.adminAccount) ;
 
+
+
 //        Attaches the NavController to the Bottom Navigation Menu to enable navigation between the Fragments
 //        Navigates between AdminHome and AdminAccount
         BottomNavigationView adminNavigationView = findViewById(R.id.bottomNavigationAdminView) ;
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentContainerAdminView);
-        NavController adminController = navHostFragment.getNavController() ;
+        adminController = navHostFragment.getNavController() ;
         NavigationUI.setupWithNavController(adminNavigationView , adminController);
 
 
@@ -46,5 +50,7 @@ public class AdminActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle("Account");
             }
         });
+
     }
+
 }
