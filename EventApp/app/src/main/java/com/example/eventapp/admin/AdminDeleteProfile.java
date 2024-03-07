@@ -3,11 +3,14 @@ package com.example.eventapp.admin;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,8 +33,12 @@ public class AdminDeleteProfile extends AppCompatActivity {
             actionBar.setTitle("View/Delete Profile");
         }
 
+        ImageView profileImageView = findViewById(R.id.profileImageView);
         TextView tvUserId = findViewById(R.id.tvUserId);
         TextView tvUserName = findViewById(R.id.tvUserName);
+        TextView tvUserContact = findViewById(R.id.tvUserContact);
+        TextView tvUserHomepage = findViewById(R.id.tvUserHomepage);
+        TextView tvUserType = findViewById(R.id.tvUserType);
         Button btnDeleteUser = findViewById(R.id.btnDeleteUser);
 
         // Try-catch block to handle a potential NullPointerException
@@ -40,13 +47,27 @@ public class AdminDeleteProfile extends AppCompatActivity {
             // TODO: Display details of user
             if (userData != null) {
                 userId = userData.get("id");
-                tvUserId.setText(userId);
-                tvUserName.setText(userData.get("name"));
+                String imageURL = userData.get("imageURL");
+
+                if (imageURL != null && !imageURL.isEmpty()) {
+                    Glide.with(this).load(imageURL).into(profileImageView);
+                } else {
+                    // Set a default image or placeholder
+                    profileImageView.setImageResource(R.drawable.ic_home);
+                }
+
+                tvUserId.setText("User ID: " + userId);
+                tvUserName.setText("Name: " + userData.get("name"));
+                tvUserContact.setText("Contact: " + userData.get("contact"));
+                tvUserHomepage.setText("Homepage: " + userData.get("homepage"));
+
+                tvUserType.setText("User Role: " + userData.get("typeOfUser"));
+
                 // ... set text for other TextViews
             }
         } catch (ClassCastException e) {
             e.printStackTrace();
-            // Handle the error appropriately
+            Toast.makeText(this, "Error retrieving user data.", Toast.LENGTH_SHORT).show();
         }
 
         btnDeleteUser.setOnClickListener(v -> deleteUser());
