@@ -20,7 +20,6 @@ import com.example.eventapp.R;
 import com.example.eventapp.admin.AdminDeleteProfile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class UserAdapter extends ArrayAdapter<User> {

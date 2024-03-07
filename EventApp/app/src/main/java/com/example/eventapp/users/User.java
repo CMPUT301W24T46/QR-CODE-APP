@@ -13,7 +13,7 @@ public class User {
 
     private String contactInformation ;
 
-    public User() {
+    public User(String number, String johnDoe, String mail, String url, String s, String regular, String id) {
 
     };
   
@@ -79,5 +79,6 @@ public class User {
     public void setTypeOfUser(String typeOfUser) {
         this.typeOfUser = typeOfUser;
     }
+
 
 }
