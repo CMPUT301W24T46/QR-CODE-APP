@@ -99,7 +99,7 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
 
         if (user != null) {
             String userId = user.getUid();
-            DocumentReference userRef = db.collection("Organizers").document(userId);
+            DocumentReference userRef = db.collection("Users").document(userId);
 
             Map<String, Object> updates = new HashMap<>();
             updates.put("name", username);

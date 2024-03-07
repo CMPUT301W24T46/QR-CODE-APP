@@ -60,7 +60,7 @@ public class UserAdapter extends ArrayAdapter<User> {
                 public void onClick(View v) {
                     Bundle bundle = new Bundle();
                     bundle.putString("UserName", user.getName());
-                    bundle.putString("ImageURL", Arrays.toString(user.getImageData()));
+//                    bundle.putString("ImageURL", Arrays.toString(user.getImageData()));
 
                     Intent intent = new Intent(context, AdminDeleteProfile.class);
                     HashMap <String, String> userData = new HashMap<>();

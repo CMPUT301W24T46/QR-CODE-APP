@@ -13,7 +13,7 @@ public class User {
 
     private String contactInformation ;
     private String role;
-    private String imageData;
+    private byte[] imageData;
   
     public User() {
 
