@@ -22,6 +22,16 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
 
     private NavController back_organizerNavigation ;
 
+    /**
+     * Called when the activity is starting. This method performs basic application startup logic
+     * that should happen only once for the entire life of the activity. It sets the content view
+     * to the activity's layout, initializes the BottomNavigationView for navigation, sets up a
+     * NavController for managing UI navigation within a NavHost, and configures action bar titles
+     * based on the current navigation destination.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut
+     *                           down then this Bundle contains the data it most recently supplied in
+     *                           onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +76,16 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
         });
 
         organizerNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+
+            /**
+             * Handles navigation item selections in the BottomNavigationView or a similar navigation component.
+             * This method is called whenever an item in the navigation menu is selected by the user.
+             * @param item The selected menu item. This parameter is annotated with {@code @NonNull} to indicate that
+             *             it should never be null.
+             * @return Returns true if the navigation action is successfully handled, false otherwise. Returning false
+             *         typically indicates that the selected item ID does not match any known navigation actions, and
+             *         no action was taken.
+             */
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId() == R.id.organizerHome){
@@ -87,7 +107,15 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
 
 
     }
-
+    /**
+     * This method is called whenever an item in the options menu is selected. Specifically, it handles
+     * the navigation when the home (or Up) button is pressed in the app bar.
+     * @param item The menu item that was selected. This parameter is annotated with {@code @NonNull} to
+     *             indicate that it should never be null.
+     * @return boolean Returns true if the event was consumed, indicating that the action was handled.
+     *                 For the home button, it returns true after handling navigation. For other items,
+     *                 it calls the superclass implementation.
+     */
     //    Navigates to the right page depending on instance and back button pressed
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
