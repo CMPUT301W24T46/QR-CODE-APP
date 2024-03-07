@@ -38,6 +38,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Activity for customizing and saving an organizer's profile, including image selection and database updates.
+ */
 public class OrganizerCustomizeProfile extends AppCompatActivity{
 
     private EditText username;
@@ -54,7 +57,13 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
     private Button profileEditImageButton;
     private Button profileDeleteImageButton;
 
-
+    /**
+     * Initializes the activity for customizing the organizer's profile. This method sets up the
+     * activity layout, initializes UI components, and sets the action bar title.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut
+     *                           down then this Bundle contains the data it most recently supplied in
+     *                           onSaveInstanceState(Bundle). Otherwise, it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +122,17 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
             }
         });
     }
+
+    /**
+     * Launches a photo picker interface for the user to select either an image or a video. This method
+     * creates a new {@link PickVisualMediaRequest} specifying the type of media to be picked - images
+     * and videos in this case. It then launches the photo picker activity, allowing the user to choose
+     * from their device's media. The selection result is handled by the activity result launcher
+     * registered in the activity's {@code onCreate} method.
+     *
+     * This functionality provides a convenient way for users to update their profile picture or add
+     * media content related to their profile directly from their device's gallery or other media sources.
+     */
     private void uploadImage() {
         // Launch the photo picker and let the user choose images and videos.
         pickMedia.launch(new PickVisualMediaRequest.Builder()
@@ -120,7 +140,19 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
                 .build());
     }
 
-
+    /**
+     * Resets the profile image for the currently signed-in user to a default image. This operation
+     * involves updating the user's document in the Firestore 'Users' collection to reference a
+     * default image stored in the 'defaultImage' collection.
+     *
+     * The method retrieves the current {@link FirebaseUser} and updates their document in the 'Users'
+     * collection. The 'imageUrl' field of the document is set to reference the 'NoImage' document
+     * within the 'defaultImage' collection, effectively setting the user's profile image to a default.
+     *
+     * Upon successful update, {@code fetchDataFromFirestore()} is called to refresh the user's profile
+     * information from Firestore, ensuring that any UI components relying on this data are updated to
+     * reflect the change.
+     */
     public void deleteImage(){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -139,6 +171,14 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
                     }});
     }
 
+    /**
+     * Retrieves and updates the UI with the current user's profile information from Firestore. Handles profile image retrieval based on 'imageUrl' field.
+     * @implNote This method assumes that the user is logged in and that a valid FirebaseUser object
+     *           exists. It requires the Firestore database to contain a "Users" collection with
+     *           documents keyed by user IDs. Each document should at least contain fields for the
+     *           user's name, contact information, homepage description, and optionally an 'imageUrl'
+     *           that points to a profile image.
+     */
     private void fetchDataFromFirestore() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -192,6 +232,9 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
         }
     }
 
+    /**
+     * Saves the updated user profile information to Firestore and displays a toast message based on success or required field validation.
+     */
     private void saveChanges() {
         String usernameText = username.getText().toString().trim();
         String contactText = contact.getText().toString().trim();
@@ -209,6 +252,9 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
         Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Updates the current user's profile information in Firestore with provided username, contact, and description.
+     */
     private void updateProfileInDatabase(String username, String contact, String description) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -228,6 +274,9 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
         }
     }
 
+    /**
+     * Fetches the profile image URL from Firestore and updates the user's profile image in the UI.
+     */
     private void getImageFromFireStore(DocumentReference imageRef , String usernameText , String contactText , String descriptionText){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
@@ -262,6 +311,10 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
         });
     }
 
+    /**
+     * Handles navigation when the up button is pressed in the action bar by mimicking the back button press.
+     * @return true to indicate that the up navigation event was handled.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
