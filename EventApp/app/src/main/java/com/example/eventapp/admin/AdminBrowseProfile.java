@@ -99,7 +99,14 @@ public class AdminBrowseProfile extends AppCompatActivity {
                 if (querySnapshots != null) {
                     userAdapter.clear();
                     for (QueryDocumentSnapshot doc: querySnapshots) {
-                        User user = doc.toObject(User.class);
+                        String userID = doc.getId();
+                        String name = doc.getString("name");
+                        String contactInfo = doc.getString("contactInformation");
+                        String homepage = doc.getString("homepage");
+                        // TODO: Replace image with profile pic
+//                        String imageURL = doc.getString("imageUrl");
+                        String typeOfUser = doc.getString("typeOfUser");
+                        User user =  new User(userID, name, contactInfo, homepage, "", typeOfUser);
                         Log.d("Firestore", user.getId());
                         userDataList.add(user);
                     }
