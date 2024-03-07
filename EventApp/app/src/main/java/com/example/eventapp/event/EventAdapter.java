@@ -18,15 +18,23 @@ import com.example.eventapp.R;
 
 import java.util.ArrayList;
 
+
+
 public class EventAdapter extends ArrayAdapter<Event> {
+
+    public interface OnEventClickListener {
+        void onEventClick(Event event);
+    }
 
     private ArrayList<Event> events ;
     private Context context ;
+    private OnEventClickListener listener;
 
-    public EventAdapter(Context context , ArrayList<Event> events){
+    public EventAdapter(Context context , ArrayList<Event> events, OnEventClickListener listener){
         super(context , 0, events);
         this.context = context ;
         this.events = events ;
+        this.listener = listener;
     }
 
     @NonNull
@@ -43,16 +51,23 @@ public class EventAdapter extends ArrayAdapter<Event> {
         ImageView eventImageView = view.findViewById(R.id.eventImageList) ;
         Button viewEventButton = view.findViewById(R.id.viewEvent) ;
 
-//        Sets navigations for each list item.
-        viewEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString("EventName", event.getEventName());
-                bundle.putString("ImageURL", event.getImageURL());
-                Navigation.findNavController(v).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
+        // Handle button click
+        viewEventButton.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onEventClick(events.get(position));
             }
         });
+
+//        Sets navigations for each list item.
+//        viewEventButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Bundle bundle = new Bundle();
+//                bundle.putString("EventName", event.getEventName());
+//                bundle.putString("ImageURL", event.getImageURL());
+//                Navigation.findNavController(v).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
+//            }
+//        });
 
         Glide.with(context).load(event.getImageURL()).centerCrop().into(eventImageView) ;
         eventName.setText(event.getEventName());

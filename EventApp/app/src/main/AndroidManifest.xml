@@ -34,6 +34,20 @@
         <activity
             android:name=".attendee.CustomizeProfile"
             android:exported="false" />
+        <!--  ADMIN        -->
+        <activity android:name=".admin.AdminBrowseProfile"
+            android:exported="false" />
+        <activity android:name=".admin.AdminDeleteProfile"
+            android:exported="false" />
+        <activity android:name=".admin.AdminBrowseEvent"
+            android:exported="false" />
+        <activity android:name=".admin.AdminDeleteEvent"
+            android:exported="false" />
+        <activity android:name=".admin.AdminBrowseImage"
+            android:exported="false" />
+        <activity android:name=".admin.AdminDeleteImage"
+            android:exported="false" />
+
         <activity
             android:name=".organizer.OrganizerCustomizeProfile">
         </activity>
@@ -43,6 +57,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
