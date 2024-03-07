@@ -13,14 +13,30 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * EventDB stores all the event information inside firebase event collections.
+ */
 public class EventDB {
     private FirebaseFirestore db;
     private CollectionReference eventsCollection;
 
+    /**
+     * Constructs a new EventDB instance with the given FirebaseFirestore instance.
+     * Initializes the events collection reference using the provided database.
+     *
+     * @param db The instance of Firebase to use for database operations.
+     */
     public EventDB(FirebaseFirestore db) {
         this.db = db;
         this.eventsCollection = db.collection("Events");
     }
+    /**
+     * Add new event to the firebase.
+     *
+     * @param eventName        The name of the event to be added.
+     * @param imageDescription The description of the event image.
+     * @param imagePhoto       The URL or path of the event image.
+     */
     public void addEvent(String eventName, String imageDescription, String imagePhoto) {
         Map<String, Object> event = new HashMap<>();
         event.put("eventName", eventName);
@@ -37,6 +53,11 @@ public class EventDB {
                 });
     }
 
+    /**
+     * Delete event from the firebase.
+     *
+     * @param eventID        The ID of the event to be deleted.
+     */
     public void deleteEvent(String eventID) {
         db.collection("Events")
                 .document(eventID)
@@ -52,6 +73,12 @@ public class EventDB {
                     }
                 });
     }
+
+    /**
+     * Retrieves information of a specific event from firebase.
+     *
+     * @param eventID The ID of the event to retrieve information.
+     */
     public void getEventInfo(String eventID) {
         db.collection("Events")
                 .document(eventID)

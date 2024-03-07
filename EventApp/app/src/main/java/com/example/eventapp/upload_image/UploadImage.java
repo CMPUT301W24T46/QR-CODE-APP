@@ -8,6 +8,7 @@ import com.example.eventapp.attendee.CustomizeProfile;
 import com.example.eventapp.document_reference.DocumentReferenceChecker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -26,72 +27,64 @@ public class UploadImage {
         this.userId = user.getUid() ;
     }
 
-    public void uploadToFireStore(){
-        if(userId != null){
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-                    .child("profileImages")
-                    .child(userId + "_profile_image.jpg");
-
-            // Upload the image to Firebase Cloud Storage
-            storageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        // Image uploaded successfully, get the download URL
-                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                            // Save the download URL to the Image collection in Firestore
-                            Log.e("Image Upload", "Successful");
-                            saveImageUrlToFirestore(uri);
-                        });
-                    })
-                    .addOnFailureListener(e -> {
-                        // Handle unsuccessful upload
-                        Log.e("CustomizeProfile", "Error uploading image", e);
-                    });
+    public void uploadToFireStore() {
+        if (userId == null) {
+            Log.e("UploadImage", "User ID is null, cannot upload image.");
+            return;
         }
+
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                .child("profileImages")
+                .child(userId + "_profile_image.jpg");
+
+        // Upload the image to Firebase Cloud Storage
+        storageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot ->
+                        // Get the download URL after successful upload
+                        storageRef.getDownloadUrl().addOnSuccessListener(this::saveImageUrlToFirestore)
+                )
+                .addOnFailureListener(e ->
+                        Log.e("UploadImage", "Error uploading image", e)
+                );
     }
 
-    private void saveImageUrlToFirestore(Uri imageUri){
+    private void saveImageUrlToFirestore(Uri downloadUrl) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-//      Create a new document in a collection and set the URI field
         Map<String, Object> data = new HashMap<>();
-        data.put("URL", imageUri.toString()); // Convert URI to string and store it
+        data.put("URL", downloadUrl.toString()); // Use the download URL from Firebase Storage
 
-//      Add the document to a collection named "Images"
+        // Save the download URL in the 'profileImages' collection
         db.collection("profileImages")
                 .document(userId)
                 .set(data)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Firestore Image saved to image collection", "Ini");
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("UploadImage", "Image URL saved to profileImages collection");
                     addReferenceToUserDatabase();
-                    // Document added successfully
                 })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error adding document", e);
-                    // Handle failure (e.g., show an error message)
-                });
+                .addOnFailureListener(e ->
+                        Log.e("UploadImage", "Error saving image URL", e)
+                );
     }
 
-    private void addReferenceToUserDatabase(){
+    private void addReferenceToUserDatabase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        //      Create a new document in a collection and set the URI field
-        Map<String, Object> data = new HashMap<>();
-        data.put("URL", imageUri.toString()); // Convert URI to string and store it
-        DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
-        documentReferenceChecker.documentReferenceUserWrite(userId);
 
-//      Add the document to a collection named "Images"
-//        db.collection("Users")
-//                .document(userId)
-//                .set(data)
-//                .addOnSuccessListener(documentReference -> {
-//                    Log.d("Firestore Image saved to image collection", "Ini");
-//                    // Document added successfully
-//                    DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
-//                    documentReferenceChecker.documentReferenceUserWrite(userId);
-//                })
-//                .addOnFailureListener(e -> {
-//                    Log.e("Firestore", "Error adding document", e);
-//                    // Handle failure (e.g., show an error message)
-//                });
+        // Create a reference to the image document in the 'profileImages' collection
+        DocumentReference imageRef = db.collection("profileImages").document(userId);
+
+        // Update the user's document with the reference to the image document
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("imageUrl", imageRef);
+
+        db.collection("Users").document(userId)
+                .update(userData)
+                .addOnSuccessListener(aVoid ->
+                        Log.d("UploadImage", "User document updated with image reference")
+                )
+                .addOnFailureListener(e ->
+                        Log.e("UploadImage", "Error updating user document", e)
+                );
     }
+
 }

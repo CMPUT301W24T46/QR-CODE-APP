@@ -3,6 +3,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
 import com.example.eventapp.admin.AdminDeleteProfile;
 
@@ -68,18 +70,27 @@ public class UserAdapter extends ArrayAdapter<User> {
                     userData.put("name", user.getName());
                     userData.put("contact", user.getContactInformation());
                     userData.put("homepage", user.getHomepage());
+                    userData.put("imageURL", user.getImageURL());
+                    userData.put("typeOfUser", user.getTypeOfUser());
                     intent.putExtra("userData", userData);
                     context.startActivity(intent);
                 }
             });
 
-//            Glide.with(context).load(user.getImageData()).centerCrop().into(eventImageView);
 
             profileName.setText(username);
             profileRole.setText(user.getTypeOfUser());
 
-            // TODO: Replace icon with profile image
-            profileImageView.setImageResource(R.drawable.ic_home);
+            String imageURL = user.getImageURL();
+
+
+            if (! TextUtils.isEmpty(imageURL)) {
+                Log.d("UserAdapter", "Image URL for user " + user.getName() + ": " + imageURL);
+                Glide.with(context).load(user.getImageURL()).centerCrop().into(profileImageView);
+
+            } else {
+                profileImageView.setImageResource(R.drawable.ic_home);
+            }
 
         }
 
