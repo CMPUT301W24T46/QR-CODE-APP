@@ -17,7 +17,11 @@ import com.example.eventapp.R;
 import com.example.eventapp.users.User;
 import com.example.eventapp.users.UserAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -25,6 +29,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AdminBrowseProfile extends AppCompatActivity {
     private FirebaseFirestore db;
@@ -33,6 +40,8 @@ public class AdminBrowseProfile extends AppCompatActivity {
     private ArrayList<User> userDataList  ;
     private ListView profileList ;
     private UserAdapter userAdapter;
+    private Map<String, DocumentReference> userImageRefMap;
+
     public AdminBrowseProfile() {
         // Required empty public constructor
     }
@@ -53,6 +62,9 @@ public class AdminBrowseProfile extends AppCompatActivity {
         userDataList = new ArrayList<>() ;
         userAdapter = new UserAdapter(this, userDataList) ;
         profileList.setAdapter(userAdapter);
+
+        userImageRefMap = new HashMap<>();
+
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -85,36 +97,6 @@ public class AdminBrowseProfile extends AppCompatActivity {
     }
 
 
-    private void subscribeToFireStore() {
-        userRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot querySnapshots,
-                                @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    Log.e("Firestore", error.toString());
-                    return;
-                }
-
-                if (querySnapshots != null) {
-                    userAdapter.clear();
-                    for (QueryDocumentSnapshot doc: querySnapshots) {
-                        String userID = doc.getId();
-                        String name = doc.getString("name");
-                        String contactInfo = doc.getString("contactInformation");
-                        String homepage = doc.getString("homepage");
-
-                        // TODO: Replace image with profile pic
-//                        String imageURL = doc.getString("imageUrl");
-                        String typeOfUser = doc.getString("typeOfUser");
-                        User user =  new User(userID, name, contactInfo, homepage, "", typeOfUser);
-                        Log.d("Firestore", user.getId());
-                        userDataList.add(user);
-                    }
-                    userAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-    }
 
 
 
@@ -131,6 +113,8 @@ public class AdminBrowseProfile extends AppCompatActivity {
                     String contactInfo = doc.getString("contactInformation");
                     String homepage = doc.getString("homepage");
                     String typeOfUser = doc.getString("typeOfUser");
+
+
                     User user = new User(userID, name, contactInfo, homepage, "", typeOfUser);
 
                     // Check if filter is needed
@@ -147,7 +131,74 @@ public class AdminBrowseProfile extends AppCompatActivity {
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
 
+    private void subscribeToFireStore() {
+        userRef.addSnapshotListener((querySnapshots, error) -> {
+            if (error != null) {
+                Log.e("Firestore", error.toString());
+                return;
+            }
 
+            if (querySnapshots != null) {
+                userAdapter.clear();
+                userImageRefMap.clear();
+                for (QueryDocumentSnapshot doc : querySnapshots) {
+                    String userID = doc.getId();
+                    String name = doc.getString("name");
+                    String contactInfo = doc.getString("contactInformation");
+                    String homepage = doc.getString("homepage");
+                    String typeOfUser = doc.getString("typeOfUser");
+
+                    DocumentReference imageRef = doc.getDocumentReference("imageUrl");
+                    if (imageRef != null) {
+                        userImageRefMap.put(userID, imageRef);
+                    }
+
+                    User user = new User(userID, name, contactInfo, homepage, "", typeOfUser);
+                    userDataList.add(user);
+                }
+                userAdapter.notifyDataSetChanged();
+                loadProfileImages(); // Load profile images after users are loaded
+            }
+        });
+    }
+
+    private void loadProfileImages() {
+        if (userImageRefMap.isEmpty()) {
+            return;
+        }
+
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+        for (DocumentReference imageRef : userImageRefMap.values()) {
+            tasks.add(imageRef.get());
+        }
+
+        Task<List<DocumentSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
+        allTasks.addOnSuccessListener(documentSnapshots -> {
+            for (DocumentSnapshot snapshot : documentSnapshots) {
+                String imageUrl = snapshot.getString("URL");
+
+                // Update the imageURL for all users with this image reference
+                for (User user : userDataList) {
+                    DocumentReference userImageRef = userImageRefMap.get(user.getId());
+                    if (userImageRef != null && userImageRef.equals(snapshot.getReference())) {
+                        user.setImageURL(imageUrl);
+                    }
+                }
+            }
+            userAdapter.notifyDataSetChanged();
+        }).addOnFailureListener(e -> Log.e("TAG", "Error loading images", e));
+    }
+
+
+
+    private String findUserIdByImageRef(DocumentReference imageRef) {
+        for (Map.Entry<String, DocumentReference> entry : userImageRefMap.entrySet()) {
+            if (entry.getValue().equals(imageRef)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 
 
     // This method is called when the up button is pressed
