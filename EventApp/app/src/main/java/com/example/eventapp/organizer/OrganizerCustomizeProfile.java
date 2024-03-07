@@ -1,9 +1,6 @@
-package com.example.eventapp.attendee;
+package com.example.eventapp.organizer;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -34,62 +31,51 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * The Activity after customize profile button is pressed
- */
-public class CustomizeProfile extends AppCompatActivity {
-    ActivityResultLauncher<PickVisualMediaRequest> pickMedia ;
-    StorageReference storageReference ;
+public class OrganizerCustomizeProfile extends AppCompatActivity{
+
     private EditText username;
     private EditText contact;
     private EditText description;
-    private Button btnAttendeeSave;
-    private Button profileEditImageButton;
-    private String userId ;
+    private Button btnOrganizerSave;
+    private Context context;
+    private ImageView profilePhtView;
 
+    ActivityResultLauncher<PickVisualMediaRequest> pickMedia ;
+    StorageReference storageReference;
+    private User organizerUser;
+    private ImageView profilePhotoView;
+    private Button profileEditImageButton;
     private Button profileDeleteImageButton;
-    private User attendeeUser ;
-    private ImageView profilePhotView ;
-    private Context context ;
-    /**
-     *
-     * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     *
-     */
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.customize_attendee_profile);
+        setContentView(R.layout.fragment_organizer_customize_profile);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Customize Profile");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        context = this ;
-//        DeleteImage
+        context = this;
+
         username = findViewById(R.id.editTextTextEmailAddress);
         contact = findViewById(R.id.editTextPhone);
         description = findViewById(R.id.editTextTextMultiLine);
-        btnAttendeeSave = findViewById(R.id.AttendeeAccountSave);
-        profilePhotView = findViewById(R.id.attendeeProfilePic) ;
-        profileEditImageButton = findViewById(R.id.CustomizeImage);
-        profileDeleteImageButton = findViewById(R.id.DeleteImage) ;
+        btnOrganizerSave = findViewById(R.id.buttonSave);
+        profilePhotoView = findViewById(R.id.organizerProfilePic);
+        profileEditImageButton = findViewById(R.id.buttonCustomizeImage);
+        profileDeleteImageButton = findViewById(R.id.buttonDeleteImage) ;
 
-
-        storageReference = FirebaseStorage.getInstance().getReference() ;
-
+        storageReference = FirebaseStorage.getInstance().getReference();
         fetchDataFromFirestore();
-        btnAttendeeSave.setOnClickListener(new View.OnClickListener() {
+
+        btnOrganizerSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveChanges();
@@ -103,38 +89,37 @@ public class CustomizeProfile extends AppCompatActivity {
             }
         });
 
-        profileEditImageButton.setOnClickListener(new View.OnClickListener() {
+            profileEditImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 uploadImage();
             }
         });
-
         // Registers a photo picker activity launcher in single-select mode.
         // Include only one of the following calls to launch(), depending on the types
         // of media that you want to let the user choose from.
         pickMedia =
-                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    // Callback is invoked after the user selects a media item or closes the
-                    // photo picker.
-                    if (uri != null) {
-                        RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
-                        Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
-                        UploadImage uploadImage = new UploadImage(uri) ;
-                        uploadImage.uploadToFireStore();
-                        Log.d("PhotoPicker", "Selected URI: " + uri);
-                    } else {
-                        Log.d("PhotoPicker", "No media selected");
-                    }
-                });
+        registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+            // Callback is invoked after the user selects a media item or closes the
+            // photo picker.
+            if (uri != null) {
+                RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
+                Glide.with(context).load(uri).apply(requestOptions).into(profilePhotoView);
+                UploadImage uploadImage = new UploadImage(uri) ;
+                uploadImage.uploadToFireStore();
+                Log.d("PhotoPicker", "Selected URI: " + uri);
+            } else {
+                Log.d("PhotoPicker", "No media selected");
+            }
+        });
     }
-
     private void uploadImage() {
         // Launch the photo picker and let the user choose images and videos.
         pickMedia.launch(new PickVisualMediaRequest.Builder()
                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageAndVideo.INSTANCE)
                 .build());
     }
+
 
     public void deleteImage(){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -154,10 +139,6 @@ public class CustomizeProfile extends AppCompatActivity {
                     }});
     }
 
-    /**
-     * Fetches user data from Firestore and populates the EditText views with data.
-     *
-     */
     private void fetchDataFromFirestore() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -173,13 +154,14 @@ public class CustomizeProfile extends AppCompatActivity {
                         String usernameText = documentSnapshot.getString("name");
                         String contactText = documentSnapshot.getString("contactInformation");
                         String descriptionText = documentSnapshot.getString("homepage");
+                        String userType = documentSnapshot.getString("typeOfUser");
 
-                        attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
+                        organizerUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Organizer");
 
                         // Set data to EditText views
-                        username.setText(attendeeUser.getName());
-                        contact.setText(attendeeUser.getContactInformation());
-                        description.setText(attendeeUser.getContactInformation());
+                        username.setText(organizerUser.getName());
+                        contact.setText(organizerUser.getContactInformation());
+                        description.setText(organizerUser.getContactInformation());
 
                         // Check if 'imageUrl' field is present and of type DocumentReference
                         Object imageUrlObject = documentSnapshot.get("imageUrl");
@@ -210,34 +192,14 @@ public class CustomizeProfile extends AppCompatActivity {
         }
     }
 
-    /**
-     *Handles the selection of menu items in the activity's options menu.
-     * @param item The menu item that was selected.
-     *
-     * @return super.onOptionsItemSelected(item);
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            // Navigate back to AttendeeAccount
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Saves changes made to the user profile by updating the database with the new information.
-     * Displays a toast message indicating whether the changes were saved successfully.
-     */
     private void saveChanges() {
         String usernameText = username.getText().toString().trim();
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 //        May need to change the position of setters
-        attendeeUser.setName(usernameText);
-        attendeeUser.setContactInformation(contactText);
-        attendeeUser.setHomepage(descriptionText);
+        organizerUser.setName(usernameText);
+        organizerUser.setContactInformation(contactText);
+        organizerUser.setHomepage(descriptionText);
         if (usernameText.isEmpty() || contactText.isEmpty() || descriptionText.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -246,14 +208,6 @@ public class CustomizeProfile extends AppCompatActivity {
         Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Updates the user profile information in the Firestore database.
-     *
-     * @param username    The new username to be updated.
-     * @param contact     The new contact information to be updated.
-     * @param description The new description or homepage to be updated.
-     *
-     */
     private void updateProfileInDatabase(String username, String contact, String description) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -267,7 +221,7 @@ public class CustomizeProfile extends AppCompatActivity {
             updates.put("name", username);
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
-            updates.put("typeOfUser", "Attendee");
+            updates.put("typeOfUser", "Organizer");
 
             userRef.update(updates);
         }
@@ -283,15 +237,15 @@ public class CustomizeProfile extends AppCompatActivity {
                     // Retrieve the URL field from the image document
                     String imageURL = imageDocumentSnapshot.getString("URL");
                     // Now you have the imageURL
-                    attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, imageURL, "Attendee");
+                    organizerUser = new User(user.getUid(), usernameText, contactText, descriptionText, imageURL, "Organizer");
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
-                    Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
+                    Glide.with(context).load(organizerUser.getImageURL()).apply(requestOptions).into(profilePhotoView);
                 } else {
 
                     documentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
-                    attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
+                    organizerUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Organizer");
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
-                    Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
+                    Glide.with(context).load(organizerUser.getImageURL()).apply(requestOptions).into(profilePhotoView);
                     Log.d("CustomizeProfile", "Image document doesn't exist");
                 }
             }
@@ -299,22 +253,18 @@ public class CustomizeProfile extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 documentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
-                attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
+                organizerUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
                 RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
-                Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
+                Glide.with(context).load(organizerUser.getImageURL()).apply(requestOptions).into(profilePhotoView);
                 Log.e("CustomizeProfile", "Error getting image document", e);
             }
         });
     }
-    public void onCustomizeProfileSaveClicked(View view) {
-        // Implementation for saving profile changes
-    }
-    public void onCustomizeProfileCustomizeImageClicked(View view) {
-        // Implementation for customizing image
-    }
 
-    public void onCustomizeProfileDeleteImageClicked(View view) {
-        // Implementation for deleting image
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
 }

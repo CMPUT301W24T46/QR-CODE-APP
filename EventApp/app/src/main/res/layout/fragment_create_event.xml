@@ -62,19 +62,31 @@
         app:layout_constraintTop_toBottomOf="@+id/EditEventDate" />
 
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Previous"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonArrow"
+        app:layout_constraintStart_toEndOf="@+id/buttonArrow"
+        app:layout_constraintTop_toTopOf="@+id/buttonArrow"
+        app:layout_constraintVertical_bias="0.472" />
+
     <ImageButton
         android:id="@+id/buttonArrow"
-        android:layout_width="56dp"
-        android:layout_height="55dp"
+        android:layout_width="37dp"
+        android:layout_height="34dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="80dp"
         android:layout_marginEnd="168dp"
         android:layout_marginBottom="50dp"
+        android:background="@android:color/transparent"
         android:src="@drawable/baseline_arrow_back_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonConfirm"
+        app:layout_constraintHorizontal_bias="0.23"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonDeleteImage" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonDeleteImage"
+        app:layout_constraintVertical_bias="0.506" />
 
     <Button
         android:id="@+id/buttonConfirm"

@@ -9,10 +9,63 @@
         android:id="@+id/adminHome"
         android:name="com.example.eventapp.admin.AdminHome"
         android:label="fragment_admin_home"
-        tools:layout="@layout/fragment_admin_home" />
+        tools:layout="@layout/fragment_admin_home">
+
+        <action
+            android:id="@+id/action_adminHome_to_adminProfiles"
+            app:destination="@id/adminBrowseProfile" />
+
+        <action
+            android:id="@+id/action_adminHome_to_adminEvents"
+            app:destination="@id/adminBrowseEvent" />
+
+        <action
+            android:id="@+id/action_adminHome_to_adminImages"
+            app:destination="@id/adminBrowseImage" />
+    </fragment>
+
     <fragment
         android:id="@+id/adminAccount"
         android:name="com.example.eventapp.admin.AdminAccount"
         android:label="fragment_admin_account"
         tools:layout="@layout/fragment_admin_account" />
+
+    <activity
+        android:id="@+id/adminBrowseProfile"
+        android:name="com.example.eventapp.admin.AdminBrowseProfile"
+        android:label="activity_admin_browse_profile"
+        tools:layout="@layout/activity_admin_browse_profile" />
+
+    <activity
+        android:id="@+id/adminDeleteProfile"
+        android:name="com.example.eventapp.attendee.CustomizeProfile"
+        android:label="activity_admin_delete_profile"
+        tools:layout="@layout/activity_admin_delete_profile"/>
+
+    <activity
+        android:id="@+id/adminBrowseEvent"
+        android:name="com.example.eventapp.admin.AdminBrowseEvent"
+        android:label="activity_admin_browse_event"
+        tools:layout="@layout/fragment_attendee_event" />
+
+    <activity
+        android:id="@+id/adminDeleteEvent"
+        android:name="com.example.eventapp.admin.AdminDeleteEvent"
+        android:label="activity_admin_delete_event"
+        tools:layout="@layout/activity_admin_delete_event"/>
+
+    <activity
+        android:id="@+id/adminBrowseImage"
+        android:name="com.example.eventapp.admin.AdminBrowseImage"
+        android:label="activity_admin_browse_image"
+        tools:layout="@layout/activity_admin_browse_image" />
+
+    <activity
+        android:id="@+id/adminDeleteImage"
+        android:name="com.example.eventapp.admin.AdminDeleteImage"
+        android:label="activity_admin_delete_image"
+        tools:layout="@layout/activity_admin_delete_image"/>
+
+
+
 </navigation>
