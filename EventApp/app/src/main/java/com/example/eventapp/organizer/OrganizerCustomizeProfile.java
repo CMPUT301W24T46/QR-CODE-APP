@@ -200,6 +200,7 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
         organizerUser.setName(usernameText);
         organizerUser.setContactInformation(contactText);
         organizerUser.setHomepage(descriptionText);
+        organizerUser.setTypeOfUser("Organizer");
         if (usernameText.isEmpty() || contactText.isEmpty() || descriptionText.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -221,7 +222,7 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
             updates.put("name", username);
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
-            updates.put("typeOfUser", "Organizer");
+            updates.put("typeOfUser", organizerUser.getTypeOfUser());
 
             userRef.update(updates);
         }
