@@ -12,6 +12,7 @@ import android.content.Context;
 import android.app.Activity;
 
 import com.example.eventapp.R;
+import com.example.eventapp.document_reference.DocumentReferenceChecker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -111,14 +112,13 @@ public class UserDB {
 
     private void addUserInformation(String uid){
         Log.d("Write" , uid) ;
-        HashMap<String, String> data = new HashMap<>();
+        HashMap<String, Object> data = new HashMap<>();
         data.put("id", uid);
         data.put("name", "");
         data.put("homepage", "");
 //        data.put("typeOfUser" , typeOfUser) ;
         data.put("contactInformation", "");
-        data.put("imageUrl" , "") ;
-//        user = new User(uid , "" , "" , "" , null , typeOfUser) ;
+        data.put("imageUrl", DocumentReferenceChecker.documentReferenceWrite());
 
         userRef.document(uid)
                 .set(data)

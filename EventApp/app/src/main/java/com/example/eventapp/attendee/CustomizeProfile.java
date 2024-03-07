@@ -23,12 +23,14 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.eventapp.R;
+import com.example.eventapp.document_reference.DocumentReferenceChecker;
 import com.example.eventapp.upload_image.UploadImage;
 import com.example.eventapp.users.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -51,7 +53,7 @@ public class CustomizeProfile extends AppCompatActivity {
     private Button profileEditImageButton;
     private String userId ;
 
-    private Button profileDeleteImage;
+    private Button profileDeleteImageButton;
     private User attendeeUser ;
     private ImageView profilePhotView ;
     private Context context ;
@@ -63,13 +65,14 @@ public class CustomizeProfile extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         context = this ;
-
+//        DeleteImage
         username = findViewById(R.id.editTextTextEmailAddress);
         contact = findViewById(R.id.editTextPhone);
         description = findViewById(R.id.editTextTextMultiLine);
         btnAttendeeSave = findViewById(R.id.AttendeeAccountSave);
         profilePhotView = findViewById(R.id.attendeeProfilePic) ;
         profileEditImageButton = findViewById(R.id.CustomizeImage);
+        profileDeleteImageButton = findViewById(R.id.DeleteImage) ;
 
 
         storageReference = FirebaseStorage.getInstance().getReference() ;
@@ -79,6 +82,13 @@ public class CustomizeProfile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 saveChanges();
+            }
+        });
+
+        profileDeleteImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteImage();
             }
         });
 
@@ -109,11 +119,28 @@ public class CustomizeProfile extends AppCompatActivity {
     }
 
     private void uploadImage() {
-
         // Launch the photo picker and let the user choose images and videos.
         pickMedia.launch(new PickVisualMediaRequest.Builder()
                 .setMediaType(ActivityResultContracts.PickVisualMedia.ImageAndVideo.INSTANCE)
                 .build());
+    }
+
+    public void deleteImage(){
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        CollectionReference usersRef = firestore.collection("Users");
+        DocumentReference docRef = firestore.collection("defaultImage").document("NoImage") ;
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("imageUrl", docRef);
+
+        usersRef.document(user.getUid())
+                .update(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        fetchDataFromFirestore();
+                    }});
     }
 
     private void fetchDataFromFirestore() {
@@ -223,6 +250,7 @@ public class CustomizeProfile extends AppCompatActivity {
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                     Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
                 } else {
+                    DocumentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
                     attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                     Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
@@ -232,6 +260,10 @@ public class CustomizeProfile extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                DocumentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
+                attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
+                RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
+                Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
                 Log.e("CustomizeProfile", "Error getting image document", e);
             }
         });
