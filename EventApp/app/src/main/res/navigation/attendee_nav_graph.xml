@@ -20,10 +20,14 @@
             app:destination="@id/attendeeNotification" />
     </fragment>
     <fragment
-        android:id="@+id/attendeeEvent"
+        android:id="@+id/attendeeEventMenu"
         android:name="com.example.eventapp.attendee.AttendeeEvent"
         android:label="fragment_attendee_event"
-        tools:layout="@layout/fragment_attendee_event" />
+        tools:layout="@layout/fragment_attendee_event" >
+        <action
+            android:id="@+id/action_attendeeEvent_to_attendeeEventInformation"
+            app:destination="@id/attendeeEventInformation" />
+    </fragment>
     <fragment
         android:id="@+id/attendeeNotification"
         android:name="com.example.eventapp.attendee.AttendeeNotification"
@@ -32,5 +36,14 @@
         <action
             android:id="@+id/action_attendeeNotification_to_attendeeHome"
             app:destination="@id/attendeeHome" />
+    </fragment>
+    <fragment
+        android:id="@+id/attendeeEventInformation"
+        android:name="com.example.eventapp.attendee.AttendeeEventInformation"
+        android:label="fragment_attendee_event_information"
+        tools:layout="@layout/fragment_attendee_event_information" >
+        <action
+            android:id="@+id/action_attendeeEventInformation_to_attendeeEvent"
+            app:destination="@id/attendeeEventMenu" />
     </fragment>
 </navigation>

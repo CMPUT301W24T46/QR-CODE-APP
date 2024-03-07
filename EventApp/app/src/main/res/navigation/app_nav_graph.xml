@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--suppress NavigationFile -->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/app_nav_graph"
-    app:startDestination="@id/acountSelection">
+    app:startDestination="@id/accountSelection">
     <fragment
-        android:id="@+id/acountSelection"
-        android:name="com.example.eventapp.AcountSelection"
-        android:label="fragment_acount_selection"
-        tools:layout="@layout/fragment_acount_selection" >
+        android:id="@+id/accountSelection"
+        android:name="com.example.eventapp.AccountSelection"
+        android:label="fragment_account_selection"
+        tools:layout="@layout/fragment_account_selection" >
         <action
-            android:id="@+id/action_acountSelection_to_attendeeActivity"
+            android:id="@+id/action_accountSelection_to_attendeeActivity"
             app:destination="@id/attendeeActivity" />
+
         <action
-            android:id="@+id/action_acountSelection_to_adminActivity"
+            android:id="@+id/action_accountSelection_to_adminActivity"
             app:destination="@id/adminActivity" />
         <action
-            android:id="@+id/action_acountSelection_to_organizerActivity"
+            android:id="@+id/action_accountSelection_to_organizerActivity"
             app:destination="@id/organizerActivity" />
+
     </fragment>
+
     <activity
         android:id="@+id/attendeeActivity"
         android:name="com.example.eventapp.attendee.AttendeeActivity"
@@ -34,4 +38,11 @@
         android:name="com.example.eventapp.organizer.OrganizerActivity"
         android:label="activity_organizer"
         tools:layout="@layout/activity_organizer" />
+
+    <activity
+        android:id="@+id/userLoginActivity"
+        android:name="com.example.eventapp.users.UserLogin"
+        android:label="activity_user_login" />
+
+
 </navigation>

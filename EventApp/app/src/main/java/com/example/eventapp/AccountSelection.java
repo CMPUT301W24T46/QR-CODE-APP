@@ -1,25 +1,33 @@
 package com.example.eventapp;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.eventapp.users.UserDB;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AcountSelection#newInstance} factory method to
- * create an instance of this fragment.
  */
-public class AcountSelection extends Fragment {
+public class AccountSelection extends Fragment {
 
     String[] accountOptionsData = {"Attend Event" , "Organize Event" , "Admin"} ;
     ListView accountOptionsListView ;
@@ -28,53 +36,35 @@ public class AcountSelection extends Fragment {
 
     SelectOptionsAdapter accountOptionsAdapter ;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    Activity activity ;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    Context context ;
 
-    public AcountSelection() {
+    private FirebaseAuth mAuth ;
+
+    private FirebaseFirestore dbQRApp ;
+
+    private CollectionReference userRef;
+
+    private UserDB userDB ;
+
+    public AccountSelection() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AcountSelection.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AcountSelection newInstance(String param1, String param2) {
-        AcountSelection fragment = new AcountSelection();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        activity = requireActivity() ;
+        context = requireContext() ;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_acount_selection, container, false);
+        return inflater.inflate(R.layout.fragment_account_selection, container, false);
     }
 
     @Override
@@ -89,18 +79,35 @@ public class AcountSelection extends Fragment {
         });
     }
 
-//    This function enables navigation to the main parts of the app which is the
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth = FirebaseAuth.getInstance();
+        dbQRApp = FirebaseFirestore.getInstance();
+        userRef = dbQRApp.collection("Users");
+        userDB = new UserDB(context ,activity , dbQRApp) ;
+    }
+
+    //    This function enables navigation to the main parts of the app which is the
 //    AttendeeActivity , OrganizerActivity , AdminActivity
     private void navigateToAccount(View view , AdapterView<?> parent , int position){
         String selectedAccount = (String) parent.getItemAtPosition(position) ;
         NavController selectAccountController = Navigation.findNavController(view) ;
-//        {"Attend Event" , "Organize Event" , "Admin"} ;
         if(selectedAccount.equals("Attend Event")){
-            selectAccountController.navigate(R.id.action_acountSelection_to_attendeeActivity);
+            userDB.setNavController(selectAccountController);
+            userDB.setNavigationPageId(R.id.action_accountSelection_to_attendeeActivity) ;
+            userDB.getUserInfoAttendee();
+//            selectAccountController.navigate(R.id.action_accountSelection_to_attendeeActivity);
+
         }else if(selectedAccount.equals("Organize Event")){
-            selectAccountController.navigate(R.id.action_acountSelection_to_organizerActivity);
+            Log.d("Organizer" , "Page Clicked") ;
+            userDB.setNavController(selectAccountController);
+            userDB.setNavigationPageId(R.id.action_accountSelection_to_organizerActivity) ;
+            userDB.getUserInfoAttendee();
+//            selectAccountController.navigate(R.id.action_accountSelection_to_organizerActivity);
         }else if(selectedAccount.equals("Admin")){
-            selectAccountController.navigate(R.id.action_acountSelection_to_adminActivity);
+            selectAccountController.navigate(R.id.action_accountSelection_to_adminActivity);
         }
     }
+
 }

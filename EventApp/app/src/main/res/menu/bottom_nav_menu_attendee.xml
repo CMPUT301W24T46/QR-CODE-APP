@@ -6,7 +6,7 @@
         android:id="@+id/attendeeHome" />
     <item android:title="@string/event"
         android:icon="@drawable/ic_calender"
-        android:id="@+id/attendeeEvent"
+        android:id="@+id/attendeeEventMenu"
         />
     <item android:title="@string/account"
         android:icon="@drawable/ic_person"
