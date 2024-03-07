@@ -68,8 +68,7 @@ public class AdminBrowseProfile extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                getCurrentUserList(query, true);
-                return true;
+                return false;
             }
 
             @Override
@@ -124,19 +123,21 @@ public class AdminBrowseProfile extends AppCompatActivity {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 ArrayList<User> searchResults = new ArrayList<>();
-                if (!queryOrDisplay) {
-                    // If not searching, add all users
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        User user = documentSnapshot.toObject(User.class);
+
+                // Iterate over all documents
+                for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                    String userID = doc.getId();
+                    String name = doc.getString("name");
+                    String contactInfo = doc.getString("contactInformation");
+                    String homepage = doc.getString("homepage");
+                    String typeOfUser = doc.getString("typeOfUser");
+                    User user = new User(userID, name, contactInfo, homepage, "", typeOfUser);
+
+                    // Check if filter is needed
+                    if (queryOrDisplay && user.getName().toLowerCase().contains(searchText.toLowerCase())) {
                         searchResults.add(user);
-                    }
-                } else {
-                    // If searching, filter the list
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        User user = documentSnapshot.toObject(User.class);
-                        if (user.getName().toLowerCase().contains(searchText.toLowerCase())) {
-                            searchResults.add(user);
-                        }
+                    } else if (!queryOrDisplay) {
+                        searchResults.add(user); // Add all users when not searching
                     }
                 }
 
@@ -145,6 +146,7 @@ public class AdminBrowseProfile extends AppCompatActivity {
             }
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
+
 
 
 
