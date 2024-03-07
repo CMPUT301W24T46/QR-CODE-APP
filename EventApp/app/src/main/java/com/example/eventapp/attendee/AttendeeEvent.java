@@ -41,6 +41,10 @@ public class AttendeeEvent extends Fragment {
     private ArrayList<Event> eventDataList  ;
     private ListView eventList ;
     private EventAdapter eventListArrayAdapter ;
+
+    /**
+     * Constructor of an instance of AttendeeEvent
+     */
     public AttendeeEvent() {
         // Required empty public constructor
     }
