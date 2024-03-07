@@ -13,6 +13,8 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.util.Log;
+
 public class DocumentReferenceChecker {
     public static boolean documentChecker(){
         return true ;
@@ -37,7 +39,7 @@ public class DocumentReferenceChecker {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d("Firestore 2", "DocumentSnapshot successfully written!");
+                        Log.d("User Profile", "Successfuly written to with Updated Information");
                     }});
     }
 
@@ -45,7 +47,6 @@ public class DocumentReferenceChecker {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference usersRef = firestore.collection("Users");
         DocumentReference docRef = firestore.collection("defaultImage").document("NoImage") ;
-
         HashMap<String, Object> data = new HashMap<>();
         data.put("imageUrl", docRef);
 

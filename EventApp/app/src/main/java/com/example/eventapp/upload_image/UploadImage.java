@@ -76,20 +76,22 @@ public class UploadImage {
         //      Create a new document in a collection and set the URI field
         Map<String, Object> data = new HashMap<>();
         data.put("URL", imageUri.toString()); // Convert URI to string and store it
+        DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
+        documentReferenceChecker.documentReferenceUserWrite(userId);
 
 //      Add the document to a collection named "Images"
-        db.collection("profileImages")
-                .document(userId)
-                .set(data)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Firestore Image saved to image collection", "Ini");
-                    // Document added successfully
-                    DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
-                    documentReferenceChecker.documentReferenceUserWrite(userId);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error adding document", e);
-                    // Handle failure (e.g., show an error message)
-                });
+//        db.collection("Users")
+//                .document(userId)
+//                .set(data)
+//                .addOnSuccessListener(documentReference -> {
+//                    Log.d("Firestore Image saved to image collection", "Ini");
+//                    // Document added successfully
+//                    DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
+//                    documentReferenceChecker.documentReferenceUserWrite(userId);
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.e("Firestore", "Error adding document", e);
+//                    // Handle failure (e.g., show an error message)
+//                });
     }
 }
