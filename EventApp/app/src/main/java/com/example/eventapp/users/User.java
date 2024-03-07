@@ -12,20 +12,10 @@ public class User {
     private String typeOfUser ;
 
     private String contactInformation ;
-    private String role;
-    private byte[] imageData;
-  
+
     public User() {
 
     };
-    public User(String id ,String name , String contactInformation ,String homepage , byte[] imageData , String role){
-      this.id = id ;
-      this.name = name ;
-      this.contactInformation = contactInformation ;
-      this.homepage = homepage ;
-      this.imageData = imageData ;
-      this.role = role;
-    }
   
     public User(String id ,String name , String contactInformation ,String homepage , String imageURL , String typeOfUser){
       this.id = id ;
@@ -65,9 +55,6 @@ public class User {
     }
 
 
-    public String getRole() {
-        return this.role;
-    }
      
     public String getEmail() {
         return email;

@@ -76,7 +76,7 @@ public class UserAdapter extends ArrayAdapter<User> {
 //            Glide.with(context).load(user.getImageData()).centerCrop().into(eventImageView);
 
             profileName.setText(username);
-            profileRole.setText(user.getRole());
+            profileRole.setText(user.getTypeOfUser());
 
             // TODO: Replace icon with profile image
             profileImageView.setImageResource(R.drawable.ic_home);
