@@ -103,6 +103,7 @@ public class AdminBrowseProfile extends AppCompatActivity {
                         String name = doc.getString("name");
                         String contactInfo = doc.getString("contactInformation");
                         String homepage = doc.getString("homepage");
+
                         // TODO: Replace image with profile pic
 //                        String imageURL = doc.getString("imageUrl");
                         String typeOfUser = doc.getString("typeOfUser");

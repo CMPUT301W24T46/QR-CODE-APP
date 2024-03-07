@@ -12,8 +12,7 @@ public class User {
     private String typeOfUser ;
 
     private String contactInformation ;
-    private byte[] imageData;
-  
+
     public User() {
 
     };
