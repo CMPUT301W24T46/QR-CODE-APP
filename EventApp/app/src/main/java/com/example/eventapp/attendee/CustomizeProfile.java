@@ -232,6 +232,7 @@ public class CustomizeProfile extends AppCompatActivity {
             updates.put("name", username);
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
+            updates.put("typeOfUser", "Attendee");
 
             userRef.update(updates);
         }
