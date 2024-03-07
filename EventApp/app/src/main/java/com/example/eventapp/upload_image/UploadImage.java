@@ -84,7 +84,8 @@ public class UploadImage {
                 .addOnSuccessListener(documentReference -> {
                     Log.d("Firestore Image saved to image collection", "Ini");
                     // Document added successfully
-                    DocumentReferenceChecker.documentReferenceUserWrite(userId);
+                    DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
+                    documentReferenceChecker.documentReferenceUserWrite(userId);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error adding document", e);

@@ -113,12 +113,13 @@ public class UserDB {
     private void addUserInformation(String uid){
         Log.d("Write" , uid) ;
         HashMap<String, Object> data = new HashMap<>();
+        DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
         data.put("id", uid);
         data.put("name", "");
         data.put("homepage", "");
 //        data.put("typeOfUser" , typeOfUser) ;
         data.put("contactInformation", "");
-        data.put("imageUrl", DocumentReferenceChecker.documentReferenceWrite());
+        data.put("imageUrl", documentReferenceChecker.documentReferenceWrite());
 
         userRef.document(uid)
                 .set(data)
