@@ -226,6 +226,7 @@ public class CustomizeProfile extends AppCompatActivity {
 
     private void getImageFromFireStore(DocumentReference imageRef , String usernameText , String contactText , String descriptionText){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
         imageRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot imageDocumentSnapshot) {
@@ -237,7 +238,8 @@ public class CustomizeProfile extends AppCompatActivity {
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                     Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
                 } else {
-                    DocumentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
+
+                    documentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
                     attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                     Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
@@ -247,7 +249,7 @@ public class CustomizeProfile extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                DocumentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
+                documentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
                 attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
                 RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                 Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);

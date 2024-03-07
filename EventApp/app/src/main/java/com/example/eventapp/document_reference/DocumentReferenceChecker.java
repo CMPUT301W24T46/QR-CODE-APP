@@ -18,15 +18,13 @@ public class DocumentReferenceChecker {
         return true ;
     }
 
-    public static DocumentReference documentReferenceWrite(){
+    public DocumentReference documentReferenceWrite(){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        // Create a map to store the reference to another document
-        // Assuming you have another document ID you want to reference, replace "referenceDocumentId" with the actual ID
         DocumentReference referenceDocRef = firestore.collection("defaultImage").document("NoImage");
         return referenceDocRef ;
     }
 
-    public static void documentReferenceUserWrite(String uid ){
+    public void documentReferenceUserWrite(String uid ){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference usersRef = firestore.collection("Users");
         DocumentReference docRef = firestore.collection("profileImages").document(uid) ;
@@ -43,7 +41,7 @@ public class DocumentReferenceChecker {
                     }});
     }
 
-    public static void emptyDocumentReferenceWrite(String uid){
+    public void emptyDocumentReferenceWrite(String uid){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference usersRef = firestore.collection("Users");
         DocumentReference docRef = firestore.collection("defaultImage").document("NoImage") ;
