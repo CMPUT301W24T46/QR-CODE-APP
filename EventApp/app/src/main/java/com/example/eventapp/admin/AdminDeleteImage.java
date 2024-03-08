@@ -1,8 +1,11 @@
 package com.example.eventapp.admin;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +52,20 @@ public class AdminDeleteImage extends AppCompatActivity {
         }
 
         imageTextView.setText(imageId);
-        deleteImageButton.setOnClickListener(v -> adminController.deleteImage(imageURL));
+        deleteImageButton.setOnClickListener(v -> new AlertDialog.Builder(this)
+                .setTitle("Delete image")
+                .setMessage("Are you sure you want to delete this image?")
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    adminController.deleteImage(imageId)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(this, "Image deleted successfully", Toast.LENGTH_SHORT).show();
+                                this.finish();
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(this, "Error deleting image", Toast.LENGTH_SHORT).show());
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show());
     }
 
 
