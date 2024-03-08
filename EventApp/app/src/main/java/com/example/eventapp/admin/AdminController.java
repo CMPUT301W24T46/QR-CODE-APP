@@ -6,9 +6,6 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.test.espresso.IdlingResource;
-import androidx.test.espresso.idling.CountingIdlingResource;
-
 import com.example.eventapp.Image.Image;
 import com.example.eventapp.Image.ImageGridAdapter;
 import com.example.eventapp.event.Event;
@@ -16,7 +13,6 @@ import com.example.eventapp.event.EventAdapter;
 import com.example.eventapp.users.User;
 import com.example.eventapp.users.UserAdapter;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -28,18 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CancellationException;
 
 public class AdminController {
     private final Context context;
     private final Map<String, DocumentReference> userImageRefMap;
     private final CollectionReference userRef, eventRef, imageRef;
-    public static CountingIdlingResource idlingResource = new CountingIdlingResource("Admin_Controller_Ops");
-
-    public IdlingResource getIdlingResource() {
-        return idlingResource;
-    }
-
 
     public AdminController(Context context) {
         this.context = context;
@@ -154,31 +143,30 @@ public class AdminController {
 
     }
 
-
-    public Task<Void> deleteUser(String userId) {
-        idlingResource.increment();
-        TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
-
+    public void deleteUser(String userId) {
         if (userId != null && !userId.isEmpty()) {
-            userRef.document(userId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(context, "User deleted successfully", Toast.LENGTH_SHORT).show();
-                        tcs.setResult(null);
-                        idlingResource.decrement();
+            new AlertDialog.Builder(this.context)
+                    .setTitle("Delete User")
+                    .setMessage("Are you sure you want to delete this user?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        // Continue with delete operation
+                        userRef.document(userId)
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this.context, "User deleted successfully", Toast.LENGTH_SHORT).show();
+                                    if (this.context instanceof Activity) {
+                                        ((Activity) this.context).finish();
+                                    }
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(this.context , "Error deleting user", Toast.LENGTH_SHORT).show());
                     })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(context, "Error deleting user", Toast.LENGTH_SHORT).show();
-                        tcs.setException(e);
-                        idlingResource.decrement();
-                    });
+                    .setNegativeButton(android.R.string.no, null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         } else {
-            tcs.setException(new IllegalArgumentException("User ID not found."));
+            Toast.makeText(this.context, "Error: User ID not found.", Toast.LENGTH_SHORT).show();
         }
-
-        return tcs.getTask();
     }
-
 
     /* --- BROWSE/DELETE EVENTS --- */
     public void subscribeToEventDB(EventAdapter adapter) {
@@ -224,49 +212,43 @@ public class AdminController {
             adapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
-    public Task<Void> deleteEvent(String eventName) {
-        idlingResource.increment(); // Increment IdlingResource
-        TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
 
+    public void deleteEvent(String eventName) {
+        // TODO: Delete based on id instead of name
         if (eventName != null && !eventName.isEmpty()) {
-            // Query to find the event with the matching name
-            eventRef.whereEqualTo("Name", eventName)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            String documentId = queryDocumentSnapshots.getDocuments().get(0).getId();
-                            eventRef.document(documentId)
-                                    .delete()
-                                    .addOnSuccessListener(aVoid -> {
-                                        Toast.makeText(context, "Event deleted successfully", Toast.LENGTH_SHORT).show();
-                                        tcs.setResult(null); // Set the result on success
-                                        idlingResource.decrement(); // Decrement IdlingResource
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(context, "Error deleting event", Toast.LENGTH_SHORT).show();
-                                        tcs.setException(e); // Set exception on failure
-                                        idlingResource.decrement(); // Decrement IdlingResource
-                                    });
-                        } else {
-                            Toast.makeText(context, "No such event found", Toast.LENGTH_SHORT).show();
-                            tcs.setException(new IllegalArgumentException("Event not found")); // Set exception if event not found
-                            idlingResource.decrement(); // Decrement IdlingResource
-                        }
+            new AlertDialog.Builder(this.context)
+                    .setTitle("Delete event")
+                    .setMessage("Are you sure you want to delete this event?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        // Query to find the event with the matching name
+                        eventRef.whereEqualTo("Name", eventName)
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    if (!queryDocumentSnapshots.isEmpty()) {
+                                        String documentId = queryDocumentSnapshots.getDocuments().get(0).getId();
+                                        eventRef.document(documentId)
+                                                .delete()
+                                                .addOnSuccessListener(aVoid -> {
+                                                    Toast.makeText(this.context, "Event deleted successfully", Toast.LENGTH_SHORT).show();
+
+                                                    if (this.context instanceof Activity) {
+                                                        ((Activity) this.context).finish();
+                                                    }
+                                                })
+                                                .addOnFailureListener(e -> Toast.makeText(this.context, "Error deleting event", Toast.LENGTH_SHORT).show());
+                                    } else {
+                                        Toast.makeText(this.context, "No such event found", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(this.context, "Error finding event", Toast.LENGTH_SHORT).show());
                     })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(context, "Error finding event", Toast.LENGTH_SHORT).show();
-                        tcs.setException(e); // Set exception on failure to find event
-                        idlingResource.decrement(); // Decrement IdlingResource
-                    });
+                    .setNegativeButton(android.R.string.no, null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         } else {
-            tcs.setException(new IllegalArgumentException("Event name not found.")); // Set exception if event name is empty
-            idlingResource.decrement(); // Decrement IdlingResource
+            Toast.makeText(this.context, "Error: Event name not found.", Toast.LENGTH_SHORT).show();
         }
-
-        return tcs.getTask(); // Return the Task
     }
-
-
 
     /* --- BROWSE/DELETE Images --- */
     public void subscribeToImageDB(ImageGridAdapter adapter) {
@@ -289,56 +271,38 @@ public class AdminController {
         });
     }
 
-    public void getCurrentImageList(String searchText, boolean queryOrDisplay, ImageGridAdapter adapter) {
-        imageRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-            ArrayList<Image> searchResults = new ArrayList<>();
-            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-
-                // Check if the document has the fields "URL"
-                String imageURL = documentSnapshot.contains("URL") ? documentSnapshot.getString("URL") : "";
-                String imageID =  documentSnapshot.getId();
-
-                if (!queryOrDisplay) {
-                    searchResults.add(new Image(imageURL, imageID));
-                    continue;
-                }
-
-                if (imageID.toLowerCase().contains(searchText.toLowerCase())) {
-                    searchResults.add(new Image(imageURL, imageID));
-                }
-            }
-            adapter.setFilter(searchResults);
-            adapter.notifyDataSetChanged();
-        }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
-    }
-    public Task<Void> deleteImage(String imageId) {
-        idlingResource.increment(); // Increment IdlingResource for Espresso synchronization
-        TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
-
-        if (imageId != null && !imageId.isEmpty()) {
-            // Delete the image document based on ID
-            imageRef.document(imageId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(context, "Image deleted successfully", Toast.LENGTH_SHORT).show();
-                        tcs.setResult(null); // Set the result on success
-                        idlingResource.decrement(); // Decrement IdlingResource
+    public void deleteImage(String imageURL) {
+        if (imageURL != null && !imageURL.isEmpty()) {
+            new androidx.appcompat.app.AlertDialog.Builder(this.context)
+                    .setTitle("Delete Image")
+                    .setMessage("Are you sure you want to delete this image?")
+                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                        // Query for the image by URL and delete it
+                        imageRef
+                                .whereEqualTo("URL", imageURL)
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                        imageRef.document(document.getId())
+                                                .delete()
+                                                .addOnSuccessListener(aVoid -> {
+                                                    Toast.makeText(this.context, "Image deleted successfully", Toast.LENGTH_SHORT).show();
+                                                    if (this.context instanceof Activity) {
+                                                        ((Activity) this.context).finish();
+                                                    }
+                                                })
+                                                .addOnFailureListener(e -> Toast.makeText(this.context, "Error deleting image", Toast.LENGTH_SHORT).show());
+                                    }
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(this.context, "Error finding image", Toast.LENGTH_SHORT).show());
                     })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(context, "Error deleting image", Toast.LENGTH_SHORT).show();
-                        tcs.setException(e); // Set exception on failure
-                        idlingResource.decrement(); // Decrement IdlingResource
-                    });
+                    .setNegativeButton(android.R.string.no, null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         } else {
-            Toast.makeText(context, "Error: Image ID not found.", Toast.LENGTH_SHORT).show();
-            tcs.setException(new IllegalArgumentException("Image ID not provided.")); // Set exception if image ID is empty
-            idlingResource.decrement(); // Decrement IdlingResource
+            Toast.makeText(this.context, "Error: Image URL not found.", Toast.LENGTH_SHORT).show();
         }
-
-        return tcs.getTask(); // Return the Task
     }
-
-
 
     /* --- HELPER FUNCTIONS FOR INTENT TESTING --- */
     public void addMockData(String randomId) {
@@ -347,63 +311,35 @@ public class AdminController {
         addMockImages(randomId);
     }
 
-    public void deleteMockdata(String randomId) {
-        deleteUser(randomId);
-        deleteEvent(randomId);
-        deleteImage(randomId);
-    }
-
     private void addMockUsers(String randomId) {
-        // Adding a mock user with a specific ID
+        // Adding a mock user
         Map<String, Object> mockUser = new HashMap<>();
+        mockUser.put("id", randomId);
         mockUser.put("name",  randomId);
         mockUser.put("contactInformation", "john.doe@example.com");
         mockUser.put("homepage", "www.JohnDoe.com");
         mockUser.put("ImageUrl", "");
         mockUser.put("typeOfUser", "Attendee");
-        userRef.document(randomId).set(mockUser); // Set the custom ID
+        userRef.add(mockUser);
+
     }
 
     private void addMockEvents(String randomId) {
-        // Adding a mock event with a specific ID
+        // Adding a mock event
         Map<String, Object> mockEvent = new HashMap<>();
         mockEvent.put("Name", randomId);
         mockEvent.put("Description", "Mock Event Intended for Testing");
-        mockEvent.put("URL", "https://example.com/image.jpg");
-        eventRef.document(randomId).set(mockEvent); // Set the custom ID
+        mockEvent.put("URL", "https://firebasestorage.googleapis.com/v0/b/qr-code-app-6fe73.appspot.com/o/DALL%C2%B7E%202024-03-06%2015.03.30%20-%20A%20modern%2C%20sleek%2C%20technology-themed%20office%20space%20with%20large%20windows%2C%20offering%20a%20view%20of%20a%20futuristic%20cityscape.%20Inside%2C%20there's%20a%20variety%20of%20high-tech%20.webp?alt=media&token=eee291b2-44aa-47fe-918d-b07a2e2bc996");
+        eventRef.add(mockEvent);
+
     }
 
     private void addMockImages(String randomId) {
-        // Adding a mock image with a specific ID
+        // Adding a mock image
         Map<String, Object> mockImage = new HashMap<>();
-        mockImage.put("URL", "https://firebasestorage.googleapis.com/v0/b/qr-code-app-6fe73.appspot.com/o/DALL%C2%B7E%202024-03-06%2015.05.19%20-%20A%20dynamic%20image%20of%20a%20futuristic%20city%20at%20night%2C%20with%20neon%20lights%20and%20towering%20skyscrapers.%20Flying%20cars%20zoom%20through%20the%20air%2C%20leaving%20trails%20of%20light%20be.webp?alt=media&token=d93cd2e0-16fc-4f54-9e77-a0f3c630eecf");
-        imageRef.document(randomId).set(mockImage); // Set the custom ID
+        mockImage.put("URL", "https://firebasestorage.googleapis.com/v0/b/qr-code-app-6fe73.appspot.com/o/DALL%C2%B7E%202024-03-06%2015.03.30%20-%20A%20modern%2C%20sleek%2C%20technology-themed%20office%20space%20with%20large%20windows%2C%20offering%20a%20view%20of%20a%20futuristic%20cityscape.%20Inside%2C%20there's%20a%20variety%20of%20high-tech%20.webp?alt=media&token=eee291b2-44aa-47fe-918d-b07a2e2bc996");
+        imageRef.add(mockImage);
     }
 
-    // SEARCH METHODS
-    public Task<Boolean> searchForProfile(String userId) {
-        return userRef.document(userId).get().continueWith(task -> {
-            DocumentSnapshot document = task.getResult();
-            // Return true if the document exists, false otherwise
-            return document.exists();
-        });
-    }
-
-    public Task<Boolean> searchForEvent(String eventId) {
-        return eventRef.document(eventId).get().continueWith(task -> {
-            DocumentSnapshot document = task.getResult();
-            // Return true if the document exists, false otherwise
-            return document.exists();
-        });
-    }
-
-
-    public Task<Boolean> searchForImage(String imageId) {
-        return imageRef.document(imageId).get().continueWith(task -> {
-            DocumentSnapshot document = task.getResult();
-            // Return true if the document exists, false otherwise
-            return document.exists();
-        });
-    }
 
 }

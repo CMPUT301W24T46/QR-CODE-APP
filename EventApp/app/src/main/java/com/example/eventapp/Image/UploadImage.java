@@ -1,4 +1,4 @@
-package com.example.eventapp.Image;
+package com.example.eventapp.upload_image;
 
 import android.net.Uri;
 import android.util.Log;
