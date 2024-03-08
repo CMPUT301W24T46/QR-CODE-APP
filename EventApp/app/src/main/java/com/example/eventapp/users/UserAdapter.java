@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
 import com.example.eventapp.admin.AdminDeleteProfile;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -99,5 +100,9 @@ public class UserAdapter extends ArrayAdapter<User> {
     public void setFilter(ArrayList<User> userDataList){
         users.clear();
         users.addAll(userDataList) ;
+    }
+
+    public ArrayList<User> getItems() {
+        return this.users;
     }
 }

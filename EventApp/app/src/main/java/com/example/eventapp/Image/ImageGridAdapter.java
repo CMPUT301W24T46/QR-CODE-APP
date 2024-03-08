@@ -9,9 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.eventapp.Image.Image;
 import com.example.eventapp.R;
-
 
 import java.util.List;
 
@@ -62,5 +60,10 @@ public class ImageGridAdapter extends BaseAdapter {
         imageText.setText(item.getId());
 
         return convertView;
+    }
+
+    public void setFilter(List<Image> newImages) {
+        imageItems.clear();
+        imageItems.addAll(newImages);
     }
 }
