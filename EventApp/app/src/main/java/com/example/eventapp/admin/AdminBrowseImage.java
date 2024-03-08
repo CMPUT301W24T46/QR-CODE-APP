@@ -19,6 +19,10 @@ import com.example.eventapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * {@link androidx.appcompat.app.AppCompatActivity}
+ * An activity that browses through images in the database
+ */
 public class AdminBrowseImage extends AppCompatActivity {
     private AdminController adminController;
 
@@ -28,6 +32,11 @@ public class AdminBrowseImage extends AppCompatActivity {
     private SearchView searchView;
 
 
+    /**
+     * Called when the activity is starting. Initializes the views
+     *
+     * @param savedInstanceState a previously saved state
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +84,9 @@ public class AdminBrowseImage extends AppCompatActivity {
 
     }
 
+    /**
+     * Sets up the search view with query listeners.
+     */
     private void setUpSearchView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -98,15 +110,21 @@ public class AdminBrowseImage extends AppCompatActivity {
 
 
 
-
-    // This method is called when the up button is pressed
+    /**
+     * This method is called when the up button is pressed.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
-    // This method is used if you have an options menu
+    /**
+     * Called whenever an item in your options menu is selected.
+     *
+     * @param item The menu item that was selected.
+     * @return  Return false to allow normal menu processing, true to consume it here.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Check if the correct item was clicked

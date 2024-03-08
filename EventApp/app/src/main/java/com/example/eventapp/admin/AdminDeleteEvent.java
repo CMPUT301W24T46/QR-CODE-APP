@@ -18,6 +18,11 @@ import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * {@link androidx.appcompat.app.AppCompatActivity} .
+ * An activity that provides the functionality for an admin
+ * to view and delete specific events.
+ */
 public class AdminDeleteEvent extends AppCompatActivity {
     // TODO: Delete based on a unique identifier instead of event name
 
@@ -29,6 +34,12 @@ public class AdminDeleteEvent extends AppCompatActivity {
     private String eventName, imageURL;
 
 
+    /**
+     * Called when the activity is starting.
+     * Sets up the UI components and event deletion functionalities.
+     *
+     * @param savedInstanceState a previously saved state
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +87,11 @@ public class AdminDeleteEvent extends AppCompatActivity {
 
 
 
-    // Handles back button press
+    /**
+     * Handles the action when the up button is pressed to navigate back.
+     *
+     * @return boolean Return true to indicate that the action has been handled.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();

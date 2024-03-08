@@ -1,7 +1,5 @@
 package com.example.eventapp.admin;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -28,8 +26,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CancellationException;
 
+/**
+ * {@link androidx.appcompat.app.AppCompatActivity}
+ * A controller class is responsible for handling various administrative functions related to users, events, and images.
+ * Utilizes Firebase Firestore for database operations.
+ */
 public class AdminController {
     private final Context context;
     private final Map<String, DocumentReference> userImageRefMap;
@@ -40,7 +42,12 @@ public class AdminController {
         return idlingResource;
     }
 
-
+    /**
+     * Constructor for AdminController.
+     * Initializes user, event, and imagereferences to Firestore collections
+     * and a map for user images.
+     * @param context The context where the AdminController is used
+     */
     public AdminController(Context context) {
         this.context = context;
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -55,6 +62,12 @@ public class AdminController {
     }
 
     /* --- BROWSE/DELETE EVENTS --- */
+
+    /**
+     * Subscribes to real-time updates of the user database in Firestore.
+     * Updates the provided UserAdapter with the latest data.
+     * @param adapter The adapter that needs to be updated with the fetched data.
+     */
     public void subscribeToUserDB(UserAdapter adapter) {
         userRef.addSnapshotListener((querySnapshots, error) -> {
             if (error != null) {
@@ -95,7 +108,12 @@ public class AdminController {
         });
     }
 
-
+    /**
+     * Fetches and filters the list of users based on the provided search query.
+     * @param searchText The query to filter the users.
+     * @param queryOrDisplay Indicates whether to perform a search (true) or just display (false).
+     * @param userAdapter The adapter to be updated with filtered results.
+     */
     public void getCurrentUserList(String searchText, boolean queryOrDisplay, UserAdapter userAdapter){
         userRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             ArrayList<User> searchResults = new ArrayList<>();
@@ -125,6 +143,10 @@ public class AdminController {
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
 
+    /**
+     * Loads profile images for users from Firestore.
+     * @param userAdapter Adapter containing users for which images are to be loaded.
+     */
     public void loadProfileImages(UserAdapter userAdapter) {
         if (userImageRefMap.isEmpty()) {
             return;
@@ -154,7 +176,11 @@ public class AdminController {
 
     }
 
-
+    /**
+     * Deletes a user from the Firestore database based on the provided user ID.
+     * @param userId The ID of the user to be deleted.
+     * @return A Task representing the result of the delete operation.
+     */
     public Task<Void> deleteUser(String userId) {
         idlingResource.increment();
         TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
@@ -181,6 +207,12 @@ public class AdminController {
 
 
     /* --- BROWSE/DELETE EVENTS --- */
+
+    /**
+     * Subscribes to real-time updates from the Events collection in Firestore.
+     * Updates provided EventAdapter with current data.
+     * @param adapter Adapter to be updated with event data.
+     */
     public void subscribeToEventDB(EventAdapter adapter) {
         eventRef.addSnapshotListener((querySnapshots, error) -> {
             if (error != null) {
@@ -202,6 +234,12 @@ public class AdminController {
         });
     }
 
+    /**
+     * Fetches and updates the event list based on provided search criteria.
+     * @param searchText Text to filter events.
+     * @param queryOrDisplay Indicates whether to perform a search (true) or just display (false).
+     * @param adapter Adapter to be updated with filtered results.
+     */
     public void getCurrentEventList(String searchText, boolean queryOrDisplay, EventAdapter adapter) {
         eventRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             ArrayList<Event> searchResults = new ArrayList<>();
@@ -224,6 +262,12 @@ public class AdminController {
             adapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
+
+    /**
+     * Deletes an event from Firestore based on the event name.
+     * @param eventName Name of the event to be deleted.
+     * @return Task representing the result of the delete operation.
+     */
     public Task<Void> deleteEvent(String eventName) {
         idlingResource.increment(); // Increment IdlingResource
         TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
@@ -269,6 +313,12 @@ public class AdminController {
 
 
     /* --- BROWSE/DELETE Images --- */
+
+    /**
+     * Subscribes to real-time updates from the Images collection in Firestore.
+     * Updates provided ImageGridAdapter with current data.
+     * @param adapter Adapter to be updated with image data.
+     */
     public void subscribeToImageDB(ImageGridAdapter adapter) {
         imageRef.addSnapshotListener((querySnapshots, error) -> {
             if (error != null) {
@@ -289,6 +339,12 @@ public class AdminController {
         });
     }
 
+    /**
+     * Fetches and updates the image list based on provided search criteria.
+     * @param searchText Text to filter images.
+     * @param queryOrDisplay Indicates whether to perform a search (true) or just display (false).
+     * @param adapter Adapter to be updated with filtered results.
+     */
     public void getCurrentImageList(String searchText, boolean queryOrDisplay, ImageGridAdapter adapter) {
         imageRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             ArrayList<Image> searchResults = new ArrayList<>();
@@ -311,6 +367,12 @@ public class AdminController {
             adapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
+
+    /**
+     * Deletes an image from Firestore based on its ID.
+     * @param imageId ID of the image to be deleted.
+     * @return Task representing the result of the delete operation.
+     */
     public Task<Void> deleteImage(String imageId) {
         idlingResource.increment(); // Increment IdlingResource for Espresso synchronization
         TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
@@ -341,19 +403,33 @@ public class AdminController {
 
 
     /* --- HELPER FUNCTIONS FOR INTENT TESTING --- */
+
+    /**
+     * Adds mock data for testing purposes.
+     * Creates mock users, events, and images with a randomly generated identifier.
+     * @param randomId Identifier to be used for mock data entries.
+     */
     public void addMockData(String randomId) {
-        addMockUsers(randomId);
-        addMockEvents(randomId);
-        addMockImages(randomId);
+        addMockUser(randomId);
+        addMockEvent(randomId);
+        addMockImage(randomId);
     }
 
+    /**
+     * Deletes mock data from Firestore collections based on the provided identifier.
+     * @param randomId Identifier used for the mock data entries.
+     */
     public void deleteMockdata(String randomId) {
         deleteUser(randomId);
         deleteEvent(randomId);
         deleteImage(randomId);
     }
 
-    private void addMockUsers(String randomId) {
+    /**
+     * Adds a mock user to the Firestore 'Users' collection for testing purposes.
+     * @param randomId Identifier for the mock user.
+     */
+    private void addMockUser(String randomId) {
         // Adding a mock user with a specific ID
         Map<String, Object> mockUser = new HashMap<>();
         mockUser.put("name",  randomId);
@@ -364,7 +440,11 @@ public class AdminController {
         userRef.document(randomId).set(mockUser); // Set the custom ID
     }
 
-    private void addMockEvents(String randomId) {
+    /**
+     * Adds a mock event to the Firestore 'Events' collection for testing purposes.
+     * @param randomId Identifier for the mock event.
+     */
+    private void addMockEvent(String randomId) {
         // Adding a mock event with a specific ID
         Map<String, Object> mockEvent = new HashMap<>();
         mockEvent.put("Name", randomId);
@@ -373,14 +453,25 @@ public class AdminController {
         eventRef.document(randomId).set(mockEvent); // Set the custom ID
     }
 
-    private void addMockImages(String randomId) {
+    /**
+     * Adds a mock image to the Firestore 'Images' collection for testing purposes.
+     * @param randomId Identifier for the mock image.
+     */
+    private void addMockImage(String randomId) {
         // Adding a mock image with a specific ID
         Map<String, Object> mockImage = new HashMap<>();
         mockImage.put("URL", "https://firebasestorage.googleapis.com/v0/b/qr-code-app-6fe73.appspot.com/o/DALL%C2%B7E%202024-03-06%2015.05.19%20-%20A%20dynamic%20image%20of%20a%20futuristic%20city%20at%20night%2C%20with%20neon%20lights%20and%20towering%20skyscrapers.%20Flying%20cars%20zoom%20through%20the%20air%2C%20leaving%20trails%20of%20light%20be.webp?alt=media&token=d93cd2e0-16fc-4f54-9e77-a0f3c630eecf");
         imageRef.document(randomId).set(mockImage); // Set the custom ID
     }
 
-    // SEARCH METHODS
+    // SEARCH METHODS FOR TESTING IF A DOCUMENT EXISTS
+
+    /**
+     * Searches for a profile in the Firestore 'Users' collection based on the given user ID.
+     * @param userId ID of the user to be searched.
+     * @return Task<Boolean> indicating whether the profile was found (true) or not (false).
+     */
+
     public Task<Boolean> searchForProfile(String userId) {
         return userRef.document(userId).get().continueWith(task -> {
             DocumentSnapshot document = task.getResult();
@@ -389,6 +480,11 @@ public class AdminController {
         });
     }
 
+    /**
+     * Searches for an event in the Firestore 'Events' collection based on the given event ID.
+     * @param eventId ID of the event to be searched.
+     * @return Task<Boolean> indicating whether the event was found (true) or not (false).
+     */
     public Task<Boolean> searchForEvent(String eventId) {
         return eventRef.document(eventId).get().continueWith(task -> {
             DocumentSnapshot document = task.getResult();
@@ -397,7 +493,11 @@ public class AdminController {
         });
     }
 
-
+    /**
+     * Searches for an image in the Firestore 'Images' collection based on the given image ID.
+     * @param imageId ID of the image to be searched.
+     * @return Task<Boolean> indicating whether the image was found (true) or not (false).
+     */
     public Task<Boolean> searchForImage(String imageId) {
         return imageRef.document(imageId).get().continueWith(task -> {
             DocumentSnapshot document = task.getResult();
