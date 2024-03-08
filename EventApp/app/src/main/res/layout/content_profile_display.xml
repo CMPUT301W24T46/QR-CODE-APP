@@ -28,7 +28,8 @@
         app:layout_constraintTop_toBottomOf="@+id/profileName" />
 
     <Button
-        android:id="@+id/viewProfileButton"
+        android:id="@+id/btnViewProfile"
+
         android:layout_width="70dp"
         android:layout_height="48dp"
         android:textColor="@color/white"
@@ -37,6 +38,8 @@
         android:text="@string/View"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
 
     <ImageView
         android:id="@+id/profileImage"

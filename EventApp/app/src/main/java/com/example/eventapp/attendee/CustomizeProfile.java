@@ -49,7 +49,6 @@ import java.util.Objects;
 public class CustomizeProfile extends AppCompatActivity {
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia ;
     StorageReference storageReference ;
-    private boolean testing = false ;
     private EditText username;
     private EditText contact;
     private EditText description;
@@ -58,7 +57,7 @@ public class CustomizeProfile extends AppCompatActivity {
     private String userId ;
 
     private Button profileDeleteImageButton;
-    public User attendeeUser ;
+    private User attendeeUser ;
     private ImageView profilePhotView ;
     private Context context ;
     /**
@@ -72,7 +71,6 @@ public class CustomizeProfile extends AppCompatActivity {
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      *
      */
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +113,6 @@ public class CustomizeProfile extends AppCompatActivity {
                 uploadImage();
             }
         });
-
 
         // Registers a photo picker activity launcher in single-select mode.
         // Include only one of the following calls to launch(), depending on the types
@@ -249,22 +246,17 @@ public class CustomizeProfile extends AppCompatActivity {
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 //        May need to change the position of setters
-        if(attendeeUser == null){
-            attendeeUser = TestUser() ;
-            Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
-        }else{
-            attendeeUser.setName(usernameText);
-            attendeeUser.setContactInformation(contactText);
-            attendeeUser.setHomepage(descriptionText);
-            attendeeUser.setTypeOfUser("Attendee");
-        }
+        attendeeUser.setName(usernameText);
+        attendeeUser.setContactInformation(contactText);
+        attendeeUser.setHomepage(descriptionText);
+        attendeeUser.setTypeOfUser("Attendee");
 
         if (usernameText.isEmpty() || contactText.isEmpty() || descriptionText.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
         updateProfileInDatabase(usernameText, contactText, descriptionText);
-        Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -335,12 +327,6 @@ public class CustomizeProfile extends AppCompatActivity {
                 Log.e("CustomizeProfile", "Error getting image document", e);
             }
         });
-    }
-
-    private User TestUser(){
-        User testUser = new User("123", "123", "123", "123", "123", "Attendee");
-        testing = true ;
-        return testUser;
     }
     public void onCustomizeProfileSaveClicked(View view) {
         // Implementation for saving profile changes
