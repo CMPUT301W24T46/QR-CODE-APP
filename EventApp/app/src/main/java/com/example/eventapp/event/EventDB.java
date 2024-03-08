@@ -54,6 +54,15 @@ public class EventDB {
                 });
     }
 
+    /**
+     * Adds a new organizer event to the Firestore database. Records event details including name, date, image URL,
+     * and creator ID into the "Events" collection.
+     *
+     * @param eventName Name of the event.
+     * @param eventDate Date of the event.
+     * @param imageURL URL for the event's image.
+     * @param creatorId ID of the user who created the event.
+     */
     public void addorganizerEvent(String eventName, String eventDate, String imageURL, String creatorId) {
         Map<String, Object> event = new HashMap<>();
         event.put("eventName", eventName);

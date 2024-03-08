@@ -87,7 +87,7 @@ public class CreateEventFragment extends DialogFragment {
                 }
                 dismiss(); // Dismiss the dialog
             } else {
-                Toast.makeText(getContext(), "Please fill in all fields and log in.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
             }
         });
 
