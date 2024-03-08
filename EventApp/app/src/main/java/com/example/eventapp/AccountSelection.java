@@ -46,7 +46,9 @@ public class AccountSelection extends Fragment {
 
     private CollectionReference userRef;
 
+    private NavController testAccountNavController ;
     private UserDB userDB ;
+
 
     public AccountSelection() {
         // Required empty public constructor
@@ -73,7 +75,7 @@ public class AccountSelection extends Fragment {
         accountOptionsListView = view.findViewById(R.id.accountOptionList) ;
         accountOptionsAdapter = new SelectOptionsAdapter(requireContext(), accountOptionsData) ;
         accountOptionsListView.setAdapter(accountOptionsAdapter);
-
+//        testAccountNavController = Navigation.findNavController(view) ;
         accountOptionsListView.setOnItemClickListener((parent , v , position , id)->{
             navigateToAccount(v , parent , position);
         });
@@ -93,6 +95,12 @@ public class AccountSelection extends Fragment {
     private void navigateToAccount(View view , AdapterView<?> parent , int position){
         String selectedAccount = (String) parent.getItemAtPosition(position) ;
         NavController selectAccountController = Navigation.findNavController(view) ;
+        if(mAuth == null){
+            testAccountNavController = selectAccountController ;
+//            testNavigateToAccount(view ,  parent , position);
+            return;
+        }
+
         if(selectedAccount.equals("Attend Event")){
             userDB.setNavController(selectAccountController);
             userDB.setNavigationPageId(R.id.action_accountSelection_to_attendeeActivity) ;
@@ -110,4 +118,14 @@ public class AccountSelection extends Fragment {
         }
     }
 
+    public void testNavigateToAccount(String page , NavController appNav){
+        testAccountNavController = appNav ;
+        if(page.equals("Attend Event")){
+            testAccountNavController.navigate(R.id.action_accountSelection_to_attendeeActivity);
+        }else if(page.equals("Organize")){
+            testAccountNavController.navigate(R.id.action_accountSelection_to_organizerActivity);
+        }else if(page.equals("Admin")){
+            testAccountNavController.navigate(R.id.action_accountSelection_to_adminActivity);
+        }
+    }
 }
