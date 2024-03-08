@@ -70,9 +70,9 @@ public class CreateEventFragment extends DialogFragment {
         buttonConfirm.setOnClickListener(view1 -> {
             String eventName = eventNameEditText.getText().toString();
             String eventDate = eventDateEditText.getText().toString();
-            // Assume imageURL is retrieved or generated somehow
+            // TODO: Generate image URL
             String imageURL = "URL_HERE";
-            // Fetching the creatorId (current user's ID from Firebase Auth)
+            // Fetching the creatorId
             String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
             if (!eventName.isEmpty() && !eventDate.isEmpty() && creatorId != null) {

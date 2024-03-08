@@ -133,6 +133,8 @@ public class UserDB {
     }
 
 
+
+
     public void updateUserInformation(String Username, String Contact, String Homepage) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {

@@ -1,9 +1,6 @@
 package com.example.eventapp.attendee;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -24,7 +21,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.eventapp.R;
 import com.example.eventapp.document_reference.DocumentReferenceChecker;
-import com.example.eventapp.upload_image.UploadImage;
+import com.example.eventapp.Image.UploadImage;
 import com.example.eventapp.users.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,10 +31,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +44,7 @@ import java.util.Objects;
 public class CustomizeProfile extends AppCompatActivity {
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia ;
     StorageReference storageReference ;
+    private boolean testing = false ;
     private EditText username;
     private EditText contact;
     private EditText description;
@@ -57,7 +53,7 @@ public class CustomizeProfile extends AppCompatActivity {
     private String userId ;
 
     private Button profileDeleteImageButton;
-    private User attendeeUser ;
+    public User attendeeUser ;
     private ImageView profilePhotView ;
     private Context context ;
     /**
@@ -71,6 +67,7 @@ public class CustomizeProfile extends AppCompatActivity {
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      *
      */
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +110,7 @@ public class CustomizeProfile extends AppCompatActivity {
                 uploadImage();
             }
         });
+
 
         // Registers a photo picker activity launcher in single-select mode.
         // Include only one of the following calls to launch(), depending on the types
@@ -246,10 +244,15 @@ public class CustomizeProfile extends AppCompatActivity {
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 //        May need to change the position of setters
-        attendeeUser.setName(usernameText);
-        attendeeUser.setContactInformation(contactText);
-        attendeeUser.setHomepage(descriptionText);
-        attendeeUser.setTypeOfUser("Attendee");
+        if(attendeeUser == null){
+            attendeeUser = TestUser() ;
+            Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
+        }else{
+            attendeeUser.setName(usernameText);
+            attendeeUser.setContactInformation(contactText);
+            attendeeUser.setHomepage(descriptionText);
+            attendeeUser.setTypeOfUser("Attendee");
+        }
 
         if (usernameText.isEmpty() || contactText.isEmpty() || descriptionText.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
@@ -327,6 +330,12 @@ public class CustomizeProfile extends AppCompatActivity {
                 Log.e("CustomizeProfile", "Error getting image document", e);
             }
         });
+    }
+
+    private User TestUser(){
+        User testUser = new User("123", "123", "123", "123", "123", "Attendee");
+        testing = true ;
+        return testUser;
     }
     public void onCustomizeProfileSaveClicked(View view) {
         // Implementation for saving profile changes

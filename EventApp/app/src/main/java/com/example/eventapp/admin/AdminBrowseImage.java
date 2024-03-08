@@ -2,9 +2,11 @@ package com.example.eventapp.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.widget.GridView;
+import android.widget.SearchView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -23,6 +25,7 @@ public class AdminBrowseImage extends AppCompatActivity {
     private GridView imageGridView;
     private List<Image> imageItems;
     private ImageGridAdapter imageGridAdapter;
+    private SearchView searchView;
 
 
     @Override
@@ -41,6 +44,7 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         imageGridView = findViewById(R.id.imageGridView);
         imageGridView.setColumnWidth(columnWidth);
+        searchView = findViewById(R.id.imageSearcher);
 
         imageItems = new ArrayList<>();
 
@@ -53,7 +57,7 @@ public class AdminBrowseImage extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
 
-        adminController.subscribeToImageDB(imageGridAdapter);
+
 
         // Implement item click listener if needed
         imageGridView.setOnItemClickListener((parent, view, position, id) -> {
@@ -66,7 +70,32 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         });
 
+        setUpSearchView();
+        adminController.subscribeToImageDB(imageGridAdapter);
+
     }
+
+    private void setUpSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter your data based on newText
+                if(TextUtils.isEmpty(newText)){
+                    adminController.getCurrentImageList("", false, imageGridAdapter);
+                }else{
+                    adminController.getCurrentImageList(newText, true, imageGridAdapter);
+
+                }
+                return true;
+            }
+        });
+    }
+
 
 
 
