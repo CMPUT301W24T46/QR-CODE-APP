@@ -112,7 +112,7 @@ public class CustomizeProfile extends AppCompatActivity {
         profileEditImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadImage();
+                    uploadImage();
             }
         });
 
@@ -344,6 +344,13 @@ public class CustomizeProfile extends AppCompatActivity {
         testing = true ;
         return testUser;
     }
+
+    public void testUploadImage(){
+        Uri uri = Uri.parse("content://com.example.app/mock_image");
+        RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
+        Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
+    }
+
     public void onCustomizeProfileSaveClicked(View view) {
         // Implementation for saving profile changes
     }
