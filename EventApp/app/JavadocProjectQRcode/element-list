@@ -1,0 +1,9 @@
+com.example.eventapp
+com.example.eventapp.admin
+com.example.eventapp.attendee
+com.example.eventapp.document_reference
+com.example.eventapp.event
+com.example.eventapp.Image
+com.example.eventapp.notification
+com.example.eventapp.organizer
+com.example.eventapp.users
