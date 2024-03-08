@@ -1,6 +1,5 @@
 package com.example.eventapp.admin;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.Button;
@@ -14,13 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
-import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AdminDeleteEvent extends AppCompatActivity {
-    // TODO: Delete based on a unique identifier instead of event name
-
     private AdminController adminController;
 
     private ImageView bigEventImageView;
@@ -57,20 +53,7 @@ public class AdminDeleteEvent extends AppCompatActivity {
             Toast.makeText(this, "Event data not available", Toast.LENGTH_LONG).show();
         }
 
-        deleteEventButton.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle("Delete event")
-                .setMessage("Are you sure you want to delete this event?")
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                    adminController.deleteEvent(eventName)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(this, "Event deleted successfully", Toast.LENGTH_SHORT).show();
-                                this.finish();
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(this, "Error deleting event", Toast.LENGTH_SHORT).show());
-                })
-                .setNegativeButton(android.R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show());
+        deleteEventButton.setOnClickListener(v -> adminController.deleteEvent(eventName));
     }
 
 
