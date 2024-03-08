@@ -80,6 +80,8 @@ public class UserAdapter extends ArrayAdapter<User> {
             profileName.setText(username);
             profileRole.setText(user.getTypeOfUser());
 
+
+
             String imageURL = user.getImageURL();
 
 
