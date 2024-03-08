@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link OrganizerEvent#newInstance} factory method to
+ * Use the {@link OrganizerEvent} factory method to
  * create an instance of this fragment.
  */
 public class OrganizerEvent extends Fragment {
