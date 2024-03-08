@@ -28,9 +28,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * create an instance of this fragment.
  */
 public class AttendeeHome extends Fragment {
-    String[] homepageOptionsData = {"Create Event" , "Join Event" , "Notifications"} ;
-    ListView homepageOptionsListView ;
-    HomePageAdapter homePageAdapter ;
     private TextView welcomeMessageText;
     private CollectionReference userRef;
 
