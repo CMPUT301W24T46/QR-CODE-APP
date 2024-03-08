@@ -5,7 +5,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.eventapp.R;
+import com.example.eventapp.event.Event;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,19 +29,24 @@ import com.google.firebase.firestore.FirebaseFirestore;
 /**
  * Fragment for the organizer's home screen, displaying welcome messages and navigation options.
  */
-public class OrganizerHome extends Fragment {
+public class OrganizerHome extends Fragment{
 
 
     private TextView organizer_welcomeMessageText;
     private CollectionReference userRef;
 
-
+    /**
+     * Constructor for OrganizerHome fragment. Used for initialization.
+     */
     public OrganizerHome() {
         // Required empty public constructor
     }
 
-
-
+    /**
+     * Initializes the fragment. Sets up a reference to the 'Users' collection in Firestore.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this holds the data.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +54,15 @@ public class OrganizerHome extends Fragment {
         //initialize user
         userRef = FirebaseFirestore.getInstance().collection("Users");
     }
+
+    /**
+     * Inflates the layout for this fragment, initializing and setting the welcome message.
+     *
+     * @param inflater LayoutInflater object to inflate views in the fragment.
+     * @param container Parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, the fragment is being re-constructed from a saved state.
+     * @return The View for the fragment's UI, or null.
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,6 +79,14 @@ public class OrganizerHome extends Fragment {
         return rootView;
 
     }
+
+    /**
+     * Sets up listeners for UI elements after the view has been created. This includes initializing buttons
+     * for creating events and displaying notifications, with click listeners to handle navigation.
+     *
+     * @param view The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -85,6 +110,11 @@ public class OrganizerHome extends Fragment {
             }
         });
     }
+
+    /**
+     * Sets the welcome message for the user. Retrieves the user's name from Firestore based on their UID
+     * and updates the welcome message TextView accordingly. If no name is found, a default message is set.
+     */
 
     private void setWelcomeMessage() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

@@ -108,8 +108,7 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
         // of media that you want to let the user choose from.
         pickMedia =
         registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-            // Callback is invoked after the user selects a media item or closes the
-            // photo picker.
+            // Callback is invoked after the user selects a media item or closes the photo picker.
             if (uri != null) {
                 RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                 Glide.with(context).load(uri).apply(requestOptions).into(profilePhotoView);

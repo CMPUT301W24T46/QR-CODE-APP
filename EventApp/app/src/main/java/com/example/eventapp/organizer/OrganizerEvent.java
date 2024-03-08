@@ -2,13 +2,24 @@ package com.example.eventapp.organizer;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.example.eventapp.R;
+import com.example.eventapp.event.Event;
+import com.example.eventapp.event.EventAdapter;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,10 +68,99 @@ public class OrganizerEvent extends Fragment {
         }
     }
 
+    /**
+     * Inflates the fragment's layout.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_organizer_event, container, false);
     }
+
+    /**
+     * Fetches event data from Firestore and updates the UI with the retrieved list.
+     * Retrieves events from the "Events" collection, creates Event objects, and updates the UI.
+     */
+    public void fetchEvents() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Events")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        ArrayList<Event> eventList = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String eventName = document.getString("eventName");
+                            String eventDate = document.getString("eventDate");
+                            String imageURL = document.getString("imageURL");
+                            String creatorId = document.getString("creatorId");
+                            Event event = new Event(eventName, eventDate, imageURL, creatorId);
+                            eventList.add(event);
+                        }
+                        updateUI(eventList);
+                    } else {
+                        Log.d("EventFetch", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
+
+    /**
+     * Updates the user interface with the provided list of events.
+     * Sets up the event adapter and attaches it to the ListView for event display.
+     *
+     * @param events The list of Event objects to display.
+     */
+
+    private void updateUI(ArrayList<Event> events) {
+        EventAdapter adapter = new EventAdapter(getContext(), events, event -> {
+            // Handle event click
+            navigateToEventInfo(event);
+        });
+        ListView listView = getView().findViewById(R.id.organizer_eventListView);
+        listView.setAdapter(adapter);
+    }
+
+    /**
+     * Navigates to the event information page for a specific event.
+     * Passes event details to the destination fragment via a Bundle.
+     *
+     * @param event The Event object whose details are to be displayed.
+     */
+
+    private void navigateToEventInfo(Event event) {
+        Bundle bundle = new Bundle();
+        bundle.putString("eventName", event.getEventName());
+        bundle.putString("eventDate", event.getEventDate());
+        bundle.putString("imageURL", event.getImageURL());
+        bundle.putString("creatorId", event.getCreatorId());
+        Navigation.findNavController(getView()).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
+    }
+
+    /**
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned, but before any saved state has been restored in to the view.
+     * Initiates fetching of events and handles argument processing for event details display.
+     *
+     * @param view The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        fetchEvents();
+        if (getArguments() != null) {
+            String eventName = getArguments().getString("eventName");
+            String eventDate = getArguments().getString("eventDate");
+            String imageURL = getArguments().getString("imageURL");
+            String creatorId = getArguments().getString("creatorId");
+            // TODO: Display event
+        }
+
+    }
+
 }
