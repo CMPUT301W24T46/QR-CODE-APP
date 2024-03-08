@@ -21,11 +21,23 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.concurrent.CancellationException;
 
+
+/**
+ * @link androidx.appcompat.app.AppCompatActivity}
+ * An Activity that provides the functionality for an admin
+ * to view and delete user profiles.
+ */
 public class AdminDeleteProfile extends AppCompatActivity {
 
     private AdminController adminController;
     private String userId;
 
+    /**
+     * Called when the activity is starting.
+     * Sets up the UI components and profile deletion functionalities.
+     *
+     * @param savedInstanceState a previously saved state
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,8 +113,11 @@ public class AdminDeleteProfile extends AppCompatActivity {
 
     }
 
-
-
+    /**
+     * Handles the action when the up button is pressed to navigate back.
+     *
+     * @return  Return true to indicate that the action has been handled.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();

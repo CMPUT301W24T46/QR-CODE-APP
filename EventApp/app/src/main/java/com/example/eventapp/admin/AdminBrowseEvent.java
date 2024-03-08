@@ -17,6 +17,11 @@ import com.example.eventapp.event.EventAdapter;
 
 import java.util.ArrayList;
 
+/**
+ *  {@link androidx.appcompat.app.AppCompatActivity} .
+ * AdminBrowseEvent is an AppCompatActivity that allows admins to browse through events.
+ * It includes search functionality and options to perform administrative actions on the events.
+ */
 public class AdminBrowseEvent extends AppCompatActivity {
     private AdminController adminController;
     private SearchView searchView;
@@ -24,6 +29,11 @@ public class AdminBrowseEvent extends AppCompatActivity {
     private ListView eventList;
     private EventAdapter eventAdapter;
 
+    /**
+     * Called when the activity is starting
+     *
+     * @param savedInstanceState A previously saved state if the application has been run before
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +70,9 @@ public class AdminBrowseEvent extends AppCompatActivity {
         adminController.subscribeToEventDB(eventAdapter);
     }
 
+    /**
+     * Sets up the search view with query listeners.
+     */
     private void setUpSearchView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -80,14 +93,21 @@ public class AdminBrowseEvent extends AppCompatActivity {
     }
 
 
-    // This method is called when the up button is pressed
+    /**
+     * This method is called when the up button is pressed.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
-    // This method is used if you have an options menu
+    /**
+     * Called whenever an item in your options menu is selected.
+     *
+     * @param item The menu item that was selected.
+     * @return Return false to allow normal menu processing, true to consume it here.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Check if the correct item was clicked
