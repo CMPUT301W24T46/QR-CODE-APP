@@ -19,7 +19,6 @@ import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
 import com.example.eventapp.admin.AdminDeleteProfile;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -49,7 +48,7 @@ public class UserAdapter extends ArrayAdapter<User> {
             TextView profileName = view.findViewById(R.id.profileName);
             TextView profileRole = view.findViewById(R.id.profileRole);
             ImageView profileImageView = view.findViewById(R.id.profileImage);
-            Button viewEventButton = view.findViewById(R.id.viewProfileButton);
+            Button viewEventButton = view.findViewById(R.id.btnViewProfile);
 
             String username = user.getName();
 // if username is null or empty, then display the id instead

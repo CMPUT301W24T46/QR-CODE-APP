@@ -96,7 +96,6 @@ public class AttendeeEvent extends Fragment {
 
         searchView = view.findViewById(R.id.eventSearcher);
         eventList = view.findViewById(R.id.eventListView) ;
-        rootView = view.findViewById(R.id.parentLayout);
 
         eventDataList = new ArrayList<>() ;
 
@@ -134,13 +133,6 @@ public class AttendeeEvent extends Fragment {
                     }
                     eventListArrayAdapter.notifyDataSetChanged();
                 }
-            }
-        });
-        rootView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Expand the SearchView
-                searchView.setIconified(false);
             }
         });
 
