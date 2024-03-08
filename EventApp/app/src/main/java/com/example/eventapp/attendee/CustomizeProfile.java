@@ -1,6 +1,7 @@
 package com.example.eventapp.attendee;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -46,6 +47,7 @@ public class CustomizeProfile extends AppCompatActivity {
     StorageReference storageReference ;
     private EditText username;
     private EditText contact;
+    private boolean testing = false ;
     private EditText description;
     private Button btnAttendeeSave;
     private Button profileEditImageButton;
@@ -105,7 +107,7 @@ public class CustomizeProfile extends AppCompatActivity {
         profileEditImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadImage();
+                    uploadImage();
             }
         });
 
@@ -120,7 +122,9 @@ public class CustomizeProfile extends AppCompatActivity {
                         RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                         Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
                         UploadImage uploadImage = new UploadImage(uri) ;
-                        uploadImage.uploadToFireStore();
+                        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+                            uploadImage.uploadToFireStore();
+                        }
                         Log.d("PhotoPicker", "Selected URI: " + uri);
                     } else {
                         Log.d("PhotoPicker", "No media selected");
@@ -241,6 +245,10 @@ public class CustomizeProfile extends AppCompatActivity {
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 //        May need to change the position of setters
+
+        if(attendeeUser == null){
+            attendeeUser = TestUser() ;
+        }
         attendeeUser.setName(usernameText);
         attendeeUser.setContactInformation(contactText);
         attendeeUser.setHomepage(descriptionText);
@@ -323,6 +331,19 @@ public class CustomizeProfile extends AppCompatActivity {
             }
         });
     }
+
+    private User TestUser(){
+        User testUser = new User("123", "123", "123", "123", "123", "Attendee");
+        testing = true ;
+        return testUser;
+    }
+
+    public void testUploadImage(){
+        Uri uri = Uri.parse("content://com.example.app/mock_image");
+        RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
+        Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
+    }
+
     public void onCustomizeProfileSaveClicked(View view) {
         // Implementation for saving profile changes
     }
