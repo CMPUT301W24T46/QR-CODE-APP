@@ -8,20 +8,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
-import com.example.eventapp.Image.Image;
 import com.example.eventapp.R;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class AdminDeleteImage extends AppCompatActivity {
-    private FirebaseFirestore db;
-    private CollectionReference imageRef;
 
+    private AdminController adminController;
     private TextView imageTextView;
     private ImageView imageView;
     private Button deleteImageButton;
@@ -33,9 +26,7 @@ public class AdminDeleteImage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_delete_image);
 
-        db = FirebaseFirestore.getInstance();
-        imageRef = db.collection("Image");
-
+        adminController = new AdminController(this);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -58,41 +49,8 @@ public class AdminDeleteImage extends AppCompatActivity {
         }
 
         imageTextView.setText(imageId);
-        deleteImageButton.setOnClickListener(v -> deleteImage(imageURL));
+        deleteImageButton.setOnClickListener(v -> adminController.deleteImage(imageURL));
     }
-
-
-    private void deleteImage(String imageURL) {
-        if (imageURL != null && !imageURL.isEmpty()) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Delete Image")
-                    .setMessage("Are you sure you want to delete this image?")
-                    .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                        // Query for the image by URL and delete it
-                        imageRef
-                                .whereEqualTo("URL", imageURL)
-                                .get()
-                                .addOnSuccessListener(queryDocumentSnapshots -> {
-                                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                        imageRef.document(document.getId())
-                                                .delete()
-                                                .addOnSuccessListener(aVoid -> {
-                                                    Toast.makeText(AdminDeleteImage.this, "Image deleted successfully", Toast.LENGTH_SHORT).show();
-                                                    finish();
-                                                })
-                                                .addOnFailureListener(e -> Toast.makeText(AdminDeleteImage.this, "Error deleting image", Toast.LENGTH_SHORT).show());
-                                    }
-                                })
-                                .addOnFailureListener(e -> Toast.makeText(AdminDeleteImage.this, "Error finding image", Toast.LENGTH_SHORT).show());
-                    })
-                    .setNegativeButton(android.R.string.no, null)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        } else {
-            Toast.makeText(this, "Error: Image URL not found.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
 
 
     @Override

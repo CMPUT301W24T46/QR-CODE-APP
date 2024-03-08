@@ -3,38 +3,26 @@ package com.example.eventapp.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.eventapp.Image.Image;
 import com.example.eventapp.Image.ImageGridAdapter;
 import com.example.eventapp.R;
-import com.example.eventapp.event.Event;
-import com.example.eventapp.users.User;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdminBrowseImage extends AppCompatActivity {
-    private FirebaseFirestore db;
-    private CollectionReference imageRef;
+    private AdminController adminController;
 
     private GridView imageGridView;
     private List<Image> imageItems;
-    private ImageGridAdapter adapter;
+    private ImageGridAdapter imageGridAdapter;
 
 
     @Override
@@ -44,8 +32,7 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         // TODO: Add search functionality (optional)
 
-        db = FirebaseFirestore.getInstance();
-        imageRef = db.collection("Image");
+        adminController = new AdminController(this);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -57,8 +44,8 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         imageItems = new ArrayList<>();
 
-        adapter = new ImageGridAdapter(this, imageItems, columnWidth);
-        imageGridView.setAdapter(adapter);
+        imageGridAdapter = new ImageGridAdapter(this, imageItems, columnWidth);
+        imageGridView.setAdapter(imageGridAdapter);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -66,7 +53,7 @@ public class AdminBrowseImage extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
 
-        subscribeToFirestore();
+        adminController.subscribeToImageDB(imageGridAdapter);
 
         // Implement item click listener if needed
         imageGridView.setOnItemClickListener((parent, view, position, id) -> {
@@ -79,27 +66,8 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         });
 
-
     }
 
-    private void subscribeToFirestore() {
-        imageRef.addSnapshotListener((querySnapshots, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-                return;
-            }
-            if (querySnapshots != null) {
-                imageItems.clear();
-                for (QueryDocumentSnapshot doc : querySnapshots) {
-                    String imageId = doc.getId();
-                    String imageURL = doc.getString("URL");
-                    Log.d("Firestore", String.format("Name(%s, %s) fetched", imageId, imageURL));
-                    imageItems.add(new Image(imageURL, imageId));
-                }
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
 
 
     // This method is called when the up button is pressed
