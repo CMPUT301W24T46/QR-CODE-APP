@@ -128,7 +128,9 @@ public class CustomizeProfile extends AppCompatActivity {
                         RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                         Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
                         UploadImage uploadImage = new UploadImage(uri) ;
-                        uploadImage.uploadToFireStore();
+                        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+                            uploadImage.uploadToFireStore();
+                        }
                         Log.d("PhotoPicker", "Selected URI: " + uri);
                     } else {
                         Log.d("PhotoPicker", "No media selected");
