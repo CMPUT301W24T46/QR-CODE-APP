@@ -33,7 +33,7 @@ public class AccountSelection extends Fragment {
     ListView accountOptionsListView ;
 
     NavController navController ;
-
+    private NavController testAccountNavController ;
     SelectOptionsAdapter accountOptionsAdapter ;
 
     Activity activity ;
@@ -93,6 +93,13 @@ public class AccountSelection extends Fragment {
     private void navigateToAccount(View view , AdapterView<?> parent , int position){
         String selectedAccount = (String) parent.getItemAtPosition(position) ;
         NavController selectAccountController = Navigation.findNavController(view) ;
+
+        if(mAuth == null){
+            testAccountNavController = selectAccountController ;
+//            testNavigateToAccount(view ,  parent , position);
+            return;
+        }
+
         if(selectedAccount.equals("Attend Event")){
             userDB.setNavController(selectAccountController);
             userDB.setNavigationPageId(R.id.action_accountSelection_to_attendeeActivity) ;
@@ -110,4 +117,14 @@ public class AccountSelection extends Fragment {
         }
     }
 
+    public void testNavigateToAccount(String page , NavController appNav){
+        testAccountNavController = appNav ;
+        if(page.equals("Attend Event")){
+            testAccountNavController.navigate(R.id.action_accountSelection_to_attendeeActivity);
+        }else if(page.equals("Organize")){
+            testAccountNavController.navigate(R.id.action_accountSelection_to_organizerActivity);
+        }else if(page.equals("Admin")){
+            testAccountNavController.navigate(R.id.action_accountSelection_to_adminActivity);
+        }
+    }
 }

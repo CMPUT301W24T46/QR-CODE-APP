@@ -245,6 +245,10 @@ public class CustomizeProfile extends AppCompatActivity {
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 //        May need to change the position of setters
+
+        if(attendeeUser == null){
+            attendeeUser = TestUser() ;
+        }
         attendeeUser.setName(usernameText);
         attendeeUser.setContactInformation(contactText);
         attendeeUser.setHomepage(descriptionText);
