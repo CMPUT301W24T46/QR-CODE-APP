@@ -256,7 +256,7 @@ public class CustomizeProfile extends AppCompatActivity {
             return;
         }
         updateProfileInDatabase(usernameText, contactText, descriptionText);
-        //Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
     }
 
     /**
