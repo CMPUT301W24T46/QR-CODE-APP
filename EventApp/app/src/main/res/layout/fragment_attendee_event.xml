@@ -2,32 +2,34 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".attendee.AttendeeEvent">
+    tools:context=".attendee.AttendeeEvent"
+    android:clickable="true">
 
     <SearchView
-        android:id="@+id/eventSearcher"
-        android:layout_width="340dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="52dp"
-        android:background="#CAC9C9"
-        android:visibility="visible"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        app:iconifiedByDefault="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:id="@+id/eventSearcher"
+    android:layout_width="340dp"
+    android:layout_height="32dp"
+    android:layout_marginTop="52dp"
+    android:background="#CAC9C9"
+    android:visibility="visible"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    app:iconifiedByDefault="false"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.49"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/eventListView"
-        android:layout_width="match_parent"
-        android:layout_height="564dp"
-        android:layout_marginTop="52dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventSearcher" />
+    android:id="@+id/eventListView"
+    android:layout_width="match_parent"
+    android:layout_height="564dp"
+    android:layout_marginTop="52dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/eventSearcher" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
