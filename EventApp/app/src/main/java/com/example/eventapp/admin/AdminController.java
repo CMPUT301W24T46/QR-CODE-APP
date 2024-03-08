@@ -78,8 +78,8 @@ public class AdminController {
 
                 adapter.clear();
                 adapter.setFilter(users);
-                adapter.notifyDataSetChanged();
                 loadProfileImages(adapter);
+                adapter.notifyDataSetChanged();
             }
         });
     }
@@ -109,6 +109,7 @@ public class AdminController {
             }
 
             userAdapter.setFilter(searchResults);
+            loadProfileImages(userAdapter);
             userAdapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
@@ -301,6 +302,43 @@ public class AdminController {
         } else {
             Toast.makeText(this.context, "Error: Image URL not found.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /* --- HELPER FUNCTIONS FOR INTENT TESTING --- */
+    public void addMockData(String randomId) {
+        addMockUsers(randomId);
+        addMockEvents(randomId);
+        addMockImages(randomId);
+    }
+
+    private void addMockUsers(String randomId) {
+        // Adding a mock user
+        Map<String, Object> mockUser = new HashMap<>();
+        mockUser.put("id", randomId);
+        mockUser.put("name",  randomId);
+        mockUser.put("contactInformation", "john.doe@example.com");
+        mockUser.put("homepage", "www.JohnDoe.com");
+        mockUser.put("ImageUrl", "");
+        mockUser.put("typeOfUser", "Attendee");
+        userRef.add(mockUser);
+
+    }
+
+    private void addMockEvents(String randomId) {
+        // Adding a mock event
+        Map<String, Object> mockEvent = new HashMap<>();
+        mockEvent.put("Name", randomId);
+        mockEvent.put("Description", "Mock Event Intended for Testing");
+        mockEvent.put("URL", "https://firebasestorage.googleapis.com/v0/b/qr-code-app-6fe73.appspot.com/o/DALL%C2%B7E%202024-03-06%2015.03.30%20-%20A%20modern%2C%20sleek%2C%20technology-themed%20office%20space%20with%20large%20windows%2C%20offering%20a%20view%20of%20a%20futuristic%20cityscape.%20Inside%2C%20there's%20a%20variety%20of%20high-tech%20.webp?alt=media&token=eee291b2-44aa-47fe-918d-b07a2e2bc996");
+        eventRef.add(mockEvent);
+
+    }
+
+    private void addMockImages(String randomId) {
+        // Adding a mock image
+        Map<String, Object> mockImage = new HashMap<>();
+        mockImage.put("URL", "https://firebasestorage.googleapis.com/v0/b/qr-code-app-6fe73.appspot.com/o/DALL%C2%B7E%202024-03-06%2015.03.30%20-%20A%20modern%2C%20sleek%2C%20technology-themed%20office%20space%20with%20large%20windows%2C%20offering%20a%20view%20of%20a%20futuristic%20cityscape.%20Inside%2C%20there's%20a%20variety%20of%20high-tech%20.webp?alt=media&token=eee291b2-44aa-47fe-918d-b07a2e2bc996");
+        imageRef.add(mockImage);
     }
 
 
