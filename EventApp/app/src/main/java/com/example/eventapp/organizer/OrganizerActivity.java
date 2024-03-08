@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -138,5 +139,7 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
     @Override
     public void onEventCreated(Event event) {
         // Handle the event
+        NavController navController = Navigation.findNavController(this, R.id.fragmentContainerOrganizerView);
+        navController.navigate(R.id.action_organizerHome_to_organizerEvent);
     }
 }

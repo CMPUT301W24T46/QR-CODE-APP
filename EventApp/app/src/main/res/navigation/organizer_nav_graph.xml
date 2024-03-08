@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_organizerEvent_to_organizerHome"
             app:destination="@id/organizerHome" />
+        <action
+            android:id="@+id/action_organizerEvent_to_organizerEventInfo"
+            app:destination="@id/organizerEventInfo" />
     </fragment>
 
     <fragment
@@ -47,6 +50,15 @@
         <action
             android:id="@+id/action_organizerNotification_to_organizerHome"
             app:destination="@id/organizerHome" />
+    </fragment>
+    <fragment
+        android:id="@+id/organizerEventInfo"
+        android:name="com.example.eventapp.organizer.OrganizerEventInfo"
+        android:label="fragment_organizer_event_info"
+        tools:layout="@layout/fragment_organizer_event_info" >
+        <action
+            android:id="@+id/action_organizerEventInfo_to_organizerEvent"
+            app:destination="@id/organizerEvent" />
     </fragment>
 
 </navigation>

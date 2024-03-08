@@ -16,6 +16,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
+import com.example.eventapp.event.EventDB;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * DialogFragment for creating a new event. It prompts the user to enter event details and passes the event back to the hosting activity.
@@ -67,17 +70,27 @@ public class CreateEventFragment extends DialogFragment {
         buttonConfirm.setOnClickListener(view1 -> {
             String eventName = eventNameEditText.getText().toString();
             String eventDate = eventDateEditText.getText().toString();
+            // Assume imageURL is retrieved or generated somehow
+            String imageURL = "URL_HERE";
+            // Fetching the creatorId (current user's ID from Firebase Auth)
+            String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-            if(!eventName.isEmpty() && !eventDate.isEmpty()) {
-                Event event = new Event(eventName, eventDate);
+            if (!eventName.isEmpty() && !eventDate.isEmpty() && creatorId != null) {
+                Event event = new Event(eventName, eventDate, imageURL, creatorId);
+                EventDB eventDB = new EventDB(FirebaseFirestore.getInstance());
+                eventDB.addorganizerEvent(event.getEventName(), event.getEventDate(), event.getImageURL(), event.getCreatorId());
+
+                // Now navigate to the organizer event page or wherever you need
+                // Navigation code goes here if needed
                 if (listener != null) {
                     listener.onEventCreated(event);
                 }
                 dismiss(); // Dismiss the dialog
             } else {
-                Toast.makeText(getContext(), "Please fill in all fields.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please fill in all fields and log in.", Toast.LENGTH_LONG).show();
             }
         });
+
 
         // Setting up the Previous button
         buttonArrow.setOnClickListener(view12 -> {
