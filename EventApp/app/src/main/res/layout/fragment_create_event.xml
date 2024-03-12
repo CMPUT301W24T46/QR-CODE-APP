@@ -75,40 +75,29 @@
 
     <Button
         android:id="@+id/buttonDeleteImage"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="44dp"
         android:background="@drawable/rounded_button_background"
         android:text="@string/AddImage"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/EditEventDescription" />
 
-    <TextView
-        android:id="@+id/textView4"
+    <Button
+        android:id="@+id/buttonArrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="130dp"
-        android:text="@string/Previous"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/buttonArrow"
-        app:layout_constraintEnd_toStartOf="@+id/buttonConfirm"
-        app:layout_constraintStart_toEndOf="@+id/buttonArrow"
-        app:layout_constraintTop_toTopOf="@+id/buttonArrow"
-        app:layout_constraintVertical_bias="0.472" />
-
-    <ImageButton
-        android:id="@+id/buttonArrow"
-        android:layout_width="37dp"
-        android:layout_height="34dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/baseline_arrow_back_24"
-        app:layout_constraintEnd_toStartOf="@+id/textView4"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/baseline_arrow_back_24"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="@string/Previous"
+        android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonDeleteImage" />
 
@@ -118,9 +107,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:layout_marginEnd="30dp"
-        android:background="@drawable/rounded_button_background"
         android:text="@string/Confirm"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
+        android:background="?android:attr/selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonDeleteImage" />
 
