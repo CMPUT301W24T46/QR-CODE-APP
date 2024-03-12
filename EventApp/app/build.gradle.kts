@@ -45,10 +45,6 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-storage:20.0.0")
     implementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
-    implementation(fileTree("C:\\Users\\rchen\\AppData\\Local\\Android\\Sdk\\platforms\\android-34") {
-        include("*.aar", "*.jar")
-        exclude()
-    })
 
 
     // Add junit test
