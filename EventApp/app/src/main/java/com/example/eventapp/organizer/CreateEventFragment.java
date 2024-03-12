@@ -1,6 +1,7 @@
 package com.example.eventapp.organizer;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventDB;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Calendar;
 
 /**
  * DialogFragment for creating a new event. It prompts the user to enter event details and passes the event back to the hosting activity.
@@ -62,7 +65,7 @@ public class CreateEventFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_create_event, null);
 
         EditText eventNameEditText = view.findViewById(R.id.EditEventName);
-        EditText eventDateEditText = view.findViewById(R.id.EditEventDate);
+        EditText eventDateEditText = view.findViewById(R.id.EditEventDate); // // initialize date selection
         Button buttonConfirm = view.findViewById(R.id.buttonConfirm); // Confirm Button
         ImageButton buttonArrow = view.findViewById(R.id.buttonArrow); // Previous Button
 
@@ -90,6 +93,8 @@ public class CreateEventFragment extends DialogFragment {
                 Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
             }
         });
+        // Set up the event date EditText to show DatePickerDialog on click
+        eventDateEditText.setOnClickListener(v -> showDatePickerDialog());
 
         // Setting up the Previous button
         buttonArrow.setOnClickListener(view12 -> {
@@ -104,6 +109,28 @@ public class CreateEventFragment extends DialogFragment {
         dialog.setCanceledOnTouchOutside(false);
 
         return dialog;
+    }
+
+    // Date selection
+    private void showDatePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, selectedYear, selectedMonth, dayOfMonth) -> {
+            // Format the date and set it to the EditText
+            String formattedDate = selectedYear + "-" + (selectedMonth + 1) + "-" + dayOfMonth;
+            EditText eventDateEditText = getDialog().findViewById(R.id.EditEventDate);
+            eventDateEditText.setText(formattedDate);
+        }, year, month, day);
+
+        // Set the DatePickerDialog to show dates from now to 10 years in the future
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+        calendar.add(Calendar.YEAR, 10);
+        datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+
+        datePickerDialog.show();
     }
 
 }
