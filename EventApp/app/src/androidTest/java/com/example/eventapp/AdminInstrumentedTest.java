@@ -24,6 +24,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
 
+import androidx.fragment.app.Fragment;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 
@@ -38,6 +39,7 @@ import androidx.test.filters.LargeTest;
 import com.example.eventapp.admin.AdminActivity;
 import com.example.eventapp.admin.AdminBrowseEvent;
 import com.example.eventapp.admin.AdminBrowseImage;
+import com.example.eventapp.admin.AdminBrowseProfile;
 import com.example.eventapp.admin.AdminController;
 import com.example.eventapp.admin.AdminDeleteEvent;
 import com.example.eventapp.admin.AdminDeleteImage;
@@ -56,6 +58,7 @@ import org.junit.runners.MethodSorters;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -100,55 +103,56 @@ public class AdminInstrumentedTest {
 
 
 
-//    @Test
-//    public void testBrowseProfile() throws InterruptedException {
-//
-//        newRandomId = UUID.randomUUID().toString();
-//
-//        // Add one more user so that there is at least 2
-//        adminController.addMockData(newRandomId);
-//
-//        // Browse to Admin Browse Profile section
-//        onData(anything()).inAdapterView(withId(R.id.adminOptions)).atPosition(0).perform(click());
-//
-//        // Intentional delay for UI updates
-//        try {
-//            Thread.sleep(1000); // Consider replacing with IdlingResource in future
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // Intent Verification
-//        intended(hasComponent(AdminBrowseProfile.class.getName()));
-//
-//        // Capture count of list items before search
-//        int initialCount = getCountFromListView(R.id.profileListView);
-//
-//        // Searching and asserting profile
-//        onView(withId(R.id.profileSearcher)).perform(click(), typeText(randomId));
-//
-//
-//        onData(anything())
-//                .inAdapterView(withId(R.id.profileListView))
-//                .atPosition(0) // Adjust position if needed
-//                .onChildView(withId(R.id.profileName)) // Replace with the actual ID of the view button
-//                .check(matches(withText(containsString(randomId))));
-//
-//        // Clear search query
-//        for (int i = 0; i < randomId.length(); i++) {
-//            onView(withId(R.id.profileSearcher)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
-//        }
-//
-//        Thread.sleep(1000);
-//
-//
-//        // Capture count of list items after clearing search
-//        int finalCount = getCountFromListView(R.id.profileListView);
-//
-//        // Compare initial and final counts
-//        assertEquals("Count should be the same before and after clearing search", initialCount, finalCount);
-//
-//    }
+    @Test
+    public void testBrowseProfile() throws InterruptedException {
+
+        newRandomId = UUID.randomUUID().toString();
+
+        // Add one more user so that there is at least 2
+        adminController.addMockData(newRandomId);
+
+        // Browse to Admin Browse Profile section
+        onData(anything()).inAdapterView(withId(R.id.adminOptions)).atPosition(0).perform(click());
+
+        // Intentional delay for UI updates
+        try {
+            Thread.sleep(1000); // Consider replacing with IdlingResource in future
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Intent Verification
+        intended(hasComponent(AdminBrowseProfile.class.getName()));
+
+        // Capture count of list items before search
+        int initialCount = getCountFromListView(R.id.profileListView);
+
+
+        // Searching and asserting profile
+        onView(withId(R.id.profileSearcher)).perform(click(), typeText(randomId));
+
+
+        onData(anything())
+                .inAdapterView(withId(R.id.profileListView))
+                .atPosition(0) // Adjust position if needed
+                .onChildView(withId(R.id.profileName)) // Replace with the actual ID of the view button
+                .check(matches(withText(containsString(randomId))));
+
+        // Clear search query
+        for (int i = 0; i < randomId.length(); i++) {
+            onView(withId(R.id.profileSearcher)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
+        }
+
+        Thread.sleep(1000);
+
+
+        // Capture count of list items after clearing search
+        int finalCount = getCountFromListView(R.id.profileListView);
+
+        // Compare initial and final counts
+        assertEquals("Count should be the same before and after clearing search", initialCount, finalCount);
+
+    }
 
     @Test
     public void testDeleteProfile() throws InterruptedException {
@@ -164,6 +168,9 @@ public class AdminInstrumentedTest {
         }
 
         onView(withId(R.id.profileSearcher)).perform(click(), typeText(randomId));
+
+        Thread.sleep(1000);
+
         // Click on the view button next to the list item
         onData(anything())
                 .inAdapterView(withId(R.id.profileListView))
@@ -246,6 +253,9 @@ public class AdminInstrumentedTest {
         }
 
         onView(withId(R.id.eventSearcher)).perform(click(), typeText(randomId));
+
+        Thread.sleep(1000);
+
         // Click on the view button next to the list item
         onData(anything())
                 .inAdapterView(withId(R.id.eventListView))
@@ -329,6 +339,8 @@ public class AdminInstrumentedTest {
 
         // Search for the image using randomId
         onView(withId(R.id.imageSearcher)).perform(click(), typeText(randomId));
+
+        Thread.sleep(1000);
 
         onData(anything())
                 .inAdapterView(withId(R.id.imageGridView))
