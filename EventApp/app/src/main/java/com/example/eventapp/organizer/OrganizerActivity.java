@@ -142,8 +142,12 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
      */
     @Override
     public void onEventCreated(Event event) {
-        // Handle the event
-        NavController navController = Navigation.findNavController(this, R.id.fragmentContainerOrganizerView);
-        navController.navigate(R.id.action_organizerHome_to_organizerEvent);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragmentContainerOrganizerView);
+        if (navHostFragment != null) {
+            NavController navController = navHostFragment.getNavController();
+            navController.navigate(R.id.action_organizerHome_to_organizerEvent);
+        }
     }
+
 }

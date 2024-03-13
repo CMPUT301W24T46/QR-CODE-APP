@@ -4,8 +4,9 @@ public class Event {
     String eventName ;
     String imageDescription ;
     String imageURL ;
-    private String eventDate;
-    private String creatorId;
+    String eventDate;
+    String creatorId;
+    String description;
 
     public Event(String eventName , String imageDescription , String imageURL){
         this.eventName = eventName ;
@@ -19,11 +20,12 @@ public class Event {
         this.imageURL = imageURL ;
     }
 
-    public Event(String eventName , String eventDate , String imageURL, String creatorId){
+    public Event(String eventName , String eventDate , String imageURL, String creatorId, String description){
         this.eventName = eventName;
         this.eventDate = eventDate;
         this.imageURL = imageURL;
         this.creatorId = creatorId;
+        this.description = description;
     }
     public String getEventName() {
         return eventName;
