@@ -36,6 +36,7 @@ public class OrganizerEvent extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private Bundle bundle;
 
     public OrganizerEvent() {
         // Required empty public constructor
@@ -99,7 +100,8 @@ public class OrganizerEvent extends Fragment {
                             String eventDate = document.getString("eventDate");
                             String imageURL = document.getString("imageURL");
                             String creatorId = document.getString("creatorId");
-                            Event event = new Event(eventName, eventDate, imageURL, creatorId);
+                            String eventDescription = document.getString("eventDescription");
+                            Event event = new Event(eventName, eventDate, imageURL, creatorId, eventDescription);
                             eventList.add(event);
                         }
                         updateUI(eventList);
@@ -123,7 +125,17 @@ public class OrganizerEvent extends Fragment {
         });
         ListView listView = getView().findViewById(R.id.organizer_eventListView);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Event selectedEvent = events.get(position);
+            // TODO: Load event
+            
+            // Navigate with the bundle
+            Navigation.findNavController(view).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
+        });
     }
+
+// If you're using RecyclerView, set an OnClickListener within your RecyclerView.Adapter's ViewHolder class
+
 
     /**
      * Navigates to the event information page for a specific event.
@@ -137,7 +149,7 @@ public class OrganizerEvent extends Fragment {
         bundle.putString("eventName", event.getEventName());
         bundle.putString("eventDate", event.getEventDate());
         bundle.putString("imageURL", event.getImageURL());
-        bundle.putString("creatorId", event.getCreatorId());
+        //bundle.putString("creatorId", event.getCreatorId());
         Navigation.findNavController(getView()).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
     }
 

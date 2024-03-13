@@ -1,4 +1,6 @@
 package com.example.eventapp.organizer;
 
-public class OrganizerEventInfo {
+import androidx.fragment.app.Fragment;
+
+public class OrganizerEventInfo extends Fragment {
 }

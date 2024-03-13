@@ -1,33 +1,48 @@
 package com.example.eventapp.organizer;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventDB;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
  * DialogFragment for creating a new event. It prompts the user to enter event details and passes the event back to the hosting activity.
  */
 public class CreateEventFragment extends DialogFragment {
+    private Uri imageUri;
+    private ImageView eventImageView;
 
     /**
      * Listener interface for event creation actions.
@@ -67,31 +82,24 @@ public class CreateEventFragment extends DialogFragment {
 
         EditText eventNameEditText = view.findViewById(R.id.EditEventName);
         EditText eventDateEditText = view.findViewById(R.id.EditEventDate); // // initialize date selection
+        EditText eventDescriptionEditText = view.findViewById(R.id.EditEventDescription);
         Button buttonConfirm = view.findViewById(R.id.buttonConfirm); // Confirm Button
         Button buttonArrow = view.findViewById(R.id.buttonArrow); // Previous Button
+        eventImageView = view.findViewById(R.id.EventImageView); // Initialize the ImageView
+
+        eventImageView.setOnClickListener(v -> pickImage());
 
         // Setting up the Confirm button
         buttonConfirm.setOnClickListener(view1 -> {
-            String eventName = eventNameEditText.getText().toString();
-            String eventDate = eventDateEditText.getText().toString();
-            // TODO: Generate image URL
-            String imageURL = "URL_HERE";
-            // Fetching the creatorId
-            String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            String eventName = eventNameEditText.getText().toString().trim();
+            String eventDate = eventDateEditText.getText().toString().trim();
+            String eventDescription = eventDescriptionEditText.getText().toString().trim();
+            String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Fetching the creatorId
 
             if (!eventName.isEmpty() && !eventDate.isEmpty() && creatorId != null) {
-                Event event = new Event(eventName, eventDate, imageURL, creatorId);
-                EventDB eventDB = new EventDB(FirebaseFirestore.getInstance());
-                eventDB.addorganizerEvent(event.getEventName(), event.getEventDate(), event.getImageURL(), event.getCreatorId());
-
-                // Now navigate to the organizer event page or wherever you need
-                // Navigation code goes here if needed
-                if (listener != null) {
-                    listener.onEventCreated(event);
-                }
-                dismiss(); // closed the dialog
+                createEvent(eventName, eventDate, creatorId, eventDescription, imageUri);
             } else {
-                Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please fill in all fields!", Toast.LENGTH_LONG).show();
             }
         });
         // Set up the event date EditText to show DatePickerDialog on click
@@ -104,9 +112,9 @@ public class CreateEventFragment extends DialogFragment {
 
         builder.setView(view);
 
+        // May not need these two line of code
         AlertDialog dialog = builder.create();
-        // Auto-closing when the area outside the dialog is clicked.
-        dialog.setCanceledOnTouchOutside(true);
+        dialog.setCanceledOnTouchOutside(false); // Auto-closing when the area outside the dialog is clicked.
 
         return dialog;
     }
@@ -164,4 +172,52 @@ public class CreateEventFragment extends DialogFragment {
         timePickerDialog.show();
     }
 
+    // Image Selection
+    private void pickImage() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        pickImage.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    imageUri = result.getData().getData();
+                    eventImageView.setImageURI(imageUri);
+                }
+            }
+    );
+
+    private void createEvent(String eventName, String eventDate, String creatorId, String eventDescription, Uri imageUri) {
+        // If user decide to upload image at this time
+        if (imageUri != null) {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference("event_images");
+            final StorageReference imageRef = storageRef.child(System.currentTimeMillis() + "-" + imageUri.getLastPathSegment());
+
+            imageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                String imageUrl = uri.toString();
+                Event event = new Event(eventName, eventDate, imageUrl, creatorId, eventDescription);
+                saveEventToFirestore(event);
+            })).addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        // Otherwise
+        } else {
+            // Create event without image URL
+            String imageUrl = "NonImage"; // Default image URL
+            Event event = new Event(eventName, eventDate, imageUrl, creatorId, eventDescription);
+            saveEventToFirestore(event);
+        }
+    }
+
+    private void saveEventToFirestore(Event event) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Events").add(event)
+                .addOnSuccessListener(documentReference -> {
+                    if (listener != null) {
+                        listener.onEventCreated(event);
+                    }
+                    dismiss();
+                })
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to create event: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
 }
