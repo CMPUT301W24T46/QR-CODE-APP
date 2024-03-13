@@ -130,11 +130,17 @@ public class AdminController {
                 User user = new User(userID, name, contactInfo, homepage, "", typeOfUser);
 
                 // Check if filter is needed
-                if (queryOrDisplay && user.getName().toLowerCase().contains(searchText.toLowerCase())) {
+                if (queryOrDisplay) {
+                    // Safe null checks before calling toLowerCase()
+                    if (user.getName() != null && searchText != null &&
+                            user.getName().toLowerCase().contains(searchText.toLowerCase())) {
+                        searchResults.add(user);
+                    }
+                } else {
+                    // Add all users when not searching
                     searchResults.add(user);
-                } else if (!queryOrDisplay) {
-                    searchResults.add(user); // Add all users when not searching
                 }
+
             }
 
             userAdapter.setFilter(searchResults);
