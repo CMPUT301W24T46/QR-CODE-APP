@@ -13,7 +13,6 @@ public class Event {
         this.imageDescription = imageDescription ;
         this.imageURL = imageURL ;
     }
-
     public Event(String eventName, String imageURL){
 
         this.eventName = eventName ;
@@ -27,6 +26,10 @@ public class Event {
         this.creatorId = creatorId;
         this.eventDescription = eventDescription;
     }
+    // No-argument constructor required for Firebase
+    public Event() {
+    }
+
     public String getEventName() {
         return eventName;
     }
