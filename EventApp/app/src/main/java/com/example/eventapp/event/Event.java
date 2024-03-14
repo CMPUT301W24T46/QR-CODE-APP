@@ -6,7 +6,7 @@ public class Event {
     String imageURL ;
     String eventDate;
     String creatorId;
-    String description;
+    String eventDescription;
 
     public Event(String eventName , String imageDescription , String imageURL){
         this.eventName = eventName ;
@@ -20,12 +20,12 @@ public class Event {
         this.imageURL = imageURL ;
     }
 
-    public Event(String eventName , String eventDate , String imageURL, String creatorId, String description){
+    public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription){
         this.eventName = eventName;
         this.eventDate = eventDate;
         this.imageURL = imageURL;
         this.creatorId = creatorId;
-        this.description = description;
+        this.eventDescription = eventDescription;
     }
     public String getEventName() {
         return eventName;
@@ -65,5 +65,13 @@ public class Event {
 
     public void setCreatorId(String creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public String getEventDescription(){
+        return eventDescription;
+    }
+
+    public void setEventDescription(String eventDescription){
+        this.eventDescription = eventDescription;
     }
 }

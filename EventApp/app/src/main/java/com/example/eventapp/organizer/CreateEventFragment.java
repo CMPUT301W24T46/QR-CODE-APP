@@ -36,6 +36,8 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * DialogFragment for creating a new event. It prompts the user to enter event details and passes the event back to the hosting activity.
@@ -96,7 +98,7 @@ public class CreateEventFragment extends DialogFragment {
             String eventDescription = eventDescriptionEditText.getText().toString().trim();
             String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Fetching the creatorId
 
-            if (!eventName.isEmpty() && !eventDate.isEmpty() && creatorId != null) {
+            if (!eventName.isEmpty() && !eventDate.isEmpty() && creatorId != null && !eventDescription.isEmpty()) {
                 createEvent(eventName, eventDate, creatorId, eventDescription, imageUri);
             } else {
                 Toast.makeText(getContext(), "Please fill in all fields!", Toast.LENGTH_LONG).show();
@@ -211,13 +213,25 @@ public class CreateEventFragment extends DialogFragment {
 
     private void saveEventToFirestore(Event event) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Events").add(event)
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("eventName", event.getEventName());
+        eventMap.put("eventDate", event.getEventDate());
+        eventMap.put("imageURL", event.getImageURL());
+        eventMap.put("creatorId", event.getCreatorId());
+        eventMap.put("eventDescription", event.getEventDescription());
+
+        db.collection("Events").add(eventMap)
                 .addOnSuccessListener(documentReference -> {
+                    // Handle success
                     if (listener != null) {
                         listener.onEventCreated(event);
                     }
                     dismiss();
                 })
-                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to create event: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                    Toast.makeText(getContext(), "Failed to create event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
+
 }
