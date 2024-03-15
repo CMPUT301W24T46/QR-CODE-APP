@@ -11,10 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="170dp"
+        android:layout_marginTop="20dp"
         android:text="@string/Eventname"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/CreateEventTitleText" />
 
     <EditText
         android:id="@+id/EditEventName"
@@ -31,7 +31,7 @@
         android:id="@+id/CreateEventDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:text="@string/create_EventDate"
         app:layout_constraintStart_toStartOf="@+id/EditEventName"
         app:layout_constraintTop_toBottomOf="@+id/EditEventName" />
@@ -43,63 +43,95 @@
         android:layout_marginHorizontal="16dp"
         android:background="@drawable/edittext_frame"
         android:inputType="date"
+        android:drawableEnd="@drawable/ic_date_calendar"
         app:layout_constraintTop_toBottomOf="@+id/CreateEventDate"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <Button
-        android:id="@+id/buttonDeleteImage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/rounded_button_background"
-        android:text="@string/AddImage"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EditEventDate" />
+        android:focusable="false"
+        android:clickable="true"
+        android:cursorVisible="false"
+        />
 
 
     <TextView
+        android:id="@+id/CreateEventDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Previous"
-        app:layout_constraintBottom_toBottomOf="@+id/buttonArrow"
-        app:layout_constraintStart_toEndOf="@+id/buttonArrow"
-        app:layout_constraintTop_toTopOf="@+id/buttonArrow"
-        app:layout_constraintVertical_bias="0.472" />
-
-    <ImageButton
-        android:id="@+id/buttonArrow"
-        android:layout_width="37dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginEnd="168dp"
-        android:layout_marginBottom="50dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/baseline_arrow_back_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonConfirm"
-        app:layout_constraintHorizontal_bias="0.23"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/create_event_description"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonDeleteImage"
-        app:layout_constraintVertical_bias="0.506" />
+        app:layout_constraintTop_toBottomOf="@+id/EditEventDate" />
+
+    <EditText
+        android:id="@+id/EditEventDescription"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/edittext_frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateEventDescription" />
+
+    <Button
+        android:id="@+id/buttonArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="93dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/baseline_arrow_back_24"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="@string/Previous"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/EventImageView" />
 
     <Button
         android:id="@+id/buttonConfirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="91dp"
         android:layout_marginEnd="30dp"
-        android:layout_marginBottom="50dp"
-        android:background="@drawable/rounded_button_background"
+        android:background="?android:attr/selectableItemBackground"
         android:text="@string/Confirm"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonDeleteImage" />
+        app:layout_constraintTop_toBottomOf="@+id/EventImageView" />
+
+    <TextView
+        android:id="@+id/CreateEventTitle"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:text="@string/create_event_text"
+        android:textColor="@color/black"
+        android:textSize="34sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/CreateEventTitleText"
+        android:layout_width="375dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/create_event_title_text"
+        android:textColor="@color/gray"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateEventTitle" />
+
+    <ImageView
+        android:id="@+id/EventImageView"
+        android:layout_width="0dp"
+        android:layout_height="118dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:onClick="pickImage"
+        app:layout_constraintTop_toBottomOf="@+id/EditEventDescription"
+        android:src="@drawable/ic_upload" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

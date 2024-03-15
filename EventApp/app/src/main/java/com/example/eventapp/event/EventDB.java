@@ -36,8 +36,9 @@ public class EventDB {
      * @param eventName        The name of the event to be added.
      * @param imageDescription The description of the event image.
      * @param imagePhoto       The URL or path of the event image.
+     * @param creatorId
      */
-    public void addEvent(String eventName, String imageDescription, String imagePhoto) {
+    public void addEvent(String eventName, String imageDescription, String imagePhoto, String creatorId) {
         Map<String, Object> event = new HashMap<>();
         event.put("eventName", eventName);
         event.put("imageDescription", imageDescription);
@@ -52,6 +53,28 @@ public class EventDB {
                     Log.w("EventDB", "Cannot Add event", error);
                 });
     }
+
+    /**
+     * Adds a new organizer event to the Firestore database. Records event details including name, date, image URL,
+     * and creator ID into the "Events" collection.
+     *
+     * @param eventName Name of the event.
+     * @param eventDate Date of the event.
+     * @param imageURL URL for the event's image.
+     * @param creatorId ID of the user who created the event.
+     */
+    public void addorganizerEvent(String eventName, String eventDate, String imageURL, String creatorId) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("eventName", eventName);
+        event.put("eventDate", eventDate);
+        event.put("imageURL", imageURL);
+        event.put("creatorId", creatorId);
+
+        eventsCollection.add(event)
+                .addOnSuccessListener(documentReference -> Log.d("EventDB", "Event successfully added!"))
+                .addOnFailureListener(e -> Log.w("EventDB", "Error adding event", e));
+    }
+
 
     /**
      * Delete event from the firebase.

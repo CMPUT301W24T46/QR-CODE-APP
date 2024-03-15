@@ -18,9 +18,9 @@ import com.example.eventapp.R;
 import com.example.eventapp.SelectOptionsAdapter;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AdminHome#newInstance} factory method to
- * create an instance of this fragment.
+ * A  {@link Fragment} subclass.
+ * Use the {@link AdminHome#newInstance} factory method to create an instance of this fragment.
+ * Displays  a list of administrative options like browsing profiles, events, and images.
  */
 public class AdminHome extends Fragment {
 
@@ -38,9 +38,10 @@ public class AdminHome extends Fragment {
     private String[] adminOptions = new String[]{"Browse Profiles", "Browse Events", "Browse Images"};
 
 
-
+    /**
+     * Required empty constructor for fragment initialization.
+     */
     public AdminHome() {
-        // Required empty public constructor
     }
 
     /**
@@ -61,6 +62,10 @@ public class AdminHome extends Fragment {
         return fragment;
     }
 
+    /**
+     * Handles initial creation of the fragment.
+     * @param savedInstanceState previously saved state of fragment if the fragment has been run before
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +75,15 @@ public class AdminHome extends Fragment {
         }
     }
 
+    /**
+     * Fragment instantiate its user interface view.
+     * Called after onCreate(Bundle)
+     *
+     * @param inflater           The LayoutInflater object used to inflate views
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState previously saved state of fragment if the fragment has been run before
+     * @return Return the View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -91,7 +105,13 @@ public class AdminHome extends Fragment {
         return rootView;
     }
 
-
+    /**
+     * Handles navigation to profile, event, and image admin pages based on the selected option in the ListView
+     *
+     * @param view     The view that was clicked.
+     * @param parent   The AdapterView for the list.
+     * @param position The position of the view in the adapter.
+     */
     private void navigateToPage(View view , AdapterView<?> parent , int position){
         String selectedPage = (String) parent.getItemAtPosition(position) ;
         NavController adminNavController = Navigation.findNavController(view) ;

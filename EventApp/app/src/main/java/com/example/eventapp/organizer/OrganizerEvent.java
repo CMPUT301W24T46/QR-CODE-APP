@@ -2,65 +2,130 @@ package com.example.eventapp.organizer;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.example.eventapp.R;
+import com.example.eventapp.event.Event;
+import com.example.eventapp.event.EventAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link OrganizerEvent#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+
+
 public class OrganizerEvent extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private EventAdapter adapter;
+    private ArrayList<Event> allEvents = new ArrayList<>();
+    private SearchView searchView;
 
     public OrganizerEvent() {
         // Required empty public constructor
     }
 
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_organizer_event, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        searchView = view.findViewById(R.id.organizer_eventSearcher);
+        fetchEvents();
+        setupSearchView();
+    }
+
+    private void fetchEvents() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection("Events")
+                .orderBy("eventDate")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        allEvents.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String creatorId = document.getString("creatorId");
+                            if (currentUserId.equals(creatorId)) { // Filter by creatorId
+                                Event event = document.toObject(Event.class);
+                                allEvents.add(event);
+                            }
+                        }
+                        updateUI(allEvents);
+                    } else {
+                        Log.d("EventFetch", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
+
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Updates the user interface with the provided list of events.
+     * Sets up the event adapter and attaches it to the ListView for event display.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment OrganizerEvent.
+     * @param events The list of Event objects to display.
      */
-    // TODO: Rename and change types and number of parameters
-    public static OrganizerEvent newInstance(String param1, String param2) {
-        OrganizerEvent fragment = new OrganizerEvent();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+
+    private void updateUI(ArrayList<Event> events) {
+        adapter = new EventAdapter(getContext(), events, event -> {
+            navigateToEventInfo(event);
+        });
+        ListView listView = getView().findViewById(R.id.organizer_eventListView);
+        listView.setAdapter(adapter);
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    /**
+     * Navigates to the event information page for a specific event.
+     * Passes event details to the destination fragment via a Bundle.
+     *
+     * @param event The Event object whose details are to be displayed.
+     */
+
+    private void navigateToEventInfo(Event event) {
+        Bundle bundle = new Bundle();
+        bundle.putString("eventName", event.getEventName());
+        bundle.putString("eventDate", event.getEventDate());
+        bundle.putString("imageURL", event.getImageURL());
+        //bundle.putString("creatorId", event.getCreatorId());
+        Navigation.findNavController(getView()).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
+    }
+
+    private void setupSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterEvents(newText);
+                return true;
+            }
+        });
+    }
+    private void filterEvents(String text) {
+        ArrayList<Event> filteredList = new ArrayList<>();
+        for (Event event : allEvents) {
+            if (event.getEventName().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(event);
+            }
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_organizer_event, container, false);
+        adapter.clear();
+        adapter.addAll(filteredList);
+        adapter.notifyDataSetChanged();
     }
 }

@@ -1,6 +1,5 @@
 package com.example.eventapp.event;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
@@ -49,7 +47,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         Event event = events.get(position) ;
         TextView eventName= view.findViewById(R.id.eventDescription);
         ImageView eventImageView = view.findViewById(R.id.eventImageList) ;
-        Button viewEventButton = view.findViewById(R.id.viewEvent) ;
+        Button viewEventButton = view.findViewById(R.id.btnViewEvent) ;
 
         // Handle button click
         viewEventButton.setOnClickListener(v -> {

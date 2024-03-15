@@ -20,7 +20,6 @@ import com.example.eventapp.R;
 import com.example.eventapp.admin.AdminDeleteProfile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class UserAdapter extends ArrayAdapter<User> {
@@ -49,7 +48,7 @@ public class UserAdapter extends ArrayAdapter<User> {
             TextView profileName = view.findViewById(R.id.profileName);
             TextView profileRole = view.findViewById(R.id.profileRole);
             ImageView profileImageView = view.findViewById(R.id.profileImage);
-            Button viewEventButton = view.findViewById(R.id.viewProfileButton);
+            Button viewEventButton = view.findViewById(R.id.btnViewProfile);
 
             String username = user.getName();
 // if username is null or empty, then display the id instead
@@ -81,6 +80,8 @@ public class UserAdapter extends ArrayAdapter<User> {
             profileName.setText(username);
             profileRole.setText(user.getTypeOfUser());
 
+
+
             String imageURL = user.getImageURL();
 
 
@@ -100,5 +101,9 @@ public class UserAdapter extends ArrayAdapter<User> {
     public void setFilter(ArrayList<User> userDataList){
         users.clear();
         users.addAll(userDataList) ;
+    }
+
+    public ArrayList<User> getItems() {
+        return this.users;
     }
 }

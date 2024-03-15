@@ -55,6 +55,15 @@
             android:name=".organizer.OrganizerHome"
             android:exported="false"/>
         <activity
+            android:name=".organizer.OrganizerEventInfo"
+            android:exported="false"/>
+        <activity
+            android:name=".organizer.OrganizerEvent"
+            android:exported="false"/>
+        <activity
+            android:name=".organizer.OrganizerAccount"
+            android:exported="false"/>
+        <activity
             android:name=".MainActivity"
             android:exported="true">
 

@@ -3,7 +3,7 @@
     <string name="chooseOption">CHOOSE AN OPTION</string>
     <string name="accountOption">Account Option</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment">Hello fragment</string>
     <string name="account">Account</string>
     <string name="home">Home</string>
     <string name="event">Event</string>
@@ -53,6 +53,10 @@
     <string name="AddImage">ADD IMAGE</string>
     <string name="Confirm">CONFIRM</string>
     <string name="Previous">Previous</string>
+    <string name="create_event_text">Create Event</string>
+    <string name="create_event_title_text">"Write the Event Name to Create an event upon submission a unique QR Code "</string>
+    <string name="create_event_description">Event Description</string>
+    <string name="edit_event">Edit Event</string>
 
 
 </resources>

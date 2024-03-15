@@ -11,9 +11,10 @@ import android.view.ViewGroup;
 import com.example.eventapp.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A  {@link Fragment} subclass.
  * Use the {@link AdminAccount#newInstance} factory method to
- * create an instance of this fragment.
+ * A Fragment representing the admin account interface within the EventApp.
+ * Allows administrators to manage their account settings.
  */
 public class AdminAccount extends Fragment {
 
@@ -26,6 +27,9 @@ public class AdminAccount extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    /**
+     * Required empty constructor
+     */
     public AdminAccount() {
         // Required empty public constructor
     }
@@ -48,6 +52,11 @@ public class AdminAccount extends Fragment {
         return fragment;
     }
 
+    /**
+     * Called to do the initial creation of the fragment.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +66,14 @@ public class AdminAccount extends Fragment {
         }
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object
+     * @param container          The parent view that the fragment's UI should be attached to
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

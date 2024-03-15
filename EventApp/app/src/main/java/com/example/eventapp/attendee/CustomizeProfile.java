@@ -1,8 +1,6 @@
 package com.example.eventapp.attendee;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,7 +22,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.eventapp.R;
 import com.example.eventapp.document_reference.DocumentReferenceChecker;
-import com.example.eventapp.upload_image.UploadImage;
+import com.example.eventapp.Image.UploadImage;
 import com.example.eventapp.users.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,10 +32,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +47,7 @@ public class CustomizeProfile extends AppCompatActivity {
     StorageReference storageReference ;
     private EditText username;
     private EditText contact;
+    private boolean testing = false ;
     private EditText description;
     private Button btnAttendeeSave;
     private Button profileEditImageButton;
@@ -61,6 +58,10 @@ public class CustomizeProfile extends AppCompatActivity {
     private ImageView profilePhotView ;
     private Context context ;
     /**
+     * Called when the activity is first created. Responsible for initializing the activity's UI components,
+     * setting up action bar title and back button, registering click listeners for buttons,
+     * fetching existing user data from firebase, and register activity result for
+     * upload/delete images.
      *
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
@@ -106,7 +107,7 @@ public class CustomizeProfile extends AppCompatActivity {
         profileEditImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadImage();
+                    uploadImage();
             }
         });
 
@@ -121,7 +122,9 @@ public class CustomizeProfile extends AppCompatActivity {
                         RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                         Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
                         UploadImage uploadImage = new UploadImage(uri) ;
-                        uploadImage.uploadToFireStore();
+                        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+                            uploadImage.uploadToFireStore();
+                        }
                         Log.d("PhotoPicker", "Selected URI: " + uri);
                     } else {
                         Log.d("PhotoPicker", "No media selected");
@@ -129,6 +132,9 @@ public class CustomizeProfile extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Launches pick media that helps user to choose image
+     */
     private void uploadImage() {
         // Launch the photo picker and let the user choose images and videos.
         pickMedia.launch(new PickVisualMediaRequest.Builder()
@@ -136,6 +142,10 @@ public class CustomizeProfile extends AppCompatActivity {
                 .build());
     }
 
+    /**
+     * Deletes the user's profile image by updating the firebase entry with a reference to the default image.
+     * after image deleted successfully, fetches the updated user data from firebase.
+     */
     public void deleteImage(){
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -235,6 +245,10 @@ public class CustomizeProfile extends AppCompatActivity {
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 //        May need to change the position of setters
+
+        if(attendeeUser == null){
+            attendeeUser = TestUser() ;
+        }
         attendeeUser.setName(usernameText);
         attendeeUser.setContactInformation(contactText);
         attendeeUser.setHomepage(descriptionText);
@@ -245,7 +259,7 @@ public class CustomizeProfile extends AppCompatActivity {
             return;
         }
         updateProfileInDatabase(usernameText, contactText, descriptionText);
-        Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -275,6 +289,15 @@ public class CustomizeProfile extends AppCompatActivity {
         }
     }
 
+    /**
+     * Retrieves the image URL from firebase based on the provided document reference,
+     * and updates the user's profile information accordingly.
+     *
+     * @param imageRef       The document reference pointing to the image in Firestore.
+     * @param usernameText   The username of the attendee.
+     * @param contactText    The contact information of the attendee.
+     * @param descriptionText The description of the attendee.
+     */
     private void getImageFromFireStore(DocumentReference imageRef , String usernameText , String contactText , String descriptionText){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
@@ -308,6 +331,19 @@ public class CustomizeProfile extends AppCompatActivity {
             }
         });
     }
+
+    private User TestUser(){
+        User testUser = new User("123", "123", "123", "123", "123", "Attendee");
+        testing = true ;
+        return testUser;
+    }
+
+    public void testUploadImage(){
+        Uri uri = Uri.parse("content://com.example.app/mock_image");
+        RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
+        Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
+    }
+
     public void onCustomizeProfileSaveClicked(View view) {
         // Implementation for saving profile changes
     }

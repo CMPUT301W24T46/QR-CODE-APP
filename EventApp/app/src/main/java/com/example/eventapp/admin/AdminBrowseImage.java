@@ -2,41 +2,41 @@ package com.example.eventapp.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.GridView;
-import android.widget.Toast;
+import android.widget.SearchView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.eventapp.Image.Image;
 import com.example.eventapp.Image.ImageGridAdapter;
 import com.example.eventapp.R;
-import com.example.eventapp.event.Event;
-import com.example.eventapp.users.User;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * {@link androidx.appcompat.app.AppCompatActivity}
+ * An activity that browses through images in the database
+ */
 public class AdminBrowseImage extends AppCompatActivity {
-    private FirebaseFirestore db;
-    private CollectionReference imageRef;
+    private AdminController adminController;
 
     private GridView imageGridView;
     private List<Image> imageItems;
-    private ImageGridAdapter adapter;
+    private ImageGridAdapter imageGridAdapter;
+    private SearchView searchView;
 
 
+    /**
+     * Called when the activity is starting. Initializes the views
+     *
+     * @param savedInstanceState a previously saved state
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +44,7 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         // TODO: Add search functionality (optional)
 
-        db = FirebaseFirestore.getInstance();
-        imageRef = db.collection("Image");
+        adminController = new AdminController(this);
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -54,11 +53,12 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         imageGridView = findViewById(R.id.imageGridView);
         imageGridView.setColumnWidth(columnWidth);
+        searchView = findViewById(R.id.imageSearcher);
 
         imageItems = new ArrayList<>();
 
-        adapter = new ImageGridAdapter(this, imageItems, columnWidth);
-        imageGridView.setAdapter(adapter);
+        imageGridAdapter = new ImageGridAdapter(this, imageItems, columnWidth);
+        imageGridView.setAdapter(imageGridAdapter);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -66,7 +66,7 @@ public class AdminBrowseImage extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
 
-        subscribeToFirestore();
+
 
         // Implement item click listener if needed
         imageGridView.setOnItemClickListener((parent, view, position, id) -> {
@@ -79,37 +79,52 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         });
 
+        setUpSearchView();
+        adminController.subscribeToImageDB(imageGridAdapter);
 
     }
 
-    private void subscribeToFirestore() {
-        imageRef.addSnapshotListener((querySnapshots, error) -> {
-            if (error != null) {
-                Log.e("Firestore", error.toString());
-                return;
+    /**
+     * Sets up the search view with query listeners.
+     */
+    private void setUpSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
             }
-            if (querySnapshots != null) {
-                imageItems.clear();
-                for (QueryDocumentSnapshot doc : querySnapshots) {
-                    String imageId = doc.getId();
-                    String imageURL = doc.getString("URL");
-                    Log.d("Firestore", String.format("Name(%s, %s) fetched", imageId, imageURL));
-                    imageItems.add(new Image(imageURL, imageId));
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter your data based on newText
+                if(TextUtils.isEmpty(newText)){
+                    adminController.getCurrentImageList("", false, imageGridAdapter);
+                }else{
+                    adminController.getCurrentImageList(newText, true, imageGridAdapter);
+
                 }
-                adapter.notifyDataSetChanged();
+                return true;
             }
         });
     }
 
 
-    // This method is called when the up button is pressed
+
+    /**
+     * This method is called when the up button is pressed.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
-    // This method is used if you have an options menu
+    /**
+     * Called whenever an item in your options menu is selected.
+     *
+     * @param item The menu item that was selected.
+     * @return  Return false to allow normal menu processing, true to consume it here.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Check if the correct item was clicked
