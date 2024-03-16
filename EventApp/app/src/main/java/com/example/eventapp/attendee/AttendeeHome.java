@@ -96,7 +96,6 @@ public class AttendeeHome extends Fragment {
         // Set the welcome message
         setWelcomeMessage();
 
-        // Handle click on notification button
         Button notificationButton = view.findViewById(R.id.notification);
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override

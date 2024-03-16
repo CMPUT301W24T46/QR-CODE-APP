@@ -1,6 +1,8 @@
 package com.example.eventapp.organizer;
 
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -15,7 +17,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
-public class OrganizerNotification extends Fragment {
+public class OrganizerNotification extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListView notificationListView;
     private NotificationAdapter notificationAdapter;
@@ -29,40 +31,20 @@ public class OrganizerNotification extends Fragment {
      * @param savedInstanceState If non-null, this fragment is re-created from a previous saved state.
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_organizer_notification);
+        getSupportActionBar().setTitle("Notification");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         db = FirebaseFirestore.getInstance();
-    }
 
-    /**
-     * Inflates the layout for the notification fragment.
-     *
-     * @param inflater LayoutInflater object to inflate any views in the fragment.
-     * @param container Parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, the fragment is being re-constructed from a previously saved state.
-     * @return The View for the fragment's UI.
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_organizer_notification, container, false);
-    }
-
-    /**
-     * Sets up the ListView for displaying notifications after the view has been created. Initializes the adapter
-     * and starts fetching notifications from Firebase to populate the list.
-     *
-     * @param view The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previously saved state.
-     */
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        notificationListView = view.findViewById(R.id.OrganizerNotificationListView);
+        notificationListView = findViewById(R.id.OrganizerNotificationListView);
         notificationList = new ArrayList<>();
-        notificationAdapter = new NotificationAdapter(getContext(), notificationList);
+        notificationAdapter = new NotificationAdapter(this, notificationList);
         notificationListView.setAdapter(notificationAdapter);
 
-        fetchNotifications(); // Implement this method to fetch notifications from Firebase
-
+        fetchNotifications();
     }
 
     /**
@@ -70,7 +52,6 @@ public class OrganizerNotification extends Fragment {
      * and refreshes the adapter upon successful retrieval.
      */
     private void fetchNotifications() {
-        // TODO: Replace with actual collection name
         db.collection("Notifications")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -83,4 +64,20 @@ public class OrganizerNotification extends Fragment {
                 })
                 .addOnFailureListener(e -> {/* Handle failure */});
     }
+
+    /**
+     *Handles the selection of menu items in the activity's options menu.
+     * @param item The menu item that was selected.
+     *
+     * @return super.onOptionsItemSelected(item);
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
