@@ -61,6 +61,8 @@
     <string name="notify_message">message</string>
     <string name="notification_type">Notification Type</string>
     <string name="notification_content">Notification Content</string>
+    <string name="no_notifications_at_this_time">No notifications at this time</string>
+    <string name="no_notification_at_this_time">No Notification at this time</string>
 
 
 </resources>
