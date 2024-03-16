@@ -1,8 +1,11 @@
 package com.example.eventapp.attendee;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,9 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.PickVisualMediaRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -40,19 +40,24 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * The Activity after customize profile button is pressed
+ * Activity for customizing the user's profile.
+ * This activity provides fields to update the user's username, contact information,
+ * and personal description. It also allows the user to select a profile image from their device's gallery and enables
+ * users to delete images
+ * The activity interacts with Firestores database to edit, upload, and delete users Information
+ *
  */
 public class CustomizeProfile extends AppCompatActivity {
-    ActivityResultLauncher<PickVisualMediaRequest> pickMedia ;
+    private static final int GALLERY_REQUEST_CODE = 123;
     StorageReference storageReference ;
     private EditText username;
     private EditText contact;
+    private boolean isDeleted = false ;
+    private boolean isSaved = false ;
     private boolean testing = false ;
     private EditText description;
     private Button btnAttendeeSave;
     private Button profileEditImageButton;
-    private String userId ;
-
     private Button profileDeleteImageButton;
     private User attendeeUser ;
     private ImageView profilePhotView ;
@@ -68,7 +73,6 @@ public class CustomizeProfile extends AppCompatActivity {
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      *
      */
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +81,7 @@ public class CustomizeProfile extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         context = this ;
-//        DeleteImage
+
         username = findViewById(R.id.editTextTextEmailAddress);
         contact = findViewById(R.id.editTextPhone);
         description = findViewById(R.id.editTextTextMultiLine);
@@ -110,36 +114,47 @@ public class CustomizeProfile extends AppCompatActivity {
                     uploadImage();
             }
         });
-
-        // Registers a photo picker activity launcher in single-select mode.
-        // Include only one of the following calls to launch(), depending on the types
-        // of media that you want to let the user choose from.
-        pickMedia =
-                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                    // Callback is invoked after the user selects a media item or closes the
-                    // photo picker.
-                    if (uri != null) {
-                        RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
-                        Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
-                        UploadImage uploadImage = new UploadImage(uri) ;
-                        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-                            uploadImage.uploadToFireStore();
-                        }
-                        Log.d("PhotoPicker", "Selected URI: " + uri);
-                    } else {
-                        Log.d("PhotoPicker", "No media selected");
-                    }
-                });
     }
 
     /**
-     * Launches pick media that helps user to choose image
+     * Initiates an intent to pick an image from the device's gallery.
+     * The selected image will be used for updating the user's profile picture.
+     * This method launches the gallery application via an intent where the user
+     * can choose an image. Once the image is selected, the result is returned in
+     * the onActivityResult method.
      */
     private void uploadImage() {
-        // Launch the photo picker and let the user choose images and videos.
-        pickMedia.launch(new PickVisualMediaRequest.Builder()
-                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageAndVideo.INSTANCE)
-                .build());
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, GALLERY_REQUEST_CODE);
+    }
+
+    /**
+     * Callback method from starting the image pick intent via {@link #uploadImage()}.
+     * This method handles the result returned from the image selection activity.
+     * @param requestCode The integer request code originally supplied to startActivityForResult(),
+     *                    allowing you to identify who this result came from.
+     * @param resultCode  The integer result code returned by the child activity through its setResult().
+     * @param data        An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            Log.d("Valid", "RESULT_OK");
+            if (requestCode == GALLERY_REQUEST_CODE) {
+                Log.d("Valid", "GALLERY_REQUEST_CODE detected.");
+                if (data != null && data.getData() != null) {
+                    Uri uri = data.getData();
+                    Log.d("Valid", "URI: " + uri);
+                    RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
+                    Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
+                    UploadImage uploadImage = new UploadImage(uri) ;
+                    if(FirebaseAuth.getInstance().getCurrentUser() != null){
+                        uploadImage.uploadToFireStore();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -160,6 +175,7 @@ public class CustomizeProfile extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        isDeleted = true;
                         fetchDataFromFirestore();
                     }});
     }
@@ -244,11 +260,7 @@ public class CustomizeProfile extends AppCompatActivity {
         String usernameText = username.getText().toString().trim();
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
-//        May need to change the position of setters
 
-        if(attendeeUser == null){
-            attendeeUser = TestUser() ;
-        }
         attendeeUser.setName(usernameText);
         attendeeUser.setContactInformation(contactText);
         attendeeUser.setHomepage(descriptionText);
@@ -259,7 +271,6 @@ public class CustomizeProfile extends AppCompatActivity {
             return;
         }
         updateProfileInDatabase(usernameText, contactText, descriptionText);
-        //Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -284,8 +295,9 @@ public class CustomizeProfile extends AppCompatActivity {
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
             updates.put("typeOfUser", attendeeUser.getTypeOfUser());
-
             userRef.update(updates);
+
+            isSaved = true;
         }
     }
 
@@ -312,7 +324,6 @@ public class CustomizeProfile extends AppCompatActivity {
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                     Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
                 } else {
-
                     documentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
                     attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
@@ -332,27 +343,22 @@ public class CustomizeProfile extends AppCompatActivity {
         });
     }
 
-    private User TestUser(){
-        User testUser = new User("123", "123", "123", "123", "123", "Attendee");
-        testing = true ;
-        return testUser;
+
+    /**
+     * Checks if the profile or associated data is currently marked as deleted.
+     *
+     * @return true if the profile or data is marked as deleted, false otherwise.
+     */
+    public boolean isDeleting(){
+        return isDeleted ;
     }
 
-    public void testUploadImage(){
-        Uri uri = Uri.parse("content://com.example.app/mock_image");
-        RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
-        Glide.with(context).load(uri).apply(requestOptions).into(profilePhotView);
+    /**
+     * Checks if the profile or associated data is currently being saved.
+     *
+     * @return true if the data is marked as successfully saved, false otherwise.
+     */
+    public boolean isSaving(){
+        return isSaved ;
     }
-
-    public void onCustomizeProfileSaveClicked(View view) {
-        // Implementation for saving profile changes
-    }
-    public void onCustomizeProfileCustomizeImageClicked(View view) {
-        // Implementation for customizing image
-    }
-
-    public void onCustomizeProfileDeleteImageClicked(View view) {
-        // Implementation for deleting image
-    }
-
 }
