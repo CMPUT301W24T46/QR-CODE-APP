@@ -1,5 +1,6 @@
 package com.example.eventapp.attendee;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,6 +23,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.navigation.Navigation;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -71,15 +75,37 @@ public class AttendeeHome extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_attendee_home, container, false);
+        return rootView;
+    }
 
-        // Initialize welcome message
-        welcomeMessageText = rootView.findViewById(R.id.welcome_message);
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned.
+     * This is where you should initialize your UI components and set up any event listeners.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     */
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Initialize welcome message TextView
+        welcomeMessageText = view.findViewById(R.id.welcome_message);
 
         // Set the welcome message
         setWelcomeMessage();
 
-        return rootView;
+        Button notificationButton = view.findViewById(R.id.notification);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start AttendeeNotificationActivity
+                startActivity(new Intent(getActivity(), AttendeeNotification.class));
+            }
+        });
     }
+
 
     /**
      * Set welcome message to anonymous when user not yet input username.
@@ -107,6 +133,5 @@ public class AttendeeHome extends Fragment {
             });
         }
     }
-
 
 }

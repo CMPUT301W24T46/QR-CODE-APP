@@ -12,15 +12,27 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.eventapp.R;
+import com.example.eventapp.notification.Notification;
+import com.example.eventapp.notification.NotificationAdapter;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link AttendeeNotification} factory method to
  * create an instance of this fragment.
  */
-public class AttendeeNotification extends Fragment {
+public class AttendeeNotification extends AppCompatActivity {
+    private FirebaseFirestore db;
+    private ListView notificationListView;
+    private NotificationAdapter notificationAdapter;
+    private ArrayList<Notification> notificationList;
     /**
      * Constructor of an instance of AttendeeNotification
      */
@@ -28,48 +40,45 @@ public class AttendeeNotification extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Called at initial creation of this fragment
-     *
-     * @param savedInstanceState If the fragment is being re-created from
-     * a previous saved state, this is the state.
-     */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_attendee_notification);
+        getSupportActionBar().setTitle("Notification");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        db = FirebaseFirestore.getInstance();
+
+        notificationListView = findViewById(R.id.AttendeeNotificationListView);
+        notificationList = new ArrayList<>();
+        notificationAdapter = new NotificationAdapter(this, notificationList);
+        notificationListView.setAdapter(notificationAdapter);
+
+        fetchNotifications();
     }
 
     /**
-     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned
-     *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     * Fetches notifications from the "Notifications" collection in Firestore. Updates the list
+     * and refreshes the adapter upon successful retrieval.
      */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+    private void fetchNotifications() {
+        db.collection("Notifications")
+                .get();
     }
 
     /**
-     * Handles options menu item selections for the fragment.
+     *Handles the selection of menu items in the activity's options menu.
+     * @param item The menu item that was selected.
      *
-     * @param item The selected MenuItem.
-     * @return True if the item selection was handled, false otherwise.
+     * @return super.onOptionsItemSelected(item);
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            requireActivity().onBackPressed();
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 }
