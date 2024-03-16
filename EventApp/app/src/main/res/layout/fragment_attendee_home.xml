@@ -12,9 +12,9 @@
 
     <Button
         android:id="@+id/join_event"
-        android:layout_width="343dp"
-        android:layout_height="159dp"
-        android:layout_marginTop="148dp"
+        android:layout_width="341dp"
+        android:layout_height="175dp"
+        android:layout_marginTop="196dp"
         android:background="@drawable/rounded_button_background"
         android:drawableStart="@drawable/ic_speech_bubble"
         android:padding="30dp"
@@ -45,21 +45,22 @@
         app:layout_constraintHeight_percent="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/join_event"
-        app:layout_constraintVertical_bias="0.486"
+        app:layout_constraintVertical_bias="0.0"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/welcome_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="52dp"
         android:text="@string/default_attendee_home_text"
         android:textColor="#000000"
         android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/join_event"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.593" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

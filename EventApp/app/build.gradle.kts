@@ -69,6 +69,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
     androidTestImplementation("androidx.test:runner:1.5.2");
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
     debugImplementation("androidx.fragment:fragment-testing:1.6.2")
     androidTestUtil("androidx.test:orchestrator:1.4.2");
