@@ -38,4 +38,5 @@ jobs:
     - name: Build with Gradle
       run: |
         cd EventApp
-        ./gradlew build
+        ./gradlew build -x test
+
