@@ -13,13 +13,13 @@
         android:id="@+id/eventName_info"
         android:layout_width="286dp"
         android:layout_height="61dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="60dp"
         android:gravity="center"
         android:text="@string/hello_blank_fragment"
         android:textColor="@color/black"
         android:textSize="27dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,9 +27,9 @@
         android:id="@+id/organizer_biggerEventImage"
         android:layout_width="362dp"
         android:layout_height="297dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintHorizontal_bias="0.53"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventDescription_info"
         tools:src="@tools:sample/avatars" />
@@ -38,23 +38,38 @@
         android:id="@+id/eventDescription_info"
         android:layout_width="362dp"
         android:layout_height="56dp"
-        android:layout_marginTop="24dp"
-        android:text="Event Description"
+        android:layout_marginTop="5dp"
+        android:text="@string/create_event_description"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintHorizontal_bias="0.53"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventName_info" />
+        app:layout_constraintTop_toBottomOf="@+id/event_date_time" />
 
     <Button
         android:id="@+id/button_editEvent_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_button_background"
         android:text="@string/edit_event"
         android:textColor="#FFFFFF"
-        android:background="@drawable/rounded_button_background"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/organizer_biggerEventImage" />
+
+    <TextView
+        android:id="@+id/event_date_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/event_date"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/eventName_info" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -99,7 +99,10 @@ public class OrganizerEvent extends Fragment {
         bundle.putString("eventName", event.getEventName());
         bundle.putString("eventDate", event.getEventDate());
         bundle.putString("imageURL", event.getImageURL());
+        bundle.putString("eventDescription", event.getEventDescription());
         //bundle.putString("creatorId", event.getCreatorId());
+        OrganizerEventInfo fragment = new OrganizerEventInfo();
+        fragment.setArguments(bundle);
         Navigation.findNavController(getView()).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
     }
 

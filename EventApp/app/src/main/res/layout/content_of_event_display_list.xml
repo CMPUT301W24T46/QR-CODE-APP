@@ -18,11 +18,11 @@
 
     <TextView
         android:id="@+id/eventDate"
-        android:textColor="@color/black"
-        android:layout_width="151dp"
+        android:layout_width="wrap_content"
         android:layout_height="28dp"
         android:layout_marginStart="12dp"
         android:text="Event Date"
+        android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@+id/eventImageList"
         app:layout_constraintTop_toBottomOf="@+id/eventDescription" />
 
