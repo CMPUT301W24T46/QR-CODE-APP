@@ -31,7 +31,7 @@ public class AdminDeleteEvent extends AppCompatActivity {
     private ImageView bigEventImageView;
     private TextView eventNameView;
     private Button deleteEventButton;
-    private String eventName, imageURL;
+    private String eventName, imageURL, eventDate, eventDescription;
 
 
     /**
@@ -53,16 +53,23 @@ public class AdminDeleteEvent extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
 
+
         // Extract information from the intent
-        eventName = getIntent().getStringExtra("EventName");
-        imageURL = getIntent().getStringExtra("ImageURL");
+        eventName = getIntent().getStringExtra("eventName");
+        imageURL = getIntent().getStringExtra("imageURL");
+        eventDate = getIntent().getStringExtra("eventDate");
+        eventDescription = getIntent().getStringExtra("eventDescription");
 
         eventNameView = findViewById(R.id.eventTitleDescrip);
         bigEventImageView = findViewById(R.id.biggerEventImage);
         deleteEventButton = findViewById(R.id.btnDeleteEvent);
+        TextView eventDateView = findViewById(R.id.attendee_event_date_time); // Make sure you have a TextView for the event date
+        TextView eventDescriptionView = findViewById(R.id.eventFullDescription);
 
         if (eventName != null && imageURL != null) {
             eventNameView.setText(eventName);
+            eventDateView.setText(eventDate);
+            eventDescriptionView.setText(eventDescription);
             Glide.with(this).load(imageURL).centerCrop().into(bigEventImageView);
         } else {
             Toast.makeText(this, "Event data not available", Toast.LENGTH_LONG).show();

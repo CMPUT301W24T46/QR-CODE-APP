@@ -220,7 +220,7 @@ public class AdminController {
      * @param adapter Adapter to be updated with event data.
      */
     public void subscribeToEventDB(EventAdapter adapter) {
-        eventRef.addSnapshotListener((querySnapshots, error) -> {
+        eventRef.orderBy("eventDate").addSnapshotListener((querySnapshots, error) -> {
             if (error != null) {
                 Log.e("Firestore", error.toString());
                 return;
@@ -228,17 +228,19 @@ public class AdminController {
             if (querySnapshots != null) {
                 ArrayList<Event> events = new ArrayList<>();
                 for (QueryDocumentSnapshot doc : querySnapshots) {
-                    String eventId = doc.getId();
-                    String eventName = doc.getString("Name");
-                    String imageURL = doc.getString("URL");
-                    Log.d("Firestore", String.format("Name(%s, %s) fetched", eventId, eventName));
-                    events.add(new Event(eventName, imageURL));
+                    String eventName = doc.getString("eventName");
+                    String eventDate = doc.getString("eventDate");
+                    String eventDescription = doc.getString("eventDescription");
+                    String imageURL = doc.getString("imageURL");
+
+                    events.add(new Event(eventName, eventDate, imageURL, eventDescription));
                 }
                 adapter.setFilter(events);
                 adapter.notifyDataSetChanged();
             }
         });
     }
+
 
     /**
      * Fetches and updates the event list based on provided search criteria.
@@ -250,24 +252,22 @@ public class AdminController {
         eventRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
             ArrayList<Event> searchResults = new ArrayList<>();
             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                String eventName = documentSnapshot.getString("eventName");
+                String eventDate = documentSnapshot.getString("eventDate");
+                String eventDescription = documentSnapshot.getString("eventDescription");
+                String imageURL = documentSnapshot.getString("imageURL");
 
-                // Check if the document has the fields "Name" and "URL"
-                String eventName = documentSnapshot.contains("Name") ? documentSnapshot.getString("Name") : "";
-                String URL = documentSnapshot.contains("URL") ? documentSnapshot.getString("URL") : "";
+                Event event = new Event(eventName, eventDate, imageURL, eventDescription);
 
-                if (!queryOrDisplay) {
-                    searchResults.add(new Event(eventName, URL));
-                    continue;
-                }
-
-                if (eventName != null && eventName.toLowerCase().contains(searchText.toLowerCase())) {
-                    searchResults.add(new Event(eventName, URL));
+                if (!queryOrDisplay || (eventName != null && eventName.toLowerCase().contains(searchText.toLowerCase()))) {
+                    searchResults.add(event);
                 }
             }
             adapter.setFilter(searchResults);
             adapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
+
 
     /**
      * Deletes an event from Firestore based on the event name.
@@ -280,7 +280,7 @@ public class AdminController {
 
         if (eventName != null && !eventName.isEmpty()) {
             // Query to find the event with the matching name
-            eventRef.whereEqualTo("Name", eventName)
+            eventRef.whereEqualTo("eventName", eventName)
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if (!queryDocumentSnapshots.isEmpty()) {

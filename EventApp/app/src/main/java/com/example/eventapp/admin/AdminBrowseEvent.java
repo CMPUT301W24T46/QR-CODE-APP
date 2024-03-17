@@ -50,8 +50,10 @@ public class AdminBrowseEvent extends AppCompatActivity {
             @Override
             public void onEventClick(Event event) {
                 Intent intent = new Intent(AdminBrowseEvent.this, AdminDeleteEvent.class);
-                intent.putExtra("EventName", event.getEventName());
-                intent.putExtra("ImageURL", event.getImageURL());
+                intent.putExtra("eventName", event.getEventName());
+                intent.putExtra("imageURL", event.getImageURL());
+                intent.putExtra("eventDate", event.getEventDate());
+                intent.putExtra("eventDescription", event.getEventDescription());
                 startActivity(intent);
             }
         };

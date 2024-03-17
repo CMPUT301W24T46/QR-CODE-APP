@@ -21,6 +21,7 @@ import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -104,8 +105,10 @@ public class AttendeeEvent extends Fragment {
             @Override
             public void onEventClick(Event event) {
                 Bundle bundle = new Bundle();
-                bundle.putString("EventName", event.getEventName());
-                bundle.putString("ImageURL", event.getImageURL());
+                bundle.putString("eventName", event.getEventName());
+                bundle.putString("eventDate", event.getEventDate());
+                bundle.putString("imageURL", event.getImageURL());
+                bundle.putString("eventDescription", event.getEventDescription());
                 Navigation.findNavController(rootView).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
             }
         };
@@ -114,27 +117,20 @@ public class AttendeeEvent extends Fragment {
         eventList.setAdapter(eventListArrayAdapter);
 
 
-        eventsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot querySnapshots,
-                                @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    Log.e("Firestore", error.toString());
-                    return;
-                }
-                if (querySnapshots != null) {
-                    eventDataList.clear();
-                    for (QueryDocumentSnapshot doc: querySnapshots) {
-                        String eventId = doc.getId();
-                        String eventName = doc.getString("Name");
-                        String imageURL = doc .getString("URL") ;
-                        Log.d("Firestore", String.format("Name(%s, %s) fetched", eventId, eventName));
-                        eventDataList.add(new Event(eventName , imageURL));
-                    }
-                    eventListArrayAdapter.notifyDataSetChanged();
-                }
+        eventsRef.orderBy("eventDate").addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", "Listen failed.", error);
+                return;
             }
+
+            eventDataList.clear();
+            for (QueryDocumentSnapshot doc : value) {
+                Event event = doc.toObject(Event.class);
+                eventDataList.add(event);
+            }
+            eventListArrayAdapter.notifyDataSetChanged();
         });
+
 
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -165,22 +161,32 @@ public class AttendeeEvent extends Fragment {
      * @param queryOrDisplay A boolean indicating whether to perform a query or display all events.
      */
     public void getCurrentEvenList(String searchText, boolean queryOrDisplay){
-        eventsRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        Task<QuerySnapshot> query;
+
+        if (queryOrDisplay) {
+            // For simplicity, fetch all and filter in memory when searching
+            query = eventsRef.orderBy("eventDate").get();
+        } else {
+            // No search text, just order by eventDate
+            query = eventsRef.orderBy("eventDate").get();
+        }
+        query.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 eventDataList.clear();
                 ArrayList<Event> searchResults = new ArrayList<>();
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     // Retrieve data from each document
-                    String eventName = documentSnapshot.getString("Name");
-                    String URL = documentSnapshot.getString("URL");
+                    String eventName = documentSnapshot.getString("eventName");
+                    String URL = documentSnapshot.getString("imageURL");
+                    String eventDate = documentSnapshot.getString("eventDate");
                     if(!queryOrDisplay){
-                        searchResults.add(new Event(eventName, URL));
+                        searchResults.add(new Event(eventName,eventDate, URL));
                         continue;
                     }
 
                     if (eventName.toLowerCase().contains(searchText.toLowerCase())) {
-                        searchResults.add(new Event(eventName, URL));
+                        searchResults.add(new Event(eventName,eventDate, URL));
                     }
                 }
 
