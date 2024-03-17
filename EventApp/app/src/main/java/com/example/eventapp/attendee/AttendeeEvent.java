@@ -163,13 +163,7 @@ public class AttendeeEvent extends Fragment {
     public void getCurrentEvenList(String searchText, boolean queryOrDisplay){
         Task<QuerySnapshot> query;
 
-        if (queryOrDisplay) {
-            // For simplicity, fetch all and filter in memory when searching
-            query = eventsRef.orderBy("eventDate").get();
-        } else {
-            // No search text, just order by eventDate
-            query = eventsRef.orderBy("eventDate").get();
-        }
+        query = eventsRef.orderBy("eventDate").get();
         query.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
