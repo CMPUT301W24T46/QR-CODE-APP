@@ -34,6 +34,11 @@
         <activity
             android:name=".attendee.CustomizeProfile"
             android:exported="false" />
+        <activity android:name=".attendee.AttendeeNotification"
+            android:exported="false" />
+        <activity android:name=".organizer.OrganizerNotification"
+            android:exported="false" />
+
         <!--  ADMIN        -->
         <activity android:name=".admin.AdminBrowseProfile"
             android:exported="false" />
