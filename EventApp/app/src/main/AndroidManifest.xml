@@ -68,6 +68,8 @@
         <activity
             android:name=".organizer.OrganizerAccount"
             android:exported="false"/>
+        <activity android:name=".organizer.OrganizerEditEventSelection"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
