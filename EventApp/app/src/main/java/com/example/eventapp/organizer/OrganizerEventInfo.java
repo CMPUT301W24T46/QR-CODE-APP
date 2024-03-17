@@ -75,5 +75,10 @@ public class OrganizerEventInfo extends Fragment {
             Glide.with(this).load(imageUrl).into(eventImageView);
         }
         navController = Navigation.findNavController(view);
+        View editEventButton = view.findViewById(R.id.button_editEvent_info);
+        editEventButton.setOnClickListener(v -> {
+            navController.navigate(R.id.action_organizerEventInfo_to_organizer_edit_event_selection);
+        });
     }
+
 }

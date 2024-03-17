@@ -65,7 +65,10 @@
     <string name="no_notifications_at_this_time">No notifications at this time</string>
     <string name="no_notification_at_this_time">No Notification at this time</string>
     <string name="create_notify">Create Notification</string>
-
+    <string name="see_list_of_attendees">See List Of Attendees</string>
+    <string name="QR_code_info">QR Code Info</string>
+    <string name="update_event_info">Update Event Information</string>
+    <string name="text_location_checkin">Location Of Check In</string>
 
 
 </resources>

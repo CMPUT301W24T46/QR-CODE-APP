@@ -124,7 +124,6 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
             NavDestination currentDestination = back_organizerNavigation.getCurrentDestination();
             if (currentDestination != null) {
                 int destinationId = currentDestination.getId();
-                // Check if we are in organizerEventInfo or organizerNotification
                 if (destinationId == R.id.organizerEventInfo) {
                     // Navigate back from OrganizerEventInfo
                     back_organizerNavigation.navigate(R.id.action_organizerEventInfo_to_organizerEvent);
@@ -133,6 +132,9 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                     // Navigate back from OrganizerNotification
                     back_organizerNavigation.navigate(R.id.action_organizerNotification_to_organizerHome);
                     return true;
+                }else if (destinationId == R.id.organizer_edit_event_selection) {
+                        back_organizerNavigation.navigate(R.id.action_organizer_edit_event_selection_to_organizerEventInfo);
+                        return true;
                 } else {
                     Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
                 }
