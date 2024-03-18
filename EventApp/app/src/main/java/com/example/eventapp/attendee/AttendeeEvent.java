@@ -1,5 +1,6 @@
 package com.example.eventapp.attendee;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,8 @@ import android.widget.SearchView;
 
 
 import com.example.eventapp.R;
+import com.example.eventapp.admin.AdminBrowseEvent;
+import com.example.eventapp.admin.AdminDeleteEvent;
 import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -106,8 +109,10 @@ public class AttendeeEvent extends Fragment {
                 Bundle bundle = new Bundle();
                 bundle.putString("EventName", event.getEventName());
                 bundle.putString("ImageURL", event.getImageURL());
+                bundle.putString("Event ID" , event.getEventId());
                 Navigation.findNavController(rootView).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
             }
+
         };
 
         eventListArrayAdapter = new EventAdapter(getContext() , eventDataList, eventClickListener) ;
@@ -127,9 +132,9 @@ public class AttendeeEvent extends Fragment {
                     for (QueryDocumentSnapshot doc: querySnapshots) {
                         String eventId = doc.getId();
                         String eventName = doc.getString("Name");
-                        String imageURL = doc .getString("URL") ;
+                        String imageURL = doc.getString("URL") ;
                         Log.d("Firestore", String.format("Name(%s, %s) fetched", eventId, eventName));
-                        eventDataList.add(new Event(eventName , imageURL));
+                        eventDataList.add(new Event(eventName , imageURL , eventId));
                     }
                     eventListArrayAdapter.notifyDataSetChanged();
                 }
@@ -141,6 +146,7 @@ public class AttendeeEvent extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // Perform search action here
+                getCurrentEvenList(query , true);
                 return false;
             }
 
@@ -149,8 +155,6 @@ public class AttendeeEvent extends Fragment {
                 // Filter your data based on newText
                 if(TextUtils.isEmpty(newText)){
                     getCurrentEvenList("" , false);
-                }else{
-                    getCurrentEvenList(newText , true);
                 }
                 return false;
             }
@@ -174,16 +178,18 @@ public class AttendeeEvent extends Fragment {
                     // Retrieve data from each document
                     String eventName = documentSnapshot.getString("Name");
                     String URL = documentSnapshot.getString("URL");
+                    searchResults.add(new Event(eventName, URL));
                     if(!queryOrDisplay){
                         searchResults.add(new Event(eventName, URL));
                         continue;
                     }
 
-                    if (eventName.toLowerCase().contains(searchText.toLowerCase())) {
-                        searchResults.add(new Event(eventName, URL));
+                    if(eventName != null){
+                        if (eventName.toLowerCase().contains(searchText.toLowerCase())) {
+                            searchResults.add(new Event(eventName, URL));
+                        }
                     }
                 }
-
                 eventListArrayAdapter.setFilter(searchResults);
                 eventListArrayAdapter.notifyDataSetChanged();
             }
@@ -194,5 +200,9 @@ public class AttendeeEvent extends Fragment {
                 Log.e("TAG", "Error getting documents: " + e);
             }
         });
+    }
+
+    public void searchCurrentArray(){
+
     }
 }

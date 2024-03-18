@@ -46,6 +46,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         Event event = events.get(position) ;
         TextView eventName= view.findViewById(R.id.eventDescription);
+        TextView eventDate = view.findViewById(R.id.eventDate);
         ImageView eventImageView = view.findViewById(R.id.eventImageList) ;
         Button viewEventButton = view.findViewById(R.id.btnViewEvent) ;
 
@@ -69,6 +70,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         Glide.with(context).load(event.getImageURL()).centerCrop().into(eventImageView) ;
         eventName.setText(event.getEventName());
+        eventDate.setText(event.getEventDate());
         return view;
     }
 

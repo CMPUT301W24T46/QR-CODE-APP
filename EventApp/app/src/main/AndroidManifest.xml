@@ -18,12 +18,15 @@
             android:exported="false" />
         <activity
             android:name=".admin.AdminActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".organizer.OrganizerActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".attendee.AttendeeActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".users.UserLogin"

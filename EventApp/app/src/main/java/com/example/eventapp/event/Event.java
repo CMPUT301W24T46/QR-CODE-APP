@@ -8,15 +8,22 @@ public class Event {
     String creatorId;
     String eventDescription;
 
-    public Event(String eventName , String imageDescription , String imageURL){
+    String eventId ;
+
+//    public Event(String eventName , String imageDescription , String imageURL){
+//        this.eventName = eventName ;
+//        this.imageDescription = imageDescription ;
+//        this.imageURL = imageURL ;
+//    }
+    public Event(String eventName, String imageURL){
         this.eventName = eventName ;
-        this.imageDescription = imageDescription ;
         this.imageURL = imageURL ;
     }
-    public Event(String eventName, String imageURL){
 
+    public Event(String eventName, String imageURL , String eventId){
         this.eventName = eventName ;
         this.imageURL = imageURL ;
+        this.eventId = eventId;
     }
 
     public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription){
@@ -76,5 +83,9 @@ public class Event {
 
     public void setEventDescription(String eventDescription){
         this.eventDescription = eventDescription;
+    }
+
+    public String getEventId() {
+        return eventId;
     }
 }

@@ -23,11 +23,25 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
+import com.example.eventapp.helpers.CheckForEventHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment showing detail information about event for attendees.
@@ -36,8 +50,9 @@ public class AttendeeEventInformation extends Fragment {
 
     private ImageView bigEventImageView ;
     private TextView eventNameView ;
-
-    private View toolBarBinding ;
+    private List<String> eventArrayList = new ArrayList<>();
+    private TextView alreadySignedUpTextView ;
+    private String eventId;
 
     /**
      * Constructor of an instance of AttendeeEventInformation
@@ -95,13 +110,109 @@ public class AttendeeEventInformation extends Fragment {
             // Extract information from the bundle
             String eventName = args.getString("EventName");
             String URL = args.getString("ImageURL");
+            eventId = args.getString("Event ID") ;
+
             eventNameView = view.findViewById(R.id.eventTitleDescrip) ;
             bigEventImageView = view.findViewById(R.id.biggerEventImage) ;
             eventNameView.setText(eventName);
             Glide.with(requireContext()).load(URL).centerCrop().into(bigEventImageView) ;
         }
 
+        Button signUpButton = view.findViewById(R.id.signUpForEventButton) ;
+        alreadySignedUpTextView = view.findViewById(R.id.alreadySigneUpTextView);
+
+        signUpButton.setOnClickListener(v -> {
+            addEventToMyEventList();
+        });
+
+        notifyAboutEventsAttended();
+    }
+
+    /**
+     * Adds the current event to the user's event list in Firestore. This method
+     * retrieves the current user's ID, then updates their 'EventList' field in the
+     * Firestore database to include the current event ID. It handles success and failure
+     * of the update operation with appropriate logging. If the update is successful,
+     * it also informs the event about the new sign-up by calling {@link #informEventAboutSignUp(String)}.
+     */
+    private void addEventToMyEventList(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = user.getUid();
+
+        if(userId != null){
+            DocumentReference documentReference = db.collection("Users").document(userId) ;
+            documentReference.update("EventList", FieldValue.arrayUnion(eventId))
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("User", "Event Signed Up for,  Event Id: " + eventId) ;
+                        informEventAboutSignUp(userId);
+
+                    })
+                    .addOnFailureListener(e ->
+                            Log.w("Event", "Error updating document", e)
+                    );
+        }
 
     }
 
+    /**
+     * Informs the specified event about a new user sign-up by adding the user's ID to
+     * the 'Event Attendees' field in Firestore. It updates the specific event document
+     * by adding the current user's ID to its attendees list. On success and failure of the
+     * operation, appropriate log messages are generated.
+     *
+     * @param userId The ID of the user signing up for the event.
+     */
+    private void informEventAboutSignUp(String userId){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Log.d("Event ID" , eventId) ;
+        DocumentReference documentReference = db.collection("Events").document(eventId) ;
+        documentReference.update("Event Attendees" , FieldValue.arrayUnion(userId))
+                .addOnSuccessListener(aVoid ->
+                        Log.d("Event", "User Signed Up for, User Id: " + userId)
+                )
+                .addOnFailureListener(e ->
+                        Log.w("Event", "Error updating document", e)
+                );
+    }
+
+    /**
+     * Attaches a snapshot listener to the current user's 'EventList' field in Firestore
+     * and updates the local eventArrayList with any changes. This method keeps the local
+     * list of events attended by the user up-to-date with the database. It also checks if the
+     * user has already signed up for the current event and updates the UI accordingly.
+     */
+    private void notifyAboutEventsAttended () {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = user.getUid();
+        DocumentReference documentReference = db.collection("Users").document(userId) ;
+        documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("Listen", "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    // Assuming the field you are interested in is named "interestingField"
+                    if (snapshot.contains("EventList")) {
+                        List<String> newArray = (List<String>) snapshot.get("EventList");
+                        eventArrayList.clear();
+                        eventArrayList.addAll(newArray) ;
+                        boolean alreadySignedUp = CheckForEventHelper.checkForEvent(eventId , (ArrayList<String>) eventArrayList);
+
+                        if(alreadySignedUp){
+                            alreadySignedUpTextView.setVisibility(View.VISIBLE);
+                            Log.d("User" , "Alreay Signed Up") ;
+                        }
+                    }
+                } else {
+                    Log.d("User", "Current data: null");
+                }
+            }
+        });
+    }
 }

@@ -54,6 +54,7 @@ public class AdminBrowseEvent extends AppCompatActivity {
                 intent.putExtra("ImageURL", event.getImageURL());
                 startActivity(intent);
             }
+
         };
 
         eventAdapter = new EventAdapter(this, eventDataList, eventClickListener) ;

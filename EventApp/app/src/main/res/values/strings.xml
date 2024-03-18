@@ -57,6 +57,8 @@
     <string name="create_event_title_text">"Write the Event Name to Create an event upon submission a unique QR Code "</string>
     <string name="create_event_description">Event Description</string>
     <string name="edit_event">Edit Event</string>
+    <string name="sign_up_for_event">Sign Up For Event</string>
+    <string name="already_signed_up">Already Signed Up</string>
 
 
 </resources>
