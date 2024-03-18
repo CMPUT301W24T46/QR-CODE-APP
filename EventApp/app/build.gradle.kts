@@ -74,5 +74,6 @@ dependencies {
     debugImplementation("androidx.fragment:fragment-testing:1.6.2")
     androidTestUtil("androidx.test:orchestrator:1.4.2");
     implementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
 }
