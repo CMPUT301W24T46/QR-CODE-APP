@@ -14,9 +14,6 @@
         android:theme="@style/Theme.EVENTAPP"
         tools:targetApi="31">
         <activity
-            android:name=".attendee.AttendEventActivity"
-            android:exported="false" />
-        <activity
             android:name=".admin.AdminActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
@@ -29,6 +26,9 @@
             android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
+            android:name=".attendee.AttendeeEvent"
+            android:exported="false"/>
+        <activity
             android:name=".users.UserLogin"
             android:exported="false" />
         <activity
@@ -37,6 +37,11 @@
         <activity
             android:name=".attendee.CustomizeProfile"
             android:exported="false" />
+        <activity android:name=".attendee.AttendeeNotification"
+            android:exported="false" />
+        <activity android:name=".organizer.OrganizerNotification"
+            android:exported="false" />
+
         <!--  ADMIN        -->
         <activity android:name=".admin.AdminBrowseProfile"
             android:exported="false" />
@@ -65,6 +70,10 @@
             android:exported="false"/>
         <activity
             android:name=".organizer.OrganizerAccount"
+            android:exported="false"/>
+        <activity android:name=".organizer.OrganizerEditEventSelection"
+            android:exported="false"/>
+        <activity android:name=".organizer.OrganizerQRCode"
             android:exported="false"/>
         <activity
             android:name=".MainActivity"

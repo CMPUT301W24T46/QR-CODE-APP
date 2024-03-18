@@ -50,9 +50,14 @@ public class AttendeeEventInformation extends Fragment {
 
     private ImageView bigEventImageView ;
     private TextView eventNameView ;
+
     private List<String> eventArrayList = new ArrayList<>();
     private TextView alreadySignedUpTextView ;
     private String eventId;
+    private TextView eventDescriptionView;
+    private TextView eventDateView;
+
+    private View toolBarBinding ;
 
     /**
      * Constructor of an instance of AttendeeEventInformation
@@ -108,13 +113,19 @@ public class AttendeeEventInformation extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             // Extract information from the bundle
-            String eventName = args.getString("EventName");
-            String URL = args.getString("ImageURL");
-            eventId = args.getString("Event ID") ;
-
+            String eventName = args.getString("eventName");
+            String URL = args.getString("imageURL");
+            String eventDate = args.getString("eventDate");
+            String eventDescription = args.getString("eventDescription");
             eventNameView = view.findViewById(R.id.eventTitleDescrip) ;
             bigEventImageView = view.findViewById(R.id.biggerEventImage) ;
+            eventDescriptionView = view.findViewById(R.id.eventFullDescription);
+            eventDateView = view.findViewById(R.id.attendee_event_date_time);
             eventNameView.setText(eventName);
+            eventDateView.setText(eventDate);
+            eventDescriptionView.setText(eventDescription);
+            Log.d("EventInfo", "Event Description: " + eventDescription);
+
             Glide.with(requireContext()).load(URL).centerCrop().into(bigEventImageView) ;
         }
 

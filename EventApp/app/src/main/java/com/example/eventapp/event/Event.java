@@ -7,8 +7,8 @@ public class Event {
     String eventDate;
     String creatorId;
     String eventDescription;
+    private String eventId;
 
-    String eventId ;
 
 //    public Event(String eventName , String imageDescription , String imageURL){
 //        this.eventName = eventName ;
@@ -25,6 +25,12 @@ public class Event {
         this.imageURL = imageURL ;
         this.eventId = eventId;
     }
+    public Event(String eventName , String eventDate , String imageURL, String eventDescription){
+        this.eventName = eventName;
+        this.eventDate = eventDate;
+        this.imageURL = imageURL;
+        this.eventDescription = eventDescription;
+    }
 
     public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription){
         this.eventName = eventName;
@@ -32,6 +38,14 @@ public class Event {
         this.imageURL = imageURL;
         this.creatorId = creatorId;
         this.eventDescription = eventDescription;
+    }
+    public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription, String eventId){
+        this.eventName = eventName;
+        this.eventDate = eventDate;
+        this.imageURL = imageURL;
+        this.creatorId = creatorId;
+        this.eventDescription = eventDescription;
+        this.eventId = eventId;
     }
     // No-argument constructor required for Firebase
     public Event() {
@@ -87,5 +101,9 @@ public class Event {
 
     public String getEventId() {
         return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 }

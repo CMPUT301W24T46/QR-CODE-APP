@@ -59,13 +59,13 @@ public class OrganizerEvent extends Fragment {
                     if (task.isSuccessful()) {
                         allEvents.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
+                            Event event = document.toObject(Event.class);
                             String creatorId = document.getString("creatorId");
                             if (currentUserId.equals(creatorId)) { // Filter by creatorId
-                                Event event = document.toObject(Event.class);
                                 allEvents.add(event);
                             }
                         }
-                        updateUI(allEvents);
+                        updateUI(new ArrayList<>(allEvents));
                     } else {
                         Log.d("EventFetch", "Error getting documents: ", task.getException());
                     }
@@ -99,7 +99,10 @@ public class OrganizerEvent extends Fragment {
         bundle.putString("eventName", event.getEventName());
         bundle.putString("eventDate", event.getEventDate());
         bundle.putString("imageURL", event.getImageURL());
+        bundle.putString("eventDescription", event.getEventDescription());
         //bundle.putString("creatorId", event.getCreatorId());
+        OrganizerEventInfo fragment = new OrganizerEventInfo();
+        fragment.setArguments(bundle);
         Navigation.findNavController(getView()).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
     }
 
@@ -112,7 +115,11 @@ public class OrganizerEvent extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filterEvents(newText);
+                if (newText.isEmpty()) {
+                    updateUI(new ArrayList<>(allEvents));
+                } else {
+                    filterEvents(newText);
+                }
                 return true;
             }
         });
@@ -124,8 +131,6 @@ public class OrganizerEvent extends Fragment {
                 filteredList.add(event);
             }
         }
-        adapter.clear();
-        adapter.addAll(filteredList);
-        adapter.notifyDataSetChanged();
+        updateUI(filteredList);
     }
 }

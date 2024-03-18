@@ -1,5 +1,6 @@
 package com.example.eventapp.organizer;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,7 +18,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.eventapp.R;
+import com.example.eventapp.attendee.AttendeeNotification;
 import com.example.eventapp.event.Event;
+import com.example.eventapp.users.Organizer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -106,7 +109,8 @@ public class OrganizerHome extends Fragment{
         notificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.action_organizerHome_to_organizerNotification);
+                // Start OrganizerNotificationActivity
+                startActivity(new Intent(getActivity(), OrganizerNotification.class));
             }
         });
     }

@@ -153,13 +153,14 @@ public class CreateEventFragment extends DialogFragment {
         // Initialize time with current time
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
+        calendar.set(Calendar.SECOND, 0);
 
         // Use a theme to specify the spinner style
         TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),
                 // OpenAI, 2024, ChatGPT, https://chat.openai.com/share/a00d4633-779c-4368-93b0-9906c6bb7824
                 android.R.style.Theme_Holo_Light_Dialog_NoActionBar, // spinner style
                 (view, selectedHour, selectedMinute) -> {
-                    // Your existing code to handle time selection
+
                     calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
                     calendar.set(Calendar.MINUTE, selectedMinute);
 

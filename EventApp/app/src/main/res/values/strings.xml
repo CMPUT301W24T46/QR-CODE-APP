@@ -59,6 +59,17 @@
     <string name="edit_event">Edit Event</string>
     <string name="sign_up_for_event">Sign Up For Event</string>
     <string name="already_signed_up">Already Signed Up</string>
-
-
+    <string name="event_date">Date</string>
+    <string name="notify_type">Type</string>
+    <string name="notify_message">message</string>
+    <string name="notification_type">Notification Type</string>
+    <string name="notification_content">Notification Content</string>
+    <string name="no_notifications_at_this_time">No notifications at this time</string>
+    <string name="no_notification_at_this_time">No Notification at this time</string>
+    <string name="create_notify">Create Notification</string>
+    <string name="see_list_of_attendees">See List Of Attendees</string>
+    <string name="QR_code_info">QR Code Info</string>
+    <string name="update_event_info">Update Event Information</string>
+    <string name="text_location_checkin">Location Of Check In</string>
+    <string name="share_qr_code">Share QR Code</string>
 </resources>
