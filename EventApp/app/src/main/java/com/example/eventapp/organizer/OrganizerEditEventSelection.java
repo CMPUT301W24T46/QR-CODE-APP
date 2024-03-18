@@ -49,10 +49,11 @@ public class OrganizerEditEventSelection extends Fragment {
 //            Navigation.findNavController(v).navigate(R.id.);
 //        });
 //
-//        Button btnQRCode = view.findViewById(R.id.btn_QRCode);
-//        btnQRCode.setOnClickListener(v -> {
-//            // Handle QR Code button click
-//        });
+        Button btnQRCode = view.findViewById(R.id.btn_QRCode);
+        btnQRCode.setOnClickListener(v -> {
+            // Handle QR Code button click
+            navController.navigate(R.id.organizer_qrcode);
+        });
 //
 //        Button btnUpdateEvent = view.findViewById(R.id.btn_updateEvent);
 //        btnUpdateEvent.setOnClickListener(v -> {

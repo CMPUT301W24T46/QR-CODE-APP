@@ -133,9 +133,12 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                     back_organizerNavigation.navigate(R.id.action_organizerNotification_to_organizerHome);
                     return true;
                 }else if (destinationId == R.id.organizer_edit_event_selection) {
-                        back_organizerNavigation.navigate(R.id.action_organizer_edit_event_selection_to_organizerEventInfo);
-                        return true;
-                } else {
+                    back_organizerNavigation.navigate(R.id.action_organizer_edit_event_selection_to_organizerEventInfo);
+                    return true;
+                }else if (destinationId == R.id.organizer_qrcode) {
+                    back_organizerNavigation.navigate(R.id.action_organizer_qrcode_to_organizer_edit_event_selection);
+                    return true;
+                }else {
                     Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
                 }
             }

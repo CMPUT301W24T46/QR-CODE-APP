@@ -33,6 +33,14 @@ public class Event {
         this.creatorId = creatorId;
         this.eventDescription = eventDescription;
     }
+    public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription, String eventId){
+        this.eventName = eventName;
+        this.eventDate = eventDate;
+        this.imageURL = imageURL;
+        this.creatorId = creatorId;
+        this.eventDescription = eventDescription;
+        this.eventId = eventId;
+    }
     // No-argument constructor required for Firebase
     public Event() {
     }

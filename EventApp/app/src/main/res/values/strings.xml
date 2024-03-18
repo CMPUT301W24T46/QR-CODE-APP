@@ -69,6 +69,7 @@
     <string name="QR_code_info">QR Code Info</string>
     <string name="update_event_info">Update Event Information</string>
     <string name="text_location_checkin">Location Of Check In</string>
+    <string name="share_qr_code">Share QR Code</string>
 
 
 </resources>
