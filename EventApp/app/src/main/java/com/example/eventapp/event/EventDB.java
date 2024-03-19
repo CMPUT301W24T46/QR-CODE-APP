@@ -131,33 +131,16 @@ public class EventDB {
                 });
     }
 
-    /**
-     * Retrieves all event names from the Firebase.
-     *
-     * @param spinner The spinner to populate with event names.
-     */
-    public void getAllEventNames(Spinner spinner) {
+    public void getAllEventsForUser(String userId, EventRetrievalListener listener) {
         db.collection("Events")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            List<String> eventNames = new ArrayList<>();
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String eventName = document.getString("Name");
-                                if (eventName != null) {
-                                    eventNames.add(eventName);
-                                }
-                            }
-                            ArrayAdapter<String> adapter = new ArrayAdapter<>(spinner.getContext(),
-                                    android.R.layout.simple_spinner_item, eventNames);
-                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            spinner.setAdapter(adapter);
-                        } else {
-                            Log.d("EventDB", "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+                .whereEqualTo("creatorId", userId)
+                .get();
     }
+
+    public interface EventRetrievalListener {
+        void onEventsRetrieved(List<Event> events);
+        void onError(String errorMessage);
+    }
+
+
 }
