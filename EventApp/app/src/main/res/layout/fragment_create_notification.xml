@@ -75,20 +75,23 @@
         android:paddingStart="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:text="Select Event"
+        android:text="@string/select_events"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/CreateAnnouncementTitle"
         tools:layout_editor_absoluteX="0dp" />
 
-    <Spinner
-        android:id="@+id/eventSpinner"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/selectEventsButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:entries="@array/events"
-        android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/EditEventDescription"
-        app:layout_constraintTop_toBottomOf="@+id/selectEventTextView"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
+        android:background="@drawable/rounded_button_background"
+        android:text="@string/select_events"
+        android:textColor="#FFFFFF"
+        android:textColorLink="#FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/CreateAnnouncementDescription"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/selectEventTextView" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
