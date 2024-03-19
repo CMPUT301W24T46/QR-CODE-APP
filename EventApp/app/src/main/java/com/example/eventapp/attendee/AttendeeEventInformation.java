@@ -117,6 +117,7 @@ public class AttendeeEventInformation extends Fragment {
             String URL = args.getString("imageURL");
             String eventDate = args.getString("eventDate");
             String eventDescription = args.getString("eventDescription");
+            eventId = args.getString("eventId") ;
             eventNameView = view.findViewById(R.id.eventTitleDescrip) ;
             bigEventImageView = view.findViewById(R.id.biggerEventImage) ;
             eventDescriptionView = view.findViewById(R.id.eventFullDescription);

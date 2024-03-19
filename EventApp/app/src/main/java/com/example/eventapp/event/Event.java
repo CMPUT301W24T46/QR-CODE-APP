@@ -32,11 +32,11 @@ public class Event {
         this.eventDescription = eventDescription;
     }
 
-    public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription){
+    public Event(String eventName , String eventDate , String imageURL, String eventId, String eventDescription){
         this.eventName = eventName;
         this.eventDate = eventDate;
         this.imageURL = imageURL;
-        this.creatorId = creatorId;
+        this.eventId = eventId;
         this.eventDescription = eventDescription;
     }
     public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription, String eventId){

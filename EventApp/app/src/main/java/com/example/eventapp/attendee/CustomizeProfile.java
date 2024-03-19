@@ -82,6 +82,7 @@ public class CustomizeProfile extends AppCompatActivity {
 
         context = this ;
 
+
         username = findViewById(R.id.editTextTextEmailAddress);
         contact = findViewById(R.id.editTextPhone);
         description = findViewById(R.id.editTextTextMultiLine);
@@ -261,11 +262,6 @@ public class CustomizeProfile extends AppCompatActivity {
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 
-        attendeeUser.setName(usernameText);
-        attendeeUser.setContactInformation(contactText);
-        attendeeUser.setHomepage(descriptionText);
-        attendeeUser.setTypeOfUser("Attendee");
-
         if (usernameText.isEmpty() || contactText.isEmpty() || descriptionText.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -287,16 +283,16 @@ public class CustomizeProfile extends AppCompatActivity {
 
         if (user != null) {
             String userId = user.getUid();
-
+            Log.d("Users" , userId) ;
             DocumentReference userRef = db.collection("Users").document(userId);
 
             Map<String, Object> updates = new HashMap<>();
             updates.put("name", username);
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
-            updates.put("typeOfUser", attendeeUser.getTypeOfUser());
             userRef.update(updates);
 
+            Log.d("Save" , "Complete") ;
             isSaved = true;
         }
     }

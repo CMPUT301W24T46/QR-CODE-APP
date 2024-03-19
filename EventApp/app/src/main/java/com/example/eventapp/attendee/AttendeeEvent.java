@@ -42,6 +42,7 @@ public class AttendeeEvent extends Fragment {
     private ArrayList<Event> eventDataList  ;
     private ListView eventList ;
     private EventAdapter eventListArrayAdapter ;
+    private boolean doneSearching = false ;
 
     /**
      * Constructor of an instance of AttendeeEvent
@@ -109,6 +110,7 @@ public class AttendeeEvent extends Fragment {
                 bundle.putString("eventDate", event.getEventDate());
                 bundle.putString("imageURL", event.getImageURL());
                 bundle.putString("eventDescription", event.getEventDescription());
+                bundle.putString("eventId" , event.getEventId());
                 Navigation.findNavController(rootView).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
             }
         };
@@ -137,6 +139,7 @@ public class AttendeeEvent extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // Perform search action here
+                getCurrentEvenList(query , true);
                 return false;
             }
 
@@ -145,8 +148,6 @@ public class AttendeeEvent extends Fragment {
                 // Filter your data based on newText
                 if(TextUtils.isEmpty(newText)){
                     getCurrentEvenList("" , false);
-                }else{
-                    getCurrentEvenList(newText , true);
                 }
                 return false;
             }
@@ -174,18 +175,24 @@ public class AttendeeEvent extends Fragment {
                     String eventName = documentSnapshot.getString("eventName");
                     String URL = documentSnapshot.getString("imageURL");
                     String eventDate = documentSnapshot.getString("eventDate");
+                    String eventId = documentSnapshot.getId() ;
+                    String eventDescription = documentSnapshot.getString("eventDescription") ;
                     if(!queryOrDisplay){
-                        searchResults.add(new Event(eventName,eventDate, URL));
+                        searchResults.add(new Event(eventName,  eventDate , URL , eventId , eventDescription));
                         continue;
                     }
 
                     if (eventName.toLowerCase().contains(searchText.toLowerCase())) {
-                        searchResults.add(new Event(eventName,eventDate, URL));
+                        searchResults.add(new Event(eventName,  eventDate , URL , eventId , eventDescription));
                     }
                 }
 
                 eventListArrayAdapter.setFilter(searchResults);
                 eventListArrayAdapter.notifyDataSetChanged();
+
+                if(!searchText.equals("")){
+                    doneSearching = true ;
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -194,5 +201,9 @@ public class AttendeeEvent extends Fragment {
                 Log.e("TAG", "Error getting documents: " + e);
             }
         });
+    }
+
+    public boolean isDoneSearching(){
+        return doneSearching ;
     }
 }
