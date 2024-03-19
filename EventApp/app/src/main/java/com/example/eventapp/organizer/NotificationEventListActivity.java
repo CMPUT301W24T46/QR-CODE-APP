@@ -30,7 +30,17 @@ public class NotificationEventListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_notification_event_list);
         fetchEvents();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        View selectButtonLayout = getLayoutInflater().inflate(R.layout.content_of_event_display_list, null);
+        Button selectButton = selectButtonLayout.findViewById(R.id.btnViewEvent);
+        selectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to the previous fragment
+                onBackPressed();
+            }
+        });
     }
+
 
 
     /**
