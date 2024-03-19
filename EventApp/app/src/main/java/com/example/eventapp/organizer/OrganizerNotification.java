@@ -1,15 +1,21 @@
 package com.example.eventapp.organizer;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import com.example.eventapp.R;
+import com.example.eventapp.attendee.AttendeeNotification;
 import com.example.eventapp.notification.Notification;
 import com.example.eventapp.notification.NotificationAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -17,7 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
-public class OrganizerNotification extends AppCompatActivity {
+public class OrganizerNotification extends AppCompatActivity implements CreateNotificationFragment.CreateNotificationListener {
     private FirebaseFirestore db;
     private ListView notificationListView;
     private NotificationAdapter notificationAdapter;
@@ -45,6 +51,14 @@ public class OrganizerNotification extends AppCompatActivity {
         notificationListView.setAdapter(notificationAdapter);
 
         fetchNotifications();
+
+        // Pop up create notification window
+        Button buttonCreateAnnouncement = findViewById(R.id.createNotificationButton);
+        buttonCreateAnnouncement.setOnClickListener(v -> {
+            // Show the create notification dialog
+            CreateNotificationFragment dialogFragment = new CreateNotificationFragment();
+            dialogFragment.show(getSupportFragmentManager(), "CreateNotificationDialog");
+        });
     }
 
     /**
@@ -78,6 +92,16 @@ public class OrganizerNotification extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onNotificationCreated() {
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragmentContainerOrganizerView);
+        if (navHostFragment != null) {
+            NavController navController = navHostFragment.getNavController();
+            navController.navigate(R.id.action_organizerHome_to_organizerNotification);
+        }
     }
 
 }
