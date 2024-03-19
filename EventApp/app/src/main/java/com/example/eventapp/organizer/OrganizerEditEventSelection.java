@@ -54,11 +54,14 @@ public class OrganizerEditEventSelection extends Fragment {
             actionBar.setTitle("Event Selection");
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
-//        Button btnListAttendee = view.findViewById(R.id.btn_listAttendee);
-//        btnListAttendee.setOnClickListener(v -> {
-//            // Navigate to the list of attendees
-//            Navigation.findNavController(v).navigate(R.id.);
-//        });
+        Button btnListAttendee = view.findViewById(R.id.btn_listAttendee);
+        btnListAttendee.setOnClickListener(v -> {
+            navController.navigate(R.id.action_organizer_edit_event_selection_to_organizer_attendees_list);
+            Log.e("OrganizerEditEventSelection", "Error: Event ID is null");
+
+            // Navigate to the list of attendees
+//            Navigation.findNavController(v).navigate(R.id.action_organizer_edit_event_selection_to_organizer_attendees_list);
+        });
 //
         Button btnQRCode = view.findViewById(R.id.btn_QRCode);
         btnQRCode.setOnClickListener(v -> {
@@ -66,6 +69,7 @@ public class OrganizerEditEventSelection extends Fragment {
             qrBundle.putString("eventId", eventId1);
             navController.navigate(R.id.organizer_qrcode, qrBundle);
             Log.d("OrganizerEditEventSelection", "EventId passed: " + eventId1);
+
         });
 //
 //        Button btnUpdateEvent = view.findViewById(R.id.btn_updateEvent);
@@ -79,5 +83,7 @@ public class OrganizerEditEventSelection extends Fragment {
 //            // Handle location check-in button click
 //        });
         navController = Navigation.findNavController(view);
+
+
     }
 }
