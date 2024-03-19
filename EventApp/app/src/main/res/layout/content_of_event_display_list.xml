@@ -28,12 +28,12 @@
 
     <Button
         android:id="@+id/btnViewEvent"
-        android:layout_width="70dp"
+        android:layout_width="100dp"
         android:layout_height="41dp"
-        android:textColor="@color/white"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="44dp"
-        android:text="@string/View"
+        android:text="@string/select"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
