@@ -77,6 +77,9 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
             } else if (destinationId == R.id.organizerEventInfo) {
                 getSupportActionBar().setTitle("Event Information");
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            } else if (destinationId == R.id.organizer_attendees_list) {
+                getSupportActionBar().setTitle("Event Information");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         });
 
@@ -138,6 +141,10 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                 }else if (destinationId == R.id.organizer_qrcode) {
                     back_organizerNavigation.navigate(R.id.action_organizer_qrcode_to_organizer_edit_event_selection);
                     return true;
+
+                }else if (destinationId == R.id.organizer_attendees_list) {
+                        back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
+                        return true;
                 }else {
                     Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
                 }

@@ -73,6 +73,8 @@
             android:exported="false"/>
         <activity android:name=".organizer.OrganizerQRCode"
             android:exported="false"/>
+        <activity android:name=".organizer.OrganizerSeeListOfAttendees"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
