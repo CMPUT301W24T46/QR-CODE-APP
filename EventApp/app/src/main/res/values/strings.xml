@@ -73,6 +73,7 @@
     <string name="create_announcement_description">Announcement Content</string>
     <string name="create_announcement_text">Create Announcement</string>
     <string name="Back">Back</string>
+    <string name="select_event">Select Event</string>
 
 
 </resources>

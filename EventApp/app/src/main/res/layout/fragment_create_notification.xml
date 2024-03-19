@@ -14,7 +14,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/create_announcement_text"
         android:textColor="@color/black"
-        android:textSize="34sp"
+        android:textSize="28dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

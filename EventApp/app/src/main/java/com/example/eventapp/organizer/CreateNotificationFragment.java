@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -21,15 +23,18 @@ import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventDB;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.eventapp.event.EventDB.EventRetrievalListener;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CreateNotificationFragment extends DialogFragment {
+
+public class CreateNotificationFragment extends DialogFragment implements EventDB.EventRetrievalListener {
 
     private Spinner eventSpinner;
     private TextView notificationTitleEditText;
     private EditText notificationDescriptionEditText;
+    private EventSpinnerAdapter spinnerAdapter;
 
     interface CreateNotificationListener {
         void onNotificationCreated();
@@ -73,13 +78,45 @@ public class CreateNotificationFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Spinner eventSpinner = view.findViewById(R.id.eventSpinner);
+        eventSpinner = view.findViewById(R.id.eventSpinner);
+        notificationTitleEditText = view.findViewById(R.id.CreateAnnouncementTitle);
+        notificationDescriptionEditText = view.findViewById(R.id.EditEventDescription);
 
-        // Instantiate EventDB
+        // Initialize EventDB
         EventDB eventDB = new EventDB(FirebaseFirestore.getInstance());
 
-        // getAllEventNames method to populate the spinner
-        eventDB.getAllEventNames(eventSpinner);
+        // Get the current user's ID
+        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Call getAllEventsForUser method to retrieve events
+        eventDB.getAllEventsForUser(currentUserID, this);
+
+        // Create the spinner adapter
+        spinnerAdapter = new EventSpinnerAdapter(requireContext(), new ArrayList<>());
+    }
+
+    @Override
+    public void onEventsRetrieved(List<Event> events) {
+        // Handle retrieved events
+        if (events != null && !events.isEmpty()) {
+            // Log the list of events
+            for (Event event : events) {
+                Log.d("CreateNotificationFragment", "Event Name: " + event.getEventName());
+                // Add more properties if needed
+            }
+
+            // Display a toast message with the number of events retrieved
+            Toast.makeText(getContext(), events.size() + " events retrieved", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "No events found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void onError(String errorMessage) {
+        // Handle error
+        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
     }
 
 
