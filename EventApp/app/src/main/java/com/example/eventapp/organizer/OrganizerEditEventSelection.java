@@ -1,6 +1,7 @@
 package com.example.eventapp.organizer;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,16 @@ public class OrganizerEditEventSelection extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Bundle receivedBundle = getArguments();
+        String eventId = null;
+        if (receivedBundle != null) {
+            eventId = receivedBundle.getString("eventId");
+            Log.d("OrganizerEditEventSelection", "Received EventId: " + eventId);
+        }else {
+            Log.d("OrganizerEditEventSelection", "Bundle is null or does not contain EventId");
+        }
+        final String eventId1 = eventId;
+
         AppCompatActivity activity = (AppCompatActivity) requireActivity();
         ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
@@ -51,8 +62,10 @@ public class OrganizerEditEventSelection extends Fragment {
 //
         Button btnQRCode = view.findViewById(R.id.btn_QRCode);
         btnQRCode.setOnClickListener(v -> {
-            // Handle QR Code button click
-            navController.navigate(R.id.organizer_qrcode);
+            Bundle qrBundle = new Bundle();
+            qrBundle.putString("eventId", eventId1);
+            navController.navigate(R.id.organizer_qrcode, qrBundle);
+            Log.d("OrganizerEditEventSelection", "EventId passed: " + eventId1);
         });
 //
 //        Button btnUpdateEvent = view.findViewById(R.id.btn_updateEvent);

@@ -60,6 +60,7 @@ public class OrganizerEvent extends Fragment {
                         allEvents.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Event event = document.toObject(Event.class);
+                            event.setEventId(document.getId());
                             String creatorId = document.getString("creatorId");
                             if (currentUserId.equals(creatorId)) { // Filter by creatorId
                                 allEvents.add(event);
@@ -100,7 +101,7 @@ public class OrganizerEvent extends Fragment {
         bundle.putString("eventDate", event.getEventDate());
         bundle.putString("imageURL", event.getImageURL());
         bundle.putString("eventDescription", event.getEventDescription());
-        //bundle.putString("creatorId", event.getCreatorId());
+        bundle.putString("eventId", event.getEventId());
         OrganizerEventInfo fragment = new OrganizerEventInfo();
         fragment.setArguments(bundle);
         Navigation.findNavController(getView()).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
