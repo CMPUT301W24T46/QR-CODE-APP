@@ -41,6 +41,9 @@ public class Event {
         this.eventDescription = eventDescription;
         this.eventId = eventId;
     }
+    public Event(String eventName){
+        this.eventName = eventName;
+    }
     // No-argument constructor required for Firebase
     public Event() {
     }
