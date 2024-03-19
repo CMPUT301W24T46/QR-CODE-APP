@@ -2,6 +2,7 @@ package com.example.eventapp.organizer;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,16 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 public class OrganizerQRCode extends Fragment {
 
     private ImageView qrCodeImageView;
+    private String eventId;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            eventId = getArguments().getString("eventId");
+            Log.d("OrganizerQRCode","EventId" + eventId);
+        }
+    }
 
     @Nullable
     @Override
@@ -32,14 +43,20 @@ public class OrganizerQRCode extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // TODO: SCANNER NAVIGATE TO SPECIFIC EVENT LINK OR STATIC QR CODE
-        generateQRCode("http://www.qrcodeapp.com/events/");
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String eventId = bundle.getString("eventId");
+            if (eventId != null) {
+                generateQRCode(eventId);
+                Log.d("OrganizerQRCode", "EventId" + eventId);
+            }
+        }
     }
 
-    private void generateQRCode(String eventLink) {
+    private void generateQRCode(String eventId) {
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            BitMatrix bitMatrix = qrCodeWriter.encode(eventLink, BarcodeFormat.QR_CODE, 600, 600);
+            BitMatrix bitMatrix = qrCodeWriter.encode(eventId, BarcodeFormat.QR_CODE, 600, 600);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
             qrCodeImageView.setImageBitmap(bitmap);

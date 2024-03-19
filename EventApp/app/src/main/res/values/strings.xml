@@ -73,6 +73,9 @@
     <string name="create_announcement_description">Announcement Content</string>
     <string name="create_announcement_text">Create Announcement</string>
     <string name="Back">Back</string>
+    <string name="event_information">EVENT INFORMATION</string>
+    <string name="basketball_tournament">Basketball Tournament</string>
+    <string name="notify_attendees">Notify Attendees</string>
     <string name="select_event">Select Event</string>
     <string name="select_events">Select Events</string>
     <string name="select">Select</string>
