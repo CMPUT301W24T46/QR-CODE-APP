@@ -70,6 +70,9 @@
     <string name="update_event_info">Update Event Information</string>
     <string name="text_location_checkin">Location Of Check In</string>
     <string name="share_qr_code">Share QR Code</string>
+    <string name="create_announcement_description">Announcement Content</string>
+    <string name="create_announcement_text">Create Announcement</string>
+    <string name="Back">Back</string>
 
 
 </resources>

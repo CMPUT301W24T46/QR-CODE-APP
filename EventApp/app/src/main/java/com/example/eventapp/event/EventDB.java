@@ -1,6 +1,8 @@
 package com.example.eventapp.event;
 
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 
@@ -9,8 +11,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -125,4 +131,33 @@ public class EventDB {
                 });
     }
 
+    /**
+     * Retrieves all event names from the Firebase.
+     *
+     * @param spinner The spinner to populate with event names.
+     */
+    public void getAllEventNames(Spinner spinner) {
+        db.collection("Events")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<String> eventNames = new ArrayList<>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String eventName = document.getString("Name");
+                                if (eventName != null) {
+                                    eventNames.add(eventName);
+                                }
+                            }
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(spinner.getContext(),
+                                    android.R.layout.simple_spinner_item, eventNames);
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            spinner.setAdapter(adapter);
+                        } else {
+                            Log.d("EventDB", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
 }
