@@ -107,10 +107,6 @@ public class CreateNotificationFragment extends DialogFragment {
             // Handle event selection
             String selectedEventName = eventNames[which];
             Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
-
-            // Update the text of the select event button with the selected event name
-            Button selectEventsButton = requireView().findViewById(R.id.selectEventsButton);
-            selectEventsButton.setText(selectedEventName);
         });
 
         builder.create().show();
