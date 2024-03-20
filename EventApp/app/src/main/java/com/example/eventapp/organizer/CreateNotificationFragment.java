@@ -69,7 +69,7 @@ public class CreateNotificationFragment extends DialogFragment {
         // Initialize EventDB instance
         eventDB = new EventDB(FirebaseFirestore.getInstance());
 
-        // Fetch events from database
+        // Fetch events from firebase
         eventDB.getAllEventsForUser(currentUserId, new EventDB.EventRetrievalListener() {
             @Override
             public void onEventsRetrieved(List<Event> eventList) {
@@ -86,6 +86,7 @@ public class CreateNotificationFragment extends DialogFragment {
         return builder.create();
     }
 
+    // OpenAI, 2024, ChatGPT, Code to openEventSelector method
     private void openEventSelector() {
         if (events == null || events.isEmpty()) {
             Toast.makeText(getContext(), "No events available to select", Toast.LENGTH_SHORT).show();
@@ -104,17 +105,14 @@ public class CreateNotificationFragment extends DialogFragment {
         builder.setItems(eventNames, (dialog, which) -> {
             String selectedEventName = eventNames[which];
             Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
-            //update button text
-            Button selectEventsButton = getView().findViewById(R.id.selectEventsButton);
-            selectEventsButton.setText(selectedEventName);
+            TextView selectEventTextView = getView().findViewById(R.id.selectEventTextView);
+            selectEventTextView.setText(selectedEventName);
         });
 
         builder.create().show();
     }
 
     private void createNotification() {
-        // Implementation for creating notification
-        // Retrieve notification details from UI elements
         String notificationTitle = notificationTitleEditText.getText().toString().trim();
         String notificationDescription = notificationDescriptionEditText.getText().toString().trim();
 
