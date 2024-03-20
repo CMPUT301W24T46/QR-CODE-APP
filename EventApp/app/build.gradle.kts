@@ -54,6 +54,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-storage:20.0.0")
 
+    // Geolocation
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+
     testImplementation("junit:junit:4.13.2")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
