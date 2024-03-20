@@ -94,42 +94,26 @@ public class CreateNotificationFragment extends DialogFragment {
             return;
         }
 
-        // Get the fragment's view
-        View view = getView();
-        if (view != null) { // Check if the view is not null
-            // Disable the selectEventsButton to prevent multiple clicks
-            Button selectEventsButton = view.findViewById(R.id.selectEventsButton);
-            selectEventsButton.setClickable(false);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Select Event");
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-            builder.setTitle("Select Event");
-
-            // Prepare a string array to hold event names
-            String[] eventNames = new String[events.size()];
-            for (int i = 0; i < events.size(); i++) {
-                eventNames[i] = events.get(i).getEventName();
-            }
-
-            builder.setItems(eventNames, (dialog, which) -> {
-                // Handle event selection
-                String selectedEventName = eventNames[which];
-                Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
-
-                // Update the text of the TextView with the selected event name
-                TextView selectEventTextView = view.findViewById(R.id.selectEventTextView);
-                if (selectEventTextView != null) { // Ensure the TextView is not null
-                    selectEventTextView.setText(selectedEventName);
-                }
-
-                // Re-enable the selectEventsButton after the AlertDialog is dismissed
-                selectEventsButton.setClickable(true);
-            });
-
-            // Dismiss the AlertDialog and re-enable the selectEventsButton when it's dismissed
-            builder.setOnDismissListener(dialog -> selectEventsButton.setClickable(true));
-
-            builder.create().show();
+        // Prepare a string array to hold event names
+        String[] eventNames = new String[events.size()];
+        for (int i = 0; i < events.size(); i++) {
+            eventNames[i] = events.get(i).getEventName();
         }
+
+        builder.setItems(eventNames, (dialog, which) -> {
+            // Handle event selection
+            String selectedEventName = eventNames[which];
+            Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
+
+            // Update the text of the select event button with the selected event name
+            Button selectEventsButton = requireView().findViewById(R.id.selectEventsButton);
+            selectEventsButton.setText(selectedEventName);
+        });
+
+        builder.create().show();
     }
 
 
