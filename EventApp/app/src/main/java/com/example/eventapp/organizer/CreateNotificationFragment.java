@@ -3,30 +3,28 @@ package com.example.eventapp.organizer;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.eventapp.R;
+import com.example.eventapp.event.Event;
+
+import java.util.ArrayList;
 
 
-public class CreateNotificationFragment extends DialogFragment{
+public class CreateNotificationFragment extends DialogFragment {
 
-    private Spinner eventSpinner;
     private TextView notificationTitleEditText;
     private EditText notificationDescriptionEditText;
+    private ArrayList<Event> events; // List of events to select from
 
     interface CreateNotificationListener {
         void onNotificationCreated();
@@ -60,39 +58,44 @@ public class CreateNotificationFragment extends DialogFragment{
         confirmButton.setOnClickListener(v -> createNotification());
 
         Button selectEventsButton = view.findViewById(R.id.selectEventsButton);
-        selectEventsButton.setOnClickListener(v -> openEventList());
+        selectEventsButton.setOnClickListener(v -> openEventSelector());
 
         builder.setView(view);
 
         return builder.create();
     }
 
-    private void openEventList() {
-        Intent intent = new Intent(requireContext(), NotificationEventListActivity.class);
-        startActivity(intent);
-    }
+    private void openEventSelector() {
+        if (events == null || events.isEmpty()) {
+            Toast.makeText(getContext(), "No events available to select", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Select Event");
 
-        // Initialize views
-        notificationTitleEditText = view.findViewById(R.id.CreateAnnouncementTitle);
-        notificationDescriptionEditText = view.findViewById(R.id.EditEventDescription);
+        // Prepare a string array to hold event names
+        String[] eventNames = new String[events.size()];
+        for (int i = 0; i < events.size(); i++) {
+            eventNames[i] = events.get(i).getEventName();
+        }
 
-        Button buttonNotificationEventList = view.findViewById(R.id.selectEventsButton);
-        buttonNotificationEventList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), NotificationEventListActivity.class);
-                startActivity(intent);
-            }
+        builder.setItems(eventNames, (dialog, which) -> {
+            // Handle event selection
+            String selectedEventName = eventNames[which];
+            Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
         });
 
+        builder.create().show();
+    }
+
+    public void setEvents(ArrayList<Event> events) {
+        this.events = events;
     }
 
     private void createNotification() {
-        String selectedEvent = eventSpinner.getSelectedItem().toString();
+        // Implementation for creating notification
+        // Retrieve notification details from UI elements
         String notificationTitle = notificationTitleEditText.getText().toString().trim();
         String notificationDescription = notificationDescriptionEditText.getText().toString().trim();
 
