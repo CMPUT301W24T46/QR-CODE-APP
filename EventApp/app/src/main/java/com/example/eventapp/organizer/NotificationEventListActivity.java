@@ -1,13 +1,14 @@
 package com.example.eventapp.organizer;
+
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.Navigation;
 
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 public class NotificationEventListActivity extends AppCompatActivity {
 
-    private NotificationEventAdapter adapter;
+    private EventAdapter adapter;
     private ArrayList<Event> allEvents = new ArrayList<>();
 
     @Override
@@ -29,15 +30,56 @@ public class NotificationEventListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_notification_event_list);
         fetchEvents();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        View selectButtonLayout = getLayoutInflater().inflate(R.layout.content_of_event_display_list, null);
+        Button selectButton = selectButtonLayout.findViewById(R.id.btnViewEvent);
+        selectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to the previous fragment
+                onBackPressed();
+            }
+        });
     }
 
+
+
+    /**
+     * Updates the user interface with the provided list of events.
+     * Sets up the event adapter and attaches it to the ListView for event display.
+     *
+     * @param events The list of Event objects to display.
+     */
     private void updateUI(ArrayList<Event> events) {
-        adapter = new NotificationEventAdapter(this, events);
+        adapter = new EventAdapter(this, events, event -> {
+            navigateToEventInfo(event);
+        });
         ListView listView = findViewById(R.id.organizer_eventListView);
         listView.setAdapter(adapter);
-        // Set item click listener if needed
     }
 
+    /**
+     * Navigates to the event information page for a specific event.
+     * Passes event details to the destination fragment via a Bundle.
+     *
+     * @param event The Event object whose details are to be displayed.
+     */
+    private void navigateToEventInfo(Event event) {
+        Bundle bundle = new Bundle();
+        bundle.putString("eventName", event.getEventName());
+        bundle.putString("eventDate", event.getEventDate());
+        bundle.putString("imageURL", event.getImageURL());
+        bundle.putString("eventDescription", event.getEventDescription());
+        //bundle.putString("creatorId", event.getCreatorId());
+        OrganizerEventInfo fragment = new OrganizerEventInfo();
+        fragment.setArguments(bundle);
+        Navigation.findNavController(this, R.id.organizer_eventListView).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
+    }
+
+    /**
+     * Fetches events from Firestore.
+     * Filters events by the current user's ID.
+     * Updates the UI with the fetched events.
+     */
     private void fetchEvents() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -50,13 +92,13 @@ public class NotificationEventListActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Event event = document.toObject(Event.class);
                             String creatorId = document.getString("creatorId");
-                            if (currentUserId.equals(creatorId)) {
+                            if (currentUserId.equals(creatorId)) { // Filter by creatorId
                                 allEvents.add(event);
                             }
                         }
                         updateUI(new ArrayList<>(allEvents));
                     } else {
-                        // Handle error
+                        Log.d("EventFetch", "Error getting documents: ", task.getException());
                     }
                 });
     }
