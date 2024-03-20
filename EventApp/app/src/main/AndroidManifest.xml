@@ -38,7 +38,8 @@
             android:exported="false" />
         <activity android:name=".organizer.OrganizerNotification"
             android:exported="false" />
-
+        <activity android:name=".organizer.NotificationEventListActivity"
+            android:exported="false" />
         <!--  ADMIN        -->
         <activity android:name=".admin.AdminBrowseProfile"
             android:exported="false" />
