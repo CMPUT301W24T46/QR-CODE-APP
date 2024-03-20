@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.example.eventapp.R;
@@ -77,7 +78,8 @@ public class NotificationEventListActivity extends AppCompatActivity {
         //bundle.putString("creatorId", event.getCreatorId());
         OrganizerEventInfo fragment = new OrganizerEventInfo();
         fragment.setArguments(bundle);
-        Navigation.findNavController(this, R.id.organizer_eventListView).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        navController.navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
     }
 
     /**
