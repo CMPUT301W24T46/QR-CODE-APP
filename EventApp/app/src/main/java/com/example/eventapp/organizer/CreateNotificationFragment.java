@@ -93,24 +93,31 @@ public class CreateNotificationFragment extends DialogFragment {
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Select Event");
+        View view = getView(); // Get the fragment's view
+        if (view != null) { // Check if the view is not null
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Select Event");
 
-        // Prepare a string array to hold event names
-        String[] eventNames = new String[events.size()];
-        for (int i = 0; i < events.size(); i++) {
-            eventNames[i] = events.get(i).getEventName();
+            // Prepare a string array to hold event names
+            String[] eventNames = new String[events.size()];
+            for (int i = 0; i < events.size(); i++) {
+                eventNames[i] = events.get(i).getEventName();
+            }
+
+            builder.setItems(eventNames, (dialog, which) -> {
+                // Handle event selection
+                String selectedEventName = eventNames[which];
+                Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
+
+                // Update the text of the TextView with the selected event name
+                TextView selectEventTextView = view.findViewById(R.id.selectEventTextView);
+                selectEventTextView.setText(selectedEventName);
+            });
+
+            builder.create().show();
         }
-
-        builder.setItems(eventNames, (dialog, which) -> {
-            String selectedEventName = eventNames[which];
-            Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
-            TextView selectEventTextView = getView().findViewById(R.id.selectEventTextView);
-            selectEventTextView.setText(selectedEventName);
-        });
-
-        builder.create().show();
     }
+
 
     private void createNotification() {
         String notificationTitle = notificationTitleEditText.getText().toString().trim();
