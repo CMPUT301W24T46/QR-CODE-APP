@@ -1,5 +1,6 @@
 package com.example.eventapp.organizer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -36,7 +37,8 @@ public class NotificationEventListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Navigate back to the previous fragment
-                onBackPressed();
+                Intent intent = new Intent(NotificationEventListActivity.this, CreateNotificationFragment.class);
+                startActivity(intent);
             }
         });
     }
