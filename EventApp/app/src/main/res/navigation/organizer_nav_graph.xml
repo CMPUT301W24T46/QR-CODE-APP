@@ -21,6 +21,22 @@
             app:destination="@id/organizerNotification" />
     </fragment>
     <fragment
+        android:id="@+id/notificationEventList"
+        android:name="com.example.eventapp.organizer.NotificationEventListFragment"
+        android:label="Notification Event List"
+        tools:layout="@layout/fragment_notification_event_list" >
+        <action
+            android:id="@+id/action_notificationEventList_to_createNotification"
+            app:destination="@id/createNotificationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createNotificationFragment"
+        android:name="com.example.eventapp.organizer.CreateNotificationFragment"
+        android:label="Create Notification"
+        tools:layout="@layout/fragment_create_notification" >
+    </fragment>
+    <fragment
         android:id="@+id/organizerAccount"
         android:name="com.example.eventapp.organizer.OrganizerAccount"
         android:label="fragment_organizer_account"

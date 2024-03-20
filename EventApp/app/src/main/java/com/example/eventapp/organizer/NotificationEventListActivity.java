@@ -1,5 +1,6 @@
 package com.example.eventapp.organizer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -31,7 +32,11 @@ public class NotificationEventListActivity extends AppCompatActivity {
         fetchEvents();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         View selectButtonLayout = getLayoutInflater().inflate(R.layout.content_of_event_display_list, null);
+
+        // Find the select button within the inflated layout
         Button selectButton = selectButtonLayout.findViewById(R.id.btnViewEvent);
+
+        // Set click listener for the select button
         selectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
