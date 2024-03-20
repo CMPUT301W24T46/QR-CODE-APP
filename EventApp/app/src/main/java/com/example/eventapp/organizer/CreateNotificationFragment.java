@@ -16,15 +16,19 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
+import com.example.eventapp.event.EventDB;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-
+import java.util.List;
 
 public class CreateNotificationFragment extends DialogFragment {
 
     private TextView notificationTitleEditText;
     private EditText notificationDescriptionEditText;
-    private ArrayList<Event> events; // List of events to select from
+    private ArrayList<Event> events = new ArrayList<>(); // Initialize events list
+    private EventDB eventDB;
 
     interface CreateNotificationListener {
         void onNotificationCreated();
@@ -48,7 +52,7 @@ public class CreateNotificationFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_create_notification, null);
-
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         notificationTitleEditText = view.findViewById(R.id.CreateAnnouncementTitle);
         notificationDescriptionEditText = view.findViewById(R.id.EditEventDescription);
         Button backButton = view.findViewById(R.id.buttonArrow);
@@ -61,6 +65,23 @@ public class CreateNotificationFragment extends DialogFragment {
         selectEventsButton.setOnClickListener(v -> openEventSelector());
 
         builder.setView(view);
+
+        // Initialize EventDB instance
+        eventDB = new EventDB(FirebaseFirestore.getInstance());
+
+        // Fetch events from database
+        eventDB.getAllEventsForUser(currentUserId, new EventDB.EventRetrievalListener() {
+            @Override
+            public void onEventsRetrieved(List<Event> eventList) {
+                events.clear();
+                events.addAll(eventList);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return builder.create();
     }
@@ -89,10 +110,6 @@ public class CreateNotificationFragment extends DialogFragment {
         builder.create().show();
     }
 
-    public void setEvents(ArrayList<Event> events) {
-        this.events = events;
-    }
-
     private void createNotification() {
         // Implementation for creating notification
         // Retrieve notification details from UI elements
@@ -112,3 +129,4 @@ public class CreateNotificationFragment extends DialogFragment {
         dismiss();
     }
 }
+

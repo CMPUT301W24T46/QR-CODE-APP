@@ -134,8 +134,20 @@ public class EventDB {
     public void getAllEventsForUser(String userId, EventRetrievalListener listener) {
         db.collection("Events")
                 .whereEqualTo("creatorId", userId)
-                .get();
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> events = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Event event = document.toObject(Event.class);
+                        events.add(event);
+                    }
+                    listener.onEventsRetrieved(events);
+                })
+                .addOnFailureListener(e -> {
+                    listener.onError("Failed to retrieve events: " + e.getMessage());
+                });
     }
+
 
     public interface EventRetrievalListener {
         void onEventsRetrieved(List<Event> events);
