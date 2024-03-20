@@ -97,6 +97,10 @@ public class CreateNotificationFragment extends DialogFragment {
         // Get the fragment's view
         View view = getView();
         if (view != null) { // Check if the view is not null
+            // Disable the selectEventsButton to prevent multiple clicks
+            Button selectEventsButton = view.findViewById(R.id.selectEventsButton);
+            selectEventsButton.setClickable(false);
+
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle("Select Event");
 
@@ -116,11 +120,18 @@ public class CreateNotificationFragment extends DialogFragment {
                 if (selectEventTextView != null) { // Ensure the TextView is not null
                     selectEventTextView.setText(selectedEventName);
                 }
+
+                // Re-enable the selectEventsButton after the AlertDialog is dismissed
+                selectEventsButton.setClickable(true);
             });
+
+            // Dismiss the AlertDialog and re-enable the selectEventsButton when it's dismissed
+            builder.setOnDismissListener(dialog -> selectEventsButton.setClickable(true));
 
             builder.create().show();
         }
     }
+
 
 
     private void createNotification() {
