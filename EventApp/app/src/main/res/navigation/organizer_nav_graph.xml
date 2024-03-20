@@ -93,7 +93,11 @@
         <action
             android:id="@+id/action_organizer_edit_event_selection_to_organizer_attendees_list"
             app:destination="@id/organizer_attendees_list" />
+
+        <action android:id="@+id/action_organizer_edit_event_selection_to_organizer_event_map"
+            app:destination="@id/organizer_event_map" />
     </fragment>
+
     <fragment
         android:id="@+id/organizer_qrcode"
         android:name="com.example.eventapp.organizer.OrganizerQRCode"
@@ -114,6 +118,17 @@
         <action
             android:id="@+id/action_organizer_attendees_list_to_organizer_edit_event_selection"
             app:destination="@id/organizer_edit_event_selection" />
+    </fragment>
+    <fragment
+        android:id="@+id/organizer_event_map"
+        android:name="com.example.eventapp.geoLocation.EventMap"
+        android:label="fragment_event_map"
+        tools:layout="@layout/fragment_organizer_eventmap" >
+
+        <action
+            android:id="@+id/action_organizer_event_map_to_organizer_edit_event_selection"
+            app:destination="@id/organizer_edit_event_selection" />
+
     </fragment>
 
 
