@@ -143,11 +143,12 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                     return true;
 
                 }else if (destinationId == R.id.organizer_attendees_list) {
-                        back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
-                        return true;
-                }else {
-                    Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
+                    back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
+                    return true;
                 }
+//                }else {
+//                    Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
+//                }
             }
         }
         return super.onOptionsItemSelected(item);
