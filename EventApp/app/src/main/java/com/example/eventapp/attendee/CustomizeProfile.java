@@ -261,6 +261,10 @@ public class CustomizeProfile extends AppCompatActivity {
         String contactText = contact.getText().toString().trim();
         String descriptionText = description.getText().toString().trim();
 
+        if (attendeeUser == null) {
+            Toast.makeText(this, "User data not loaded yet, please try again.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         attendeeUser.setName(usernameText);
         attendeeUser.setContactInformation(contactText);
         attendeeUser.setHomepage(descriptionText);
@@ -271,6 +275,8 @@ public class CustomizeProfile extends AppCompatActivity {
             return;
         }
         updateProfileInDatabase(usernameText, contactText, descriptionText);
+
+
     }
 
     /**
@@ -295,9 +301,20 @@ public class CustomizeProfile extends AppCompatActivity {
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
             updates.put("typeOfUser", attendeeUser.getTypeOfUser());
-            userRef.update(updates);
+            userRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Toast.makeText(CustomizeProfile.this, "Profile updated successfully.", Toast.LENGTH_SHORT).show();
+                    isSaved = true;
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(CustomizeProfile.this, "Failed to update profile.", Toast.LENGTH_SHORT).show();
+                }
+            });;
 
-            isSaved = true;
         }
     }
 

@@ -19,6 +19,8 @@ import com.example.eventapp.R;
 
 public class OrganizerEditEventSelection extends Fragment {
 
+    // TODO: event data is lost on back navigations to edit page
+
 
     private NavController navController;
 

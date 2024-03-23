@@ -123,7 +123,7 @@
         android:id="@+id/organizer_event_map"
         android:name="com.example.eventapp.geoLocation.EventMap"
         android:label="fragment_event_map"
-        tools:layout="@layout/fragment_organizer_eventmap" >
+        tools:layout="@layout/fragment_organizer_event_map" >
 
         <action
             android:id="@+id/action_organizer_event_map_to_organizer_edit_event_selection"

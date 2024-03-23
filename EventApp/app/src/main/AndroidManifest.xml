@@ -30,12 +30,7 @@
         <activity
             android:name=".attendee.AttendeeEvent"
             android:exported="false"/>
-        <activity
-            android:name=".users.UserLogin"
-            android:exported="false" />
-        <activity
-            android:name=".users.UserSignUp"
-            android:exported="false" />
+   
         <activity
             android:name=".attendee.CustomizeProfile"
             android:exported="false" />
@@ -91,6 +86,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD2uoBic6LBl3GZrfsuVD-PUfigX9mZlKI" />
     </application>
 
 </manifest>

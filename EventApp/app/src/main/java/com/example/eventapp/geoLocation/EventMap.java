@@ -1,123 +1,103 @@
 package com.example.eventapp.geoLocation;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.eventapp.R;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.GeoPoint;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
-public class EventMap extends Fragment {
+public class EventMap extends Fragment implements OnMapReadyCallback {
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-    private TextView eventMapTitle, address, city, country, latitude, longitude, ipAddress;
-    private Button buttonGetLocation;
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    SupportMapFragment mapFragment;
+    private GoogleMap mMap;
+    private String eventId;
+    private GeolocationController controller;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_organizer_eventmap, container, false);
+        View view = inflater.inflate(R.layout.fragment_organizer_event_map, container, false);
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.event_map);
 
-
-        // Initialize UI components
-        eventMapTitle = view.findViewById(R.id.eventMapTitle);
-        address = view.findViewById(R.id.address);
-        city = view.findViewById(R.id.city);
-        country = view.findViewById(R.id.country);
-        latitude = view.findViewById(R.id.latitude);
-        longitude = view.findViewById(R.id.longitude);
-        ipAddress = view.findViewById(R.id.ip_address);
-        buttonGetLocation = view.findViewById(R.id.button_get_location);
-
-        if (getArguments() != null && getArguments().containsKey("eventId")) {
-            String eventId = getArguments().getString("eventId");
-            eventMapTitle.setText(eventId);
-            Log.d("EventMap", "Received event: " + eventId);
-
+        // Retrieve the eventId from the arguments
+        Bundle arguments = getArguments();
+        if (arguments != null && arguments.containsKey("eventId")) {
+            eventId = arguments.getString("eventId");
+            Log.d("EventMap", "EventId received: " + eventId);
         } else {
-            Log.d("EventMap", "No eventId found in fragment arguments");
+            Log.e("EventMap", "No eventId passed to EventMap fragment");
         }
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
-        // Setup button click listener
-        buttonGetLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getAndDisplayLocation();
-            }
-        });
+        if (mapFragment != null) {
+            mapFragment.getMapAsync((OnMapReadyCallback) this);
+        } else {
+            Log.e("EventMap", "SupportMapFragment is null");
+        }
+
 
         return view;
     }
 
-    private void getAndDisplayLocation() {
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    updateLocationUI(location);
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // customize map
+        addLocationMarkers();
+
+        // Enable zoom buttons
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+    }
+
+    private void addLocationMarkers() {
+        if (eventId != null) {
+            GeolocationController controller = new GeolocationController(); // Ensure this is initialized appropriately
+            controller.getCheckInLocations(eventId, locationsMap -> {
+                double totalLat = 0;
+                double totalLng = 0;
+                int count = 0;
+
+                for (Map.Entry<String, GeoPoint> entry : locationsMap.entrySet()) {
+                    String attendeeId = entry.getKey();
+                    GeoPoint location = entry.getValue();
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(latLng).title(attendeeId));
+
+                    totalLat += location.getLatitude();
+                    totalLng += location.getLongitude();
+                    count++;
                 }
+
+                // move camera to a centroid location
+                if (count > 0) {
+                    LatLng centroid = new LatLng(totalLat / count, totalLng / count);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(centroid, 10));
+                }
+
             });
         } else {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            Log.e("EventMap", "EventId is null");
         }
     }
-
-    private void updateLocationUI(Location location) {
-        if (location != null) {
-            Geocoder geocoder = new Geocoder(requireActivity(), Locale.getDefault());
-            try {
-                List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                if (!addresses.isEmpty()) {
-                    Address addressObj = addresses.get(0);
-
-                    latitude.setText(String.format("Latitude: %s", addressObj.getLatitude()));
-                    longitude.setText(String.format("Longitude: %s", addressObj.getLongitude()));
-                    address.setText(String.format("Address: %s", addressObj.getAddressLine(0)));
-                    city.setText(String.format("City: %s", addressObj.getLocality()));
-                    country.setText(String.format("Country: %s", addressObj.getCountryName()));
-                }
-            } catch (IOException e) {
-                Log.e("EventMapFragment", "Error fetching location details", e);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getAndDisplayLocation();
-            } else {
-                // Permission denied
-                Log.d("EventMapFragment", "Location permission was denied by the user.");
-            }
-        }
-    }
-
-
 }

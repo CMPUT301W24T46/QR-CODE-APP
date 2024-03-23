@@ -21,6 +21,7 @@ import java.util.Set;
 
 public class OrganizerActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
 
+
     private NavController back_organizerNavigation;
 
     /**
@@ -79,6 +80,9 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             } else if (destinationId == R.id.organizer_attendees_list) {
                 getSupportActionBar().setTitle("Event Information");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            } else if (destinationId == R.id.organizer_event_map) {
+                getSupportActionBar().setTitle("Location of Check In");
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         });
@@ -143,12 +147,15 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                     return true;
 
                 }else if (destinationId == R.id.organizer_attendees_list) {
-                    back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
+                        back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
+                        return true;
+                } else if (destinationId == R.id.organizer_event_map) {
+                    back_organizerNavigation.navigate(R.id.action_organizer_event_map_to_organizer_edit_event_selection);
                     return true;
                 }
-//                }else {
-//                    Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
-//                }
+                else {
+                    Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
+                }
             }
         }
         return super.onOptionsItemSelected(item);
