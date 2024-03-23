@@ -79,6 +79,8 @@
     <string name="select_event">Select Event</string>
     <string name="select_events">Select Events</string>
     <string name="select">Select</string>
+    <string name="scan_your_qr_code">SCAN YOUR QR CODE</string>
+    <string name="scan">SCAN</string>
 
 
 </resources>

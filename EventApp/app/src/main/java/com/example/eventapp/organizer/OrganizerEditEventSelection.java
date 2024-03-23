@@ -42,7 +42,7 @@ public class OrganizerEditEventSelection extends Fragment {
         String eventId = null;
         if (receivedBundle != null) {
             eventId = receivedBundle.getString("eventId");
-            Log.d("OrganizerEditEventSelection", "Received EventId: " + eventId);
+//            Log.d("OrganizerEditEventSelection", "Received EventId: " + eventId);
         }else {
             Log.d("OrganizerEditEventSelection", "Bundle is null or does not contain EventId");
         }
@@ -67,8 +67,8 @@ public class OrganizerEditEventSelection extends Fragment {
         btnQRCode.setOnClickListener(v -> {
             Bundle qrBundle = new Bundle();
             qrBundle.putString("eventId", eventId1);
-            navController.navigate(R.id.organizer_qrcode, qrBundle);
-            Log.d("OrganizerEditEventSelection", "EventId passed: " + eventId1);
+            navController.navigate(R.id.action_organizer_edit_event_selection_to_organizer_qrcode, qrBundle);
+//            Log.d("OrganizerEditEventSelection", "EventId passed: " + eventId1);
 
         });
 //
