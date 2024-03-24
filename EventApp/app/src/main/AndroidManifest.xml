@@ -75,6 +75,11 @@
             android:exported="false"/>
         <activity android:name=".organizer.OrganizerSeeListOfAttendees"
             android:exported="false"/>
+        <activity android:name=".attendee.QRCodeScanFragment"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".attendee.QRCodeScannerActivity"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -87,5 +92,9 @@
             </intent-filter>
         </activity>
     </application>
+
+    <!-- Camera permission -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
 
 </manifest>
