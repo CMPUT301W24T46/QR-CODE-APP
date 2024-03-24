@@ -138,7 +138,9 @@ public class EventDB {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Event> events = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String eventId = document.getId();
                         Event event = document.toObject(Event.class);
+                        event.setEventId(eventId);
                         events.add(event);
                     }
                     listener.onEventsRetrieved(events);

@@ -106,15 +106,20 @@ public class CreateNotificationFragment extends DialogFragment {
 
         // Prepare a string array to hold event names
         String[] eventNames = new String[events.size()];
+        String[] eventIds = new String[events.size()];
         for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
             eventNames[i] = events.get(i).getEventName();
+            eventIds[i] = event.getEventId();
         }
 
         builder.setItems(eventNames, (dialog, which) -> {
             // event selection
             String selectedEventName = eventNames[which];
+            String selectedEventId = eventIds[which];
             Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
             notificationTitleEditText.setText(selectedEventName);
+            notificationDescriptionEditText.setTag(selectedEventId);
         });
 
         builder.create().show();
@@ -134,12 +139,13 @@ public class CreateNotificationFragment extends DialogFragment {
         // Generate current timestamp
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
         String timestamp = dateFormat.format(new Date());
+        String eventId = notificationDescriptionEditText.getTag() != null ? notificationDescriptionEditText.getTag().toString() : "";
 
         // Get current user ID
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         // Create a Notification object with current user ID
-        Notification notification = new Notification(notificationTitle, notificationDescription, timestamp.toString(), currentUserId);
+        Notification notification = new Notification(notificationTitle, notificationDescription, timestamp.toString(), currentUserId, eventId);
 
         // Save the notification to the Firestore database
         NotificationDB notificationDB = new NotificationDB(FirebaseFirestore.getInstance());
