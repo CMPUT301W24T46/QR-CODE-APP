@@ -84,6 +84,9 @@
     <string name="gallery">Gallery</string>
     <string name="check_in">Check In</string>
     <string name="scan_cancelled">Scan Cancelled</string>
+    <string name="update_event_title">Update Event</string>
+    <string name="update_event_title_text">Write the Event Name to update event.</string>
+    <string name="update">Update</string>
 
 
 </resources>

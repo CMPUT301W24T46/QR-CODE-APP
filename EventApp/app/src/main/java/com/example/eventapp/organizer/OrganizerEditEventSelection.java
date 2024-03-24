@@ -71,13 +71,15 @@ public class OrganizerEditEventSelection extends Fragment {
 //            Log.d("OrganizerEditEventSelection", "EventId passed: " + eventId1);
 
         });
-//
-//        Button btnUpdateEvent = view.findViewById(R.id.btn_updateEvent);
-//        btnUpdateEvent.setOnClickListener(v -> {
-//            // Navigate to update event fragment
-//            Navigation.findNavController(v).navigate(R.id.);
-//        });
-//
+
+        Button btnUpdateEvent = view.findViewById(R.id.btn_updateEvent);
+        btnUpdateEvent.setOnClickListener(v -> {
+            Bundle updateBundle = new Bundle();
+            updateBundle.putString("eventId", eventId1);
+            // Log.d("OrganizerEditEventSelection", "eventId" + eventId1);
+            navController.navigate(R.id.action_organizer_edit_event_selection_to_organizer_update_event, updateBundle);
+        });
+
 //        Button btnLocationCheckIn = view.findViewById(R.id.btn_locationCheckIn);
 //        btnLocationCheckIn.setOnClickListener(v -> {
 //            // Handle location check-in button click
