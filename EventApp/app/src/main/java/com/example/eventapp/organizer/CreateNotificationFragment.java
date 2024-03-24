@@ -17,12 +17,19 @@ import androidx.fragment.app.DialogFragment;
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventDB;
+import com.example.eventapp.notification.Notification;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.google.firebase.Timestamp;
+import com.example.eventapp.notification.NotificationDB;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 
 public class CreateNotificationFragment extends DialogFragment {
 
@@ -104,9 +111,10 @@ public class CreateNotificationFragment extends DialogFragment {
         }
 
         builder.setItems(eventNames, (dialog, which) -> {
-            // Handle event selection
+            // event selection
             String selectedEventName = eventNames[which];
             Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
+            notificationTitleEditText.setText(selectedEventName);
         });
 
         builder.create().show();
@@ -122,6 +130,20 @@ public class CreateNotificationFragment extends DialogFragment {
             Toast.makeText(getContext(), "Please fill in all fields!", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Generate current timestamp
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+        String timestamp = dateFormat.format(new Date());
+
+        // Get current user ID
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Create a Notification object with current user ID
+        Notification notification = new Notification(notificationTitle, notificationDescription, timestamp.toString(), currentUserId);
+
+        // Save the notification to the Firestore database
+        NotificationDB notificationDB = new NotificationDB(FirebaseFirestore.getInstance());
+        notificationDB.saveNotificationToFirestore(notification);
 
         // Notify listener that notification is created
         if (listener != null) {
