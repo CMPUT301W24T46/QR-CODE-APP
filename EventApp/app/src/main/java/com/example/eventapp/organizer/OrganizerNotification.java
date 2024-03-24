@@ -135,6 +135,7 @@ public class OrganizerNotification extends AppCompatActivity implements CreateNo
     @Override
     public void onNotificationsRetrieved(List<Notification> notifications) {
         // Add the retrieved notifications to the list
+        notificationList.clear();
         notificationList.addAll(notifications);
 
         // Notify the adapter
