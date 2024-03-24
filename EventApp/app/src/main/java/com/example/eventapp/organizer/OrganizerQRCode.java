@@ -57,7 +57,6 @@ public class OrganizerQRCode extends Fragment {
             String eventId = bundle.getString("eventId");
             if (eventId != null) {
                 generateQRCode(eventId);
-                Log.d("OrganizerQRCode", "EventId" + eventId);
             }
         }
     }
@@ -87,7 +86,6 @@ public class OrganizerQRCode extends Fragment {
                     saveQrCodeUrlToFirestore(eventId, downloadUrl);
                 });
             }).addOnFailureListener(e -> {
-                // Handle unsuccessful uploads
                 e.printStackTrace();
             });
 

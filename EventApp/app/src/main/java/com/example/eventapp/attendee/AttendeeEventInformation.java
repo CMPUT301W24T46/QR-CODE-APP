@@ -28,6 +28,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * Fragment showing detail information about event for attendees.
@@ -99,8 +102,8 @@ public class AttendeeEventInformation extends Fragment {
             String URL = args.getString("imageURL");
             String eventDate = args.getString("eventDate");
             String eventDescription = args.getString("eventDescription");
-            eventNameView = view.findViewById(R.id.eventTitleDescrip) ;
-            bigEventImageView = view.findViewById(R.id.biggerEventImage) ;
+            eventNameView = view.findViewById(R.id.eventTitleDescrip);
+            bigEventImageView = view.findViewById(R.id.biggerEventImage);
             eventDescriptionView = view.findViewById(R.id.eventFullDescription);
             eventDateView = view.findViewById(R.id.attendee_event_date_time);
             eventNameView.setText(eventName);
@@ -108,10 +111,35 @@ public class AttendeeEventInformation extends Fragment {
             eventDescriptionView.setText(eventDescription);
             Log.d("EventInfo", "Event Description: " + eventDescription);
 
-            Glide.with(requireContext()).load(URL).centerCrop().into(bigEventImageView) ;
+            Glide.with(requireContext()).load(URL).centerCrop().into(bigEventImageView);
+
+            if (args != null && args.containsKey("eventId")) {
+                String eventId = args.getString("eventId");
+                fetchEventInformation(eventId);
+            }
         }
+    }
+    private void fetchEventInformation(String eventId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference eventRef = db.collection("events").document(eventId);
 
+        eventRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    eventNameView.setText(document.getString("eventName"));
+                    eventDateView.setText(document.getString("eventDate"));
+                    eventDescriptionView.setText(document.getString("eventDescription"));
 
+                    String imageURL = document.getString("imageURL");
+                    Glide.with(requireContext()).load(imageURL).centerCrop().into(bigEventImageView);
+                } else {
+                    Log.d("EventInfo", "No such event");
+                }
+            } else {
+                Log.d("EventInfo", "get failed with ", task.getException());
+            }
+        });
     }
 
 }

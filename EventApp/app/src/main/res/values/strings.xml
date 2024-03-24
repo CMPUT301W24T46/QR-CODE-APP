@@ -81,10 +81,15 @@
     <string name="select">Select</string>
     <string name="scan_your_qr_code">SCAN YOUR QR CODE</string>
     <string name="scan">SCAN</string>
+    <string name="gallery">Gallery</string>
+    <string name="check_in">Check In</string>
+    <string name="scan_cancelled">Scan Cancelled</string>
+    <string name="update_event_title">Update Event</string>
+    <string name="update_event_title_text">Write the Event Name to update event.</string>
+    <string name="update">Update</string>
     <string name="notificationdate">Notification Date</string>
     <string name="content">Content</string>
     <string name="Title">Title</string>
     <string name="Delete_notification">Delete</string>
-
 
 </resources>

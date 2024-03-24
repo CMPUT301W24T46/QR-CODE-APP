@@ -80,6 +80,9 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
             } else if (destinationId == R.id.organizer_attendees_list) {
                 getSupportActionBar().setTitle("Event Information");
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }else if (destinationId == R.id.organizer_update_event) {
+                getSupportActionBar().setTitle("Update Event Information");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         });
 
@@ -146,9 +149,12 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                     back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
                     return true;
                 }
-//                }else {
-//                    Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
-//                }
+                else if (destinationId == R.id.organizer_update_event) {
+                    back_organizerNavigation.navigate(R.id.action_organizer_update_event_to_organizer_edit_event_selection);
+                    return true;
+                }else {
+                    Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
+                }
             }
         }
         return super.onOptionsItemSelected(item);

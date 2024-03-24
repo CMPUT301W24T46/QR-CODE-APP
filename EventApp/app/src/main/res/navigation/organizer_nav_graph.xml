@@ -93,6 +93,9 @@
         <action
             android:id="@+id/action_organizer_edit_event_selection_to_organizer_attendees_list"
             app:destination="@id/organizer_attendees_list" />
+        <action
+            android:id="@+id/action_organizer_edit_event_selection_to_organizer_update_event"
+            app:destination="@id/organizer_update_event" />
     </fragment>
     <fragment
         android:id="@+id/organizer_qrcode"
@@ -109,10 +112,17 @@
         android:name="com.example.eventapp.organizer.OrganizerSeeListOfAttendees"
         android:label="fragment_list_of_attendees"
         tools:layout="@layout/fragment_list_of_attendees" >
-
-        <!-- Define other actions and fragments if needed -->
         <action
             android:id="@+id/action_organizer_attendees_list_to_organizer_edit_event_selection"
+            app:destination="@id/organizer_edit_event_selection" />
+    </fragment>
+    <fragment
+        android:id="@+id/organizer_update_event"
+        android:name="com.example.eventapp.organizer.UpdateEventFragment"
+        android:label="Update Event"
+        tools:layout="@layout/fragment_update_event" >
+        <action
+            android:id="@+id/action_organizer_update_event_to_organizer_edit_event_selection"
             app:destination="@id/organizer_edit_event_selection" />
     </fragment>
 
