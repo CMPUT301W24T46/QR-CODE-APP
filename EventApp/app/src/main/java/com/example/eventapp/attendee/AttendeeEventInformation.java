@@ -23,26 +23,34 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Fragment showing detail information about event for attendees.
  */
 public class AttendeeEventInformation extends Fragment {
 
-    private ImageView bigEventImageView ;
-    private TextView eventNameView ;
+    private ImageView bigEventImageView;
+    private TextView eventNameView;
     private TextView eventDescriptionView;
     private TextView eventDateView;
 
-    private View toolBarBinding ;
+    private View toolBarBinding;
 
     /**
      * Constructor of an instance of AttendeeEventInformation
@@ -55,7 +63,7 @@ public class AttendeeEventInformation extends Fragment {
      * Called at initial creation of this fragment
      *
      * @param savedInstanceState If the fragment is being re-created from
-     * a previous saved state, this is the state.
+     *                           a previous saved state, this is the state.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,6 +110,7 @@ public class AttendeeEventInformation extends Fragment {
             String URL = args.getString("imageURL");
             String eventDate = args.getString("eventDate");
             String eventDescription = args.getString("eventDescription");
+
             eventNameView = view.findViewById(R.id.eventTitleDescrip);
             bigEventImageView = view.findViewById(R.id.biggerEventImage);
             eventDescriptionView = view.findViewById(R.id.eventFullDescription);
@@ -113,12 +122,17 @@ public class AttendeeEventInformation extends Fragment {
 
             Glide.with(requireContext()).load(URL).centerCrop().into(bigEventImageView);
 
-            if (args != null && args.containsKey("eventId")) {
-                String eventId = args.getString("eventId");
+            String eventId = args.getString("eventId");
+            Log.d("AttendeeEventInformation","Eventid:" + eventId);
+            if (eventId != null) {
                 fetchEventInformation(eventId);
+
+                Button checkInButton = view.findViewById(R.id.btn_checkin);
+                checkInButton.setOnClickListener(v -> checkInToEvent(eventId));
             }
         }
     }
+
     private void fetchEventInformation(String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference eventRef = db.collection("events").document(eventId);
@@ -142,4 +156,48 @@ public class AttendeeEventInformation extends Fragment {
         });
     }
 
+    private void checkInToEvent(String eventId) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Check if user has already checked in
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference eventRef = db.collection("Events").document(eventId);
+
+        eventRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                List<String> attendees = (List<String>) documentSnapshot.get("Event Attendees");
+                if (attendees != null && attendees.contains(userId)) {
+                    // User already checked in
+                    Toast.makeText(requireContext(), "You have already checked in to this event", Toast.LENGTH_SHORT).show();
+                } else {
+                    // User has not checked in, add them to the attendees list
+                    if (attendees == null) {
+                        attendees = new ArrayList<>();
+                    }
+                    attendees.add(userId);
+
+                    // Update attendees list in Firestore
+                    List<String> finalAttendees = attendees;
+                    eventRef.set(new HashMap<String, Object>() {{
+                                put("Event Attendees", finalAttendees);
+                            }}, SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> Toast.makeText(requireContext(), "Check in successful", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Log.e("AttendeeEventInfo", "Failed to update attendees list: " + e.getMessage()));
+                }
+            } else {
+                Log.d("AttendeeEventInfo", "Event document does not exist");
+
+                // If the event document does not exist, create it and add the user to the attendees list
+                List<String> attendees = new ArrayList<>();
+                attendees.add(userId);
+
+                // Create event document with attendees list in Firestore
+                eventRef.set(new HashMap<String, Object>() {{
+                            put("Event Attendees", attendees);
+                        }})
+                        .addOnSuccessListener(aVoid -> Toast.makeText(requireContext(), "Check in successful", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Log.e("AttendeeEventInfo", "Failed to create event document: " + e.getMessage()));
+            }
+        }).addOnFailureListener(e -> Log.e("AttendeeEventInfo", "Error checking event attendance: " + e.getMessage()));
+    }
 }
