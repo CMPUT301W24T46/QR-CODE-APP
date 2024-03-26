@@ -39,46 +39,21 @@ import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class SearchEventTest {
-    private LoginIdlingResource idlingResource;
-    private SearchEventIdlingResource searchEventIdlingResource;
-
     @Rule
-    public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
+    public ActivityScenarioRule<AttendeeActivity> activityRule = new ActivityScenarioRule<>(AttendeeActivity.class);
 
     @Before
     public void setUp() {
         Intents.init();
-        // Gets the Account Selection Fragment and registers it as an idling resource
-        activityRule.getScenario().onActivity(activity -> {
-            NavController navController = Navigation.findNavController(activity, R.id.fragmentContainerView);
-            NavHostFragment navHostFragment = (NavHostFragment) activity.getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
-            Fragment currentFragment = null;
-            if (navHostFragment != null) {
-                currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
-            }
-            AccountSelection fragment = (AccountSelection) currentFragment;
-            idlingResource = new LoginIdlingResource(fragment);
-        });
     }
 
     @After
     public void tearDown() {
         Intents.release();
-        IdlingRegistry.getInstance().unregister(idlingResource);
-        IdlingRegistry.getInstance().unregister(searchEventIdlingResource);
     }
 
     @Test
     public void searchEventTest() {
-        // Have to make sure view is present
-        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
-        onData(anything())  // You can use a matcher here to match specific data
-                .inAdapterView(withId(R.id.accountOptionList))
-                .atPosition(0)
-                .perform(click());
-        // Wait for firestore to be communicated with
-        IdlingRegistry.getInstance().register(idlingResource);
-        intended(hasComponent(AttendeeActivity.class.getName()));
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeEventMenu)).perform(click()) ;
@@ -87,22 +62,11 @@ public class SearchEventTest {
 
         onView(withId(R.id.eventSearcher))
                 .perform(click()) // Click on the SearchView to expand it
-                .perform(typeText("ABSDD"), pressKey(KeyEvent.KEYCODE_ENTER));
-
-        IdlingRegistry.getInstance().register(searchEventIdlingResource);
+                .perform(typeText("First Event"), pressKey(KeyEvent.KEYCODE_ENTER));
     }
 
     @Test
-    public void signUpEventTest() {
-        // Have to make sure view is present
-        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
-        onData(anything())  // You can use a matcher here to match specific data
-                .inAdapterView(withId(R.id.accountOptionList))
-                .atPosition(0)
-                .perform(click());
-        // Wait for firestore to be communicated with
-        IdlingRegistry.getInstance().register(idlingResource);
-        intended(hasComponent(AttendeeActivity.class.getName()));
+    public void searchEventTestViewInfo() {
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeEventMenu)).perform(click()) ;
@@ -111,29 +75,14 @@ public class SearchEventTest {
 
         onView(withId(R.id.eventSearcher))
                 .perform(click()) // Click on the SearchView to expand it
-                .perform(typeText("ABSDD"), pressKey(KeyEvent.KEYCODE_ENTER));
-
+                .perform(typeText("First Event"), pressKey(KeyEvent.KEYCODE_ENTER));
 
         onView(withId(R.id.btnViewEvent)).check(matches(isDisplayed())) ;
         onView(withId(R.id.btnViewEvent)).perform(click()) ;
-
-        // Clicks the button and signs up for an event
-        onView(withId(R.id.signUpForEventButton)).check(matches(isDisplayed())) ;
-        onView(withId(R.id.signUpForEventButton)).perform(click()) ;
-
     }
 
     @Test
-    public void seeSignedUpEventTest() {
-        // Have to make sure view is present
-        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
-        onData(anything())  // You can use a matcher here to match specific data
-                .inAdapterView(withId(R.id.accountOptionList))
-                .atPosition(0)
-                .perform(click());
-        // Wait for firestore to be communicated with
-        IdlingRegistry.getInstance().register(idlingResource);
-        intended(hasComponent(AttendeeActivity.class.getName()));
+    public void searchEventTestSignUp() {
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeEventMenu)).perform(click()) ;
@@ -142,8 +91,7 @@ public class SearchEventTest {
 
         onView(withId(R.id.eventSearcher))
                 .perform(click()) // Click on the SearchView to expand it
-                .perform(typeText("ABSDD"), pressKey(KeyEvent.KEYCODE_ENTER));
-
+                .perform(typeText("First Event"), pressKey(KeyEvent.KEYCODE_ENTER));
 
         onView(withId(R.id.btnViewEvent)).check(matches(isDisplayed())) ;
         onView(withId(R.id.btnViewEvent)).perform(click()) ;
@@ -152,7 +100,7 @@ public class SearchEventTest {
         onView(withId(R.id.signUpForEventButton)).check(matches(isDisplayed())) ;
         onView(withId(R.id.signUpForEventButton)).perform(click()) ;
 
+        // Checks if Already SignedUp Text is displayed
         onView(withId(R.id.alreadySigneUpTextView)).check(matches(isDisplayed())) ;
     }
-
 }

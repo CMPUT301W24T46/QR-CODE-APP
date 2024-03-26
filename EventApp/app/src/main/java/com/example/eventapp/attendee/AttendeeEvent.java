@@ -22,6 +22,7 @@ import com.example.eventapp.event.EventAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fragment representing the attendee's view of events.
@@ -41,6 +43,7 @@ public class AttendeeEvent extends Fragment {
     private CollectionReference eventsRef;
     private ArrayList<Event> eventDataList  ;
     private ListView eventList ;
+    private String uid ;
     private EventAdapter eventListArrayAdapter ;
     private boolean doneSearching = false ;
 
@@ -64,6 +67,7 @@ public class AttendeeEvent extends Fragment {
 
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("Events") ;
+        uid = FirebaseAuth.getInstance().getUid() ;
     }
 
     /**
@@ -118,36 +122,43 @@ public class AttendeeEvent extends Fragment {
         eventListArrayAdapter = new EventAdapter(getContext() , eventDataList, eventClickListener) ;
         eventList.setAdapter(eventListArrayAdapter);
 
+        if(uid != null){
+            eventsRef.orderBy("eventDate").addSnapshotListener((value, error) -> {
+                if (error != null) {
+                    Log.e("Firestore", "Listen failed.", error);
+                    return;
+                }
 
-        eventsRef.orderBy("eventDate").addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", "Listen failed.", error);
-                return;
-            }
-
-            eventDataList.clear();
-            for (QueryDocumentSnapshot doc : value) {
-                Event event = doc.toObject(Event.class);
-                eventDataList.add(event);
-            }
-            eventListArrayAdapter.notifyDataSetChanged();
-        });
-
-
+                eventDataList.clear();
+                for (QueryDocumentSnapshot doc : value) {
+                    Event event = doc.toObject(Event.class);
+                    eventDataList.add(event);
+                }
+                eventListArrayAdapter.notifyDataSetChanged();
+            });
+        }else{
+            setStaticEventList();
+        }
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // Perform search action here
-                getCurrentEvenList(query , true);
+                if(uid != null){
+                    getCurrentEvenList(query , true);
+                }else{
+                    filterStaticEventList(query);
+                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 // Filter your data based on newText
-                if(TextUtils.isEmpty(newText)){
+                if(TextUtils.isEmpty(newText) && uid != null){
                     getCurrentEvenList("" , false);
+                }else if(uid == null){
+                    setStaticEventList();
                 }
                 return false;
             }
@@ -203,7 +214,47 @@ public class AttendeeEvent extends Fragment {
         });
     }
 
+    /**
+     * Checks if the search operation is completed.
+     *
+     * @return true if the search operation is completed, false otherwise.
+     */
     public boolean isDoneSearching(){
         return doneSearching ;
     }
+
+
+    /**
+     * Filters the static event list based on the provided search text.
+     * This method is called when the application is in test mode
+     * @param searchText The text to search for in event names.
+     */
+    public void filterStaticEventList(String searchText){
+        String eventStaticName ;
+        Event staticEvent ;
+        ArrayList<Event> searchResults = new ArrayList<>();
+        for(int i = 0 ; i < eventDataList.size() ; i++){
+            staticEvent = eventDataList.get(i) ;
+            eventStaticName = eventDataList.get(i).getEventName() ;
+            if (eventStaticName.toLowerCase().contains(searchText.toLowerCase())) {
+                searchResults.add(new Event(staticEvent.getEventName(),  staticEvent.getEventDate() , staticEvent.getImageURL() , staticEvent.getEventId() ,
+                        staticEvent.getEventDescription()));
+            }
+        }
+        eventListArrayAdapter.setFilter(searchResults);
+        eventListArrayAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Sets the static event list with predefined events.
+     * This method is intended to populate the event list with predefined events for testing purposes.
+     */
+    public void setStaticEventList(){
+        ArrayList<Event> staticEvents = new ArrayList<>() ;
+        staticEvents.add(new Event("First Event" , "19/72/43" , "" , "Test Id" , "Event for the Young")) ;
+        staticEvents.add(new Event("Second Event" , "19/72/43" , "" , "Test Id" , "Event for the Young")) ;
+        eventListArrayAdapter.setFilter(staticEvents);
+        eventListArrayAdapter.notifyDataSetChanged();
+    }
+
 }

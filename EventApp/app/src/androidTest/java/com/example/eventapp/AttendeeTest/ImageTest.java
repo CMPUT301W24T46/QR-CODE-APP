@@ -76,8 +76,6 @@ public class ImageTest {
     public void tearDown() {
         Intents.release();
         IdlingRegistry.getInstance().unregister(idlingResource);
-        IdlingRegistry.getInstance().unregister(deleteIdlingResource);
-        IdlingRegistry.getInstance().unregister(saveImageIdlingResource);
     }
 
     @Test
@@ -136,8 +134,6 @@ public class ImageTest {
         onView(withId(R.id.DeleteImage)).check(matches(isDisplayed())) ;
         onView(withId(R.id.DeleteImage)).perform(click()) ;
 
-        // Idling resource to wait for callback function to return a successful delete
-        IdlingRegistry.getInstance().register(deleteIdlingResource);
     }
 
     @Test
@@ -167,8 +163,6 @@ public class ImageTest {
         // Click on the "Save" button
         onView(withId(R.id.AttendeeAccountSave)).perform(click());
 
-        //Idling resource waiting for save to complete
-        IdlingRegistry.getInstance().register(saveImageIdlingResource);
     }
 
     private ActivityResult createGalleryPickActivityResultStub() {

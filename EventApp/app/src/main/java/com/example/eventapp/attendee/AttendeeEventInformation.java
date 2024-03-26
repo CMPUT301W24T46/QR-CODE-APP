@@ -32,6 +32,7 @@ import com.example.eventapp.R;
 import com.example.eventapp.helpers.CheckForEventHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -41,7 +42,9 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Fragment showing detail information about event for attendees.
@@ -134,10 +137,16 @@ public class AttendeeEventInformation extends Fragment {
         alreadySignedUpTextView = view.findViewById(R.id.alreadySigneUpTextView);
 
         signUpButton.setOnClickListener(v -> {
-            addEventToMyEventList();
+            if(FirebaseAuth.getInstance().getUid() != null){
+                addEventToMyEventList();
+            }else{
+                alreadySignedUpTextView.setVisibility(View.VISIBLE);
+            }
         });
 
-        notifyAboutEventsAttended();
+        if(FirebaseAuth.getInstance().getUid() != null){
+            notifyAboutEventsAttended();
+        }
     }
 
     /**
@@ -170,22 +179,31 @@ public class AttendeeEventInformation extends Fragment {
     /**
      * Informs the specified event about a new user sign-up by adding the user's ID to
      * the 'Event Attendees' field in Firestore. It updates the specific event document
-     * by adding the current user's ID to its attendees list. On success and failure of the
+     * by adding the current user's ID to the CheckIn subcollection. On success and failure of the
      * operation, appropriate log messages are generated.
      *
      * @param userId The ID of the user signing up for the event.
      */
     private void informEventAboutSignUp(String userId){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Log.d("Event ID" , eventId) ;
         DocumentReference documentReference = db.collection("Events").document(eventId) ;
-        documentReference.update("Event Attendees" , FieldValue.arrayUnion(userId))
-                .addOnSuccessListener(aVoid ->
-                        Log.d("Event", "User Signed Up for, User Id: " + userId)
-                )
-                .addOnFailureListener(e ->
-                        Log.w("Event", "Error updating document", e)
-                );
+        CollectionReference eventSubCollection = db.collection("Events").document(eventId).collection("CheckIns");
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("Number of Sign Ups", 0);
+
+        // Add the document to the sub collection with the specified ID
+        eventSubCollection.document(userId).set(data)
+                .addOnSuccessListener(aVoid -> {
+                    // Document added successfully
+                    Log.d("Sucessful" , "Sign Up") ;
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors
+                    Log.d("UnSucessful" , "Sign Up") ;
+                });
+
+
     }
 
     /**

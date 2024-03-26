@@ -16,7 +16,7 @@ public class SearchEventIdlingResource implements IdlingResource{
     }
     @Override
     public String getName() {
-        return LoginIdlingResource.class.getName();
+        return SearchEventIdlingResource.class.getName();
     }
 
     @Override
