@@ -132,6 +132,7 @@ public class AttendeeEventInformation extends Fragment {
             Log.d("EventInfo", "Event Description: " + eventDescription);
 
             Glide.with(requireContext()).load(URL).centerCrop().into(bigEventImageView);
+        }
         Button signUpButton = view.findViewById(R.id.signUpForEventButton) ;
         alreadySignedUpTextView = view.findViewById(R.id.alreadySigneUpTextView);
 
