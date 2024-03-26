@@ -200,14 +200,16 @@ public class CreateEventFragment extends DialogFragment {
 
             imageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                 String imageUrl = uri.toString();
-                Event event = new Event(eventName, eventDate, imageUrl, creatorId, eventDescription);
+                Event event = new Event(eventName, eventDate, imageUrl, eventDescription);
+                event.setCreatorId(creatorId);
                 saveEventToFirestore(event);
             })).addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         // Otherwise
         } else {
             // Create event without image URL
             String imageUrl = "NonImage"; // Default image URL
-            Event event = new Event(eventName, eventDate, imageUrl, creatorId, eventDescription);
+            Event event = new Event(eventName, eventDate, imageUrl, eventDescription);
+            event.setCreatorId(creatorId);
             saveEventToFirestore(event);
         }
     }

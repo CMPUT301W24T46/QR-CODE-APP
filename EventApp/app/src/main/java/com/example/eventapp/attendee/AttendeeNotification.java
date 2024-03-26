@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,10 +21,14 @@ import android.widget.TextView;
 import com.example.eventapp.R;
 import com.example.eventapp.notification.Notification;
 import com.example.eventapp.notification.NotificationAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,8 +38,11 @@ import java.util.ArrayList;
 public class AttendeeNotification extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListView notificationListView;
+    private ArrayAdapter<String> testNotificationAdapter ;
     private NotificationAdapter notificationAdapter;
     private ArrayList<Notification> notificationList;
+
+    private ArrayList<String> testNotificationList;
     /**
      * Constructor of an instance of AttendeeNotification
      */
@@ -52,9 +60,14 @@ public class AttendeeNotification extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         notificationListView = findViewById(R.id.AttendeeNotificationListView);
-        notificationList = new ArrayList<>();
-        notificationAdapter = new NotificationAdapter(this, notificationList);
-        notificationListView.setAdapter(notificationAdapter);
+        testNotificationList = new ArrayList<>() ;
+        testNotificationAdapter = new ArrayAdapter<>(this , R.layout.notification_list_item, testNotificationList) ;
+
+        notificationListView.setAdapter(testNotificationAdapter);
+
+//        notificationList = new ArrayList<>();
+//        notificationAdapter = new NotificationAdapter(this, notificationList);
+//        notificationListView.setAdapter(notificationAdapter);
 
         fetchNotifications();
     }
@@ -64,8 +77,28 @@ public class AttendeeNotification extends AppCompatActivity {
      * and refreshes the adapter upon successful retrieval.
      */
     private void fetchNotifications() {
-        db.collection("Notifications")
-                .get();
+        String uid = FirebaseAuth.getInstance().getUid() ;
+        if(uid != null){
+            DocumentReference notifiyDocUser = db.collection("Notifications").document(uid) ;
+            notifiyDocUser.addSnapshotListener(this, (value, error) -> {
+                if (error != null) {
+                    // Handle errors
+                    return;
+                }
+
+                if (value != null && value.exists()) {
+                    // Get the updated array field from the document
+                    ArrayList<String> updatedArray = (ArrayList<String>) value.get("allNotifications");
+                    if (updatedArray != null) {
+                        testNotificationList.clear();
+                        testNotificationList.addAll(updatedArray);
+                        testNotificationAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+
+
     }
 
     /**

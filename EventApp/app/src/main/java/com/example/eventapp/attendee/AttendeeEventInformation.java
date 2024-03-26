@@ -173,11 +173,6 @@ public class AttendeeEventInformation extends Fragment {
                             Log.w("Event", "Error updating document", e)
                     );
         }
-
-                Button checkInButton = view.findViewById(R.id.btn_checkin);
-                checkInButton.setOnClickListener(v -> checkInToEvent(eventId));
-            }
-        }
     }
 
     /**
@@ -194,7 +189,7 @@ public class AttendeeEventInformation extends Fragment {
         CollectionReference eventSubCollection = db.collection("Events").document(eventId).collection("CheckIns");
 
         Map<String, Object> data = new HashMap<>();
-        data.put("Number of Sign Ups", 0);
+        data.put("Number of Check Ins", 0);
 
         // Add the document to the sub collection with the specified ID
         eventSubCollection.document(userId).set(data)
