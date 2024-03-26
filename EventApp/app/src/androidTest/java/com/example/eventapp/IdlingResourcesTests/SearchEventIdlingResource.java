@@ -1,29 +1,32 @@
 package com.example.eventapp.IdlingResourcesTests;
 
 import androidx.test.espresso.IdlingResource;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.eventapp.attendee.AttendeeActivity;
+import com.example.eventapp.attendee.AttendeeEvent;
 import com.example.eventapp.attendee.CustomizeProfile;
 
-public class DeleteIdlingResource implements IdlingResource {
-    private CustomizeProfile customizeProfile;
+public class SearchEventIdlingResource implements IdlingResource{
+    private AttendeeEvent attendeeEvent;
     private IdlingResource.ResourceCallback resourceCallback;
 
-    public DeleteIdlingResource(CustomizeProfile customizeProfile) {
-        this.customizeProfile = customizeProfile ;
+    public SearchEventIdlingResource(AttendeeEvent attendeeEvent) {
+        this.attendeeEvent = attendeeEvent ;
     }
     @Override
     public String getName() {
-        return DeleteIdlingResource.class.getName();
+        return SearchEventIdlingResource.class.getName();
     }
 
     @Override
     public boolean isIdleNow() {
         // Important part: checks if the login operation is in progress in the fragment
-        if(customizeProfile.isDeleting()){
+        if(attendeeEvent.isDoneSearching()){
             resourceCallback.onTransitionToIdle();
         }else{
         }
-        return customizeProfile.isDeleting();
+        return attendeeEvent.isDoneSearching();
     }
 
     @Override

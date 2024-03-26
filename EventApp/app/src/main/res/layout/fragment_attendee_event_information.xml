@@ -25,8 +25,8 @@
 
     <ImageView
         android:id="@+id/biggerEventImage"
-        android:layout_width="362dp"
-        android:layout_height="297dp"
+        android:layout_width="320dp"
+        android:layout_height="291dp"
         android:layout_marginTop="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.516"
@@ -56,15 +56,27 @@
         app:layout_constraintTop_toBottomOf="@+id/eventTitleDescrip" />
 
     <Button
-        android:id="@+id/btn_checkin"
+        android:id="@+id/signUpForEventButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/check_in"
-        android:background="@drawable/rounded_button_background"
+        android:layout_marginTop="28dp"
+        android:backgroundTint="@color/mainAppColor"
+        android:text="@string/sign_up_for_event"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/biggerEventImage" />
+    <TextView
+        android:id="@+id/alreadySigneUpTextView"
+        android:layout_width="128dp"
+        android:layout_height="33dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/already_signed_up"
+        android:textColor="@color/black"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpForEventButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
