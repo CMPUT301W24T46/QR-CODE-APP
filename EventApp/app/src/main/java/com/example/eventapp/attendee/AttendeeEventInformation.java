@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
@@ -60,7 +61,7 @@ public class AttendeeEventInformation extends Fragment {
     private TextView eventDescriptionView;
     private TextView eventDateView;
 
-    private View toolBarBinding ;
+    private View toolBarBinding;
 
     /**
      * Constructor of an instance of AttendeeEventInformation
@@ -73,7 +74,7 @@ public class AttendeeEventInformation extends Fragment {
      * Called at initial creation of this fragment
      *
      * @param savedInstanceState If the fragment is being re-created from
-     * a previous saved state, this is the state.
+     *                           a previous saved state, this is the state.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -130,9 +131,7 @@ public class AttendeeEventInformation extends Fragment {
             eventDescriptionView.setText(eventDescription);
             Log.d("EventInfo", "Event Description: " + eventDescription);
 
-            Glide.with(requireContext()).load(URL).centerCrop().into(bigEventImageView) ;
-        }
-
+            Glide.with(requireContext()).load(URL).centerCrop().into(bigEventImageView);
         Button signUpButton = view.findViewById(R.id.signUpForEventButton) ;
         alreadySignedUpTextView = view.findViewById(R.id.alreadySigneUpTextView);
 
@@ -174,6 +173,10 @@ public class AttendeeEventInformation extends Fragment {
                     );
         }
 
+                Button checkInButton = view.findViewById(R.id.btn_checkin);
+                checkInButton.setOnClickListener(v -> checkInToEvent(eventId));
+            }
+        }
     }
 
     /**

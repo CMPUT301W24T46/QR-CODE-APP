@@ -128,7 +128,7 @@ public class AttendeeEvent extends Fragment {
                     Log.e("Firestore", "Listen failed.", error);
                     return;
                 }
-
+              
                 eventDataList.clear();
                 for (QueryDocumentSnapshot doc : value) {
                     Event event = doc.toObject(Event.class);

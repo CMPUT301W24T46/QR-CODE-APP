@@ -104,6 +104,13 @@ public class AttendeeHome extends Fragment {
                 startActivity(new Intent(getActivity(), AttendeeNotification.class));
             }
         });
+
+        // navigate to scan QR code
+        Button joinEventButton = view.findViewById(R.id.join_event);
+        joinEventButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(AttendeeHome.this)
+                    .navigate(R.id.action_attendeeHome_to_attendeeQRCodeScan);
+        });
     }
 
 

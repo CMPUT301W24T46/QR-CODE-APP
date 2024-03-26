@@ -185,5 +185,15 @@ public class UserDB {
     public void setTypeOfUser(String typeOfUser) {
         this.typeOfUser = typeOfUser;
     }
+
+    public String getCurrentUserId() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            return currentUser.getUid();
+        } else {
+            return null; // or handle the case when user is not signed in
+        }
+    }
+
 }
 

@@ -1,6 +1,8 @@
 package com.example.eventapp.event;
 
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 
@@ -9,8 +11,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -124,5 +130,31 @@ public class EventDB {
                     }
                 });
     }
+
+    public void getAllEventsForUser(String userId, EventRetrievalListener listener) {
+        db.collection("Events")
+                .whereEqualTo("creatorId", userId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> events = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String eventId = document.getId();
+                        Event event = document.toObject(Event.class);
+                        event.setEventId(eventId);
+                        events.add(event);
+                    }
+                    listener.onEventsRetrieved(events);
+                })
+                .addOnFailureListener(e -> {
+                    listener.onError("Failed to retrieve events: " + e.getMessage());
+                });
+    }
+
+
+    public interface EventRetrievalListener {
+        void onEventsRetrieved(List<Event> events);
+        void onError(String errorMessage);
+    }
+
 
 }

@@ -44,7 +44,6 @@ public class OrganizerEventInfo extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         AppCompatActivity activity = (AppCompatActivity) requireActivity();
         ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
@@ -59,6 +58,8 @@ public class OrganizerEventInfo extends Fragment {
             String eventDate = bundle.getString("eventDate");
             String imageUrl = bundle.getString("imageURL");
             String eventDescription = bundle.getString("eventDescription");
+            String eventId = bundle.getString("eventId");
+//            Log.d("OrganizerEventInfo", "Event ID: " + eventId);
 
             TextView eventNameView = view.findViewById(R.id.eventName_info);
             TextView eventDescriptionView = view.findViewById(R.id.eventDescription_info);
@@ -69,16 +70,20 @@ public class OrganizerEventInfo extends Fragment {
             eventDescriptionView.setText(eventDescription);
             eventDateView.setText(eventDate);
 
-            Log.d("eventDescription", "Event Description: " + eventDescription);
+            // Log.d("eventDescription", "Event Description: " + eventDescription);
 
             // Load the event image
             Glide.with(this).load(imageUrl).into(eventImageView);
+
+            navController = Navigation.findNavController(view);
+            View editEventButton = view.findViewById(R.id.button_editEvent_info);
+            editEventButton.setOnClickListener(v -> {
+                Bundle newBundle = new Bundle();
+                newBundle.putString("eventId", eventId);
+//                Log.d("OrganizerEventInfo", "Navigating with Event ID: " + eventId);
+                navController.navigate(R.id.action_organizerEventInfo_to_organizer_edit_event_selection,newBundle);
+            });
         }
-        navController = Navigation.findNavController(view);
-        View editEventButton = view.findViewById(R.id.button_editEvent_info);
-        editEventButton.setOnClickListener(v -> {
-            navController.navigate(R.id.action_organizerEventInfo_to_organizer_edit_event_selection);
-        });
     }
 
 }

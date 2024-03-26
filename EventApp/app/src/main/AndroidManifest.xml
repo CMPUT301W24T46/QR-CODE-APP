@@ -41,7 +41,8 @@
             android:exported="false" />
         <activity android:name=".organizer.OrganizerNotification"
             android:exported="false" />
-
+        <activity android:name=".organizer.NotificationEventListActivity"
+            android:exported="false" />
         <!--  ADMIN        -->
         <activity android:name=".admin.AdminBrowseProfile"
             android:exported="false" />
@@ -75,6 +76,15 @@
             android:exported="false"/>
         <activity android:name=".organizer.OrganizerQRCode"
             android:exported="false"/>
+        <activity android:name=".organizer.OrganizerSeeListOfAttendees"
+            android:exported="false"/>
+        <activity android:name=".attendee.QRCodeScanFragment"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".attendee.QRCodeScannerActivity"
+            android:exported="false"/>
+        <activity android:name=".organizer.UpdateEventFragment"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -87,5 +97,9 @@
             </intent-filter>
         </activity>
     </application>
+
+    <!-- Camera permission -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
 
 </manifest>

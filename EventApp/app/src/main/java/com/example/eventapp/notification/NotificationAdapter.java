@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.example.eventapp.R;
 import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationAdapter extends ArrayAdapter<Notification> {
     private ArrayList<Notification> notifications;
@@ -21,19 +22,39 @@ public class NotificationAdapter extends ArrayAdapter<Notification> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            view = inflater.inflate(R.layout.fragment_organizer_notification, parent, false);
+        ViewHolder holder;
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_notification_list_item, parent, false);
+            holder = new ViewHolder();
+            holder.titleTextView = convertView.findViewById(R.id.notificationTitle);
+            holder.dateTextView = convertView.findViewById(R.id.notificationDate);
+            holder.messageTextView = convertView.findViewById(R.id.notificationContent);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
         Notification notification = getItem(position);
         if (notification != null) {
-//            TextView title = view.findViewById(R.id.notificationTitle);
-//            TextView message = view.findViewById(R.id.notificationMessage);
-//            title.setText(notification.getTitle());
-//            message.setText(notification.getMessage());
+            holder.titleTextView.setText(notification.getTitle());
+            holder.dateTextView.setText(notification.getTimestamp());
+            holder.messageTextView.setText(notification.getMessage());
         }
-        return view;
+
+        return convertView;
     }
+
+    private static class ViewHolder {
+        TextView titleTextView;
+        TextView dateTextView;
+        TextView messageTextView;
+    }
+
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications.clear();
+        this.notifications.addAll(notifications);
+        notifyDataSetChanged();
+    }
+
 }
