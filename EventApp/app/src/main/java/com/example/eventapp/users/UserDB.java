@@ -30,6 +30,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -153,6 +154,7 @@ public class UserDB {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        createNotificationEntry(uid);
                         authCallback.onSuccess();
                         Log.d("Firestore", "DocumentSnapshot successfully written!");
                     }});
@@ -184,6 +186,41 @@ public class UserDB {
      */
     public void setTypeOfUser(String typeOfUser) {
         this.typeOfUser = typeOfUser;
+    }
+
+    private void createNotificationEntry(String userId){
+        // Create an empty array list
+        ArrayList<String> newNotificationArray = new ArrayList<>();
+
+        // Create a Map to hold the notification data
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put("allNotifications", newNotificationArray);
+
+        // Set a specific document ID
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if(userId!= null){
+            DocumentReference docRef = db.collection("Notifications").document(userId);
+
+            // Create the document with the specified ID
+            // Set the document with the array field
+            docRef.set(notificationData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Document added successfully
+                            // You can handle success here
+                            Log.d("Notification" , "Document Created Successsfully") ;
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Handle errors
+                            Log.e("Firestore", "Error creating notification document with array field", e);
+                        }
+                    });
+        }
     }
 
     public String getCurrentUserId() {
