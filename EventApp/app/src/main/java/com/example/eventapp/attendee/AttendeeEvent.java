@@ -109,6 +109,7 @@ public class AttendeeEvent extends Fragment {
                 bundle.putString("eventDate", event.getEventDate());
                 bundle.putString("imageURL", event.getImageURL());
                 bundle.putString("eventDescription", event.getEventDescription());
+                bundle.putString("eventId", event.getEventId());
                 Navigation.findNavController(rootView).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
             }
         };
@@ -126,6 +127,8 @@ public class AttendeeEvent extends Fragment {
             eventDataList.clear();
             for (QueryDocumentSnapshot doc : value) {
                 Event event = doc.toObject(Event.class);
+                String eventId = doc.getId();
+                event.setEventId(eventId);
                 eventDataList.add(event);
             }
             eventListArrayAdapter.notifyDataSetChanged();
@@ -174,9 +177,11 @@ public class AttendeeEvent extends Fragment {
                     String eventName = documentSnapshot.getString("eventName");
                     String URL = documentSnapshot.getString("imageURL");
                     String eventDate = documentSnapshot.getString("eventDate");
+                    String eventId = documentSnapshot.getId();
                     if(!queryOrDisplay){
-                        searchResults.add(new Event(eventName,eventDate, URL));
-                        continue;
+                        Event event = new Event(eventName, eventDate, URL);
+                        event.setEventId(eventId);
+                        searchResults.add(event);
                     }
 
                     if (eventName.toLowerCase().contains(searchText.toLowerCase())) {
