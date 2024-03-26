@@ -9,6 +9,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.eventapp.R;
+import com.example.eventapp.attendeeNotification.AttendeeNotifAdapter;
+import com.example.eventapp.helpers.ReverseEventList;
 import com.example.eventapp.notification.Notification;
 import com.example.eventapp.notification.NotificationAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,11 +41,9 @@ import java.util.List;
 public class AttendeeNotification extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListView notificationListView;
-    private ArrayAdapter<String> testNotificationAdapter ;
-    private NotificationAdapter notificationAdapter;
-    private ArrayList<Notification> notificationList;
+    private AttendeeNotifAdapter notificationAdapter ;
 
-    private ArrayList<String> testNotificationList;
+    private ArrayList<String> notificationList;
     /**
      * Constructor of an instance of AttendeeNotification
      */
@@ -60,16 +61,20 @@ public class AttendeeNotification extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         notificationListView = findViewById(R.id.AttendeeNotificationListView);
-        testNotificationList = new ArrayList<>() ;
-        testNotificationAdapter = new ArrayAdapter<>(this , R.layout.notification_list_item, testNotificationList) ;
+        notificationList = new ArrayList<>() ;
+        notificationAdapter = new AttendeeNotifAdapter(this , notificationList) ;
 
-        notificationListView.setAdapter(testNotificationAdapter);
+        notificationListView.setAdapter(notificationAdapter);
 
-//        notificationList = new ArrayList<>();
-//        notificationAdapter = new NotificationAdapter(this, notificationList);
-//        notificationListView.setAdapter(notificationAdapter);
 
-        fetchNotifications();
+        String uid = FirebaseAuth.getInstance().getUid();
+
+        if(uid != null){
+            fetchNotifications();
+        }else{
+            staticNotificationList();
+            Log.d("I am" , "NULL") ;
+        }
     }
 
     /**
@@ -88,17 +93,30 @@ public class AttendeeNotification extends AppCompatActivity {
 
                 if (value != null && value.exists()) {
                     // Get the updated array field from the document
-                    ArrayList<String> updatedArray = (ArrayList<String>) value.get("allNotifications");
+                    ArrayList<String> updatedArray = (ArrayList<String>)value.get("allNotifications");
                     if (updatedArray != null) {
-                        testNotificationList.clear();
-                        testNotificationList.addAll(updatedArray);
-                        testNotificationAdapter.notifyDataSetChanged();
+                        ReverseEventList reverseArray = new ReverseEventList() ;
+                        reverseArray.reverseArrayList(updatedArray);
+                        notificationList.clear();
+                        notificationList.addAll(updatedArray);
+                        notificationAdapter.notifyDataSetChanged();
                     }
                 }
             });
         }
 
 
+    }
+
+    private void staticNotificationList(){
+        ArrayList<String> updatedArray = new ArrayList<>() ;
+        updatedArray.add("Event: From Yeno is about to start") ;
+        updatedArray.add("Event True: From Yeno is about to start") ;
+        ReverseEventList reverseArray = new ReverseEventList() ;
+        reverseArray.reverseArrayList(updatedArray);
+        notificationList.clear();
+        notificationList.addAll(updatedArray);
+        notificationAdapter.notifyDataSetChanged();
     }
 
     /**
