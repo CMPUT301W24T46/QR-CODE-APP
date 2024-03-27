@@ -81,6 +81,7 @@
     <string name="select_event">Select Event</string>
     <string name="select_events">Select Events</string>
     <string name="select">Select</string>
+
     <string name="scan_your_qr_code">SCAN YOUR QR CODE</string>
     <string name="scan">SCAN</string>
     <string name="gallery">Gallery</string>
@@ -97,4 +98,9 @@
     <string name="share_to_google">google sharing</string>
     <string name="download_qr_code">Download QR Code</string>
     <string name="notif_placeholder">Notif Placeholder</string>
+    <string name="event_description">Event Description</string>
+    <string name="checked_in_1_times">Checked in 1 times</string>
+    <string name="last_check_in_march_25_2024">Last check-in: March 25, 2024</string>
+    <string name="view">View</string>
+
 </resources>
