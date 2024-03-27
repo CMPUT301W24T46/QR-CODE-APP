@@ -123,4 +123,3 @@ public class CreateNotificationFragment extends DialogFragment {
 
 
 }
-

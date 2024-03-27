@@ -17,6 +17,7 @@ import com.example.eventapp.R;
 import com.example.eventapp.checkIn.AttendeeCheckInAdapter;
 import com.example.eventapp.checkIn.AttendeeCheckInView;
 import com.example.eventapp.checkIn.CheckInController;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -27,6 +28,8 @@ public class OrganizerSeeListOfAttendees extends Fragment{
     private CheckInController controller;
     String eventId;
 
+    private NavController navController;
+    private FirebaseFirestore db;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -59,5 +62,13 @@ public class OrganizerSeeListOfAttendees extends Fragment{
         controller = new CheckInController();
 
         controller.subscribeToEventCheckIns(eventId, adapter);
+        navController = Navigation.findNavController(view);
+        Button buttonCreateAnnouncement = view.findViewById(R.id.button_notifyAttendees);
+        db = FirebaseFirestore.getInstance();
+        buttonCreateAnnouncement.setOnClickListener(v -> {
+            // Show notify attendees dialog
+            CreateNotificationFragment dialogFragment = new CreateNotificationFragment();
+            dialogFragment.show(requireActivity().getSupportFragmentManager(), "CreateNotificationDialog");
+        });
     }
 }
