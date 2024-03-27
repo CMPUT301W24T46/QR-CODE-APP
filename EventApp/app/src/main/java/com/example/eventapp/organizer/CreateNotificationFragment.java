@@ -69,8 +69,6 @@ public class CreateNotificationFragment extends DialogFragment {
         Button confirmButton = view.findViewById(R.id.buttonConfirm);
         confirmButton.setOnClickListener(v -> createNotification());
 
-        Button selectEventsButton = view.findViewById(R.id.selectEventsButton);
-        selectEventsButton.setOnClickListener(v -> openEventSelector());
 
         builder.setView(view);
 
@@ -94,44 +92,10 @@ public class CreateNotificationFragment extends DialogFragment {
         return builder.create();
     }
 
-    // OpenAI, 2024, ChatGPT, Code to openEventSelector method
-    private void openEventSelector() {
-        if (events == null || events.isEmpty()) {
-            Toast.makeText(getContext(), "No events available to select", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Select Event");
-
-        // Prepare a string array to hold event names
-        String[] eventNames = new String[events.size()];
-        String[] eventIds = new String[events.size()];
-        for (int i = 0; i < events.size(); i++) {
-            Event event = events.get(i);
-            eventNames[i] = events.get(i).getEventName();
-            eventIds[i] = event.getEventId();
-        }
-
-        builder.setItems(eventNames, (dialog, which) -> {
-            // event selection
-            String selectedEventName = eventNames[which];
-            String selectedEventId = eventIds[which];
-            Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
-            notificationTitleEditText.setText(selectedEventName);
-            notificationDescriptionEditText.setTag(selectedEventId);
-        });
-
-        builder.create().show();
-    }
-
-
-
     private void createNotification() {
-        String notificationTitle = notificationTitleEditText.getText().toString().trim();
         String notificationDescription = notificationDescriptionEditText.getText().toString().trim();
 
-        if (notificationTitle.isEmpty() || notificationDescription.isEmpty()) {
+        if (notificationDescription.isEmpty()) {
             Toast.makeText(getContext(), "Please fill in all fields!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -143,20 +107,20 @@ public class CreateNotificationFragment extends DialogFragment {
 
         // Get current user ID
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
+        NotificationDB notificationDB = new NotificationDB(FirebaseFirestore.getInstance());
         // Create a Notification object with current user ID
-        Notification notification = new Notification(notificationTitle, notificationDescription, timestamp.toString(), currentUserId, eventId);
+        Notification notification = new Notification("", notificationDescription, timestamp.toString(), currentUserId, eventId);
 
         // Save the notification to the Firestore database
-        NotificationDB notificationDB = new NotificationDB(FirebaseFirestore.getInstance());
         notificationDB.saveNotificationToFirestore(notification);
 
         // Notify listener that notification is created
         if (listener != null) {
             listener.onNotificationCreated();
         }
-
         dismiss();
     }
+
+
 }
 
