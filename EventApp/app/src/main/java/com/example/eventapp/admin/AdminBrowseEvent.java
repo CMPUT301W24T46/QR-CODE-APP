@@ -56,6 +56,7 @@ public class AdminBrowseEvent extends AppCompatActivity {
                 intent.putExtra("eventDescription", event.getEventDescription());
                 startActivity(intent);
             }
+
         };
 
         eventAdapter = new EventAdapter(this, eventDataList, eventClickListener) ;

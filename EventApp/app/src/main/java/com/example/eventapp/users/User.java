@@ -26,6 +26,15 @@ public class User {
       this.typeOfUser = typeOfUser ;
     }
 
+    public User(String id ,String name , String contactInformation ,String homepage ){
+        this.id = id ;
+        this.name = name ;
+        this.contactInformation = contactInformation ;
+        this.homepage = homepage ;
+        this.imageURL= imageURL ;
+        this.typeOfUser = typeOfUser ;
+    }
+
     public String getId() {
         return id;
     }

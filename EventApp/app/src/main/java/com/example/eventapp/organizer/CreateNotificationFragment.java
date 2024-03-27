@@ -17,12 +17,19 @@ import androidx.fragment.app.DialogFragment;
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventDB;
+import com.example.eventapp.notification.Notification;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.google.firebase.Timestamp;
+import com.example.eventapp.notification.NotificationDB;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+
 
 public class CreateNotificationFragment extends DialogFragment {
 
@@ -62,8 +69,6 @@ public class CreateNotificationFragment extends DialogFragment {
         Button confirmButton = view.findViewById(R.id.buttonConfirm);
         confirmButton.setOnClickListener(v -> createNotification());
 
-        Button selectEventsButton = view.findViewById(R.id.selectEventsButton);
-        selectEventsButton.setOnClickListener(v -> openEventSelector());
 
         builder.setView(view);
 
@@ -87,48 +92,35 @@ public class CreateNotificationFragment extends DialogFragment {
         return builder.create();
     }
 
-    // OpenAI, 2024, ChatGPT, Code to openEventSelector method
-    private void openEventSelector() {
-        if (events == null || events.isEmpty()) {
-            Toast.makeText(getContext(), "No events available to select", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Select Event");
-
-        // Prepare a string array to hold event names
-        String[] eventNames = new String[events.size()];
-        for (int i = 0; i < events.size(); i++) {
-            eventNames[i] = events.get(i).getEventName();
-        }
-
-        builder.setItems(eventNames, (dialog, which) -> {
-            // Handle event selection
-            String selectedEventName = eventNames[which];
-            Toast.makeText(getContext(), "Selected Event: " + selectedEventName, Toast.LENGTH_SHORT).show();
-        });
-
-        builder.create().show();
-    }
-
-
-
     private void createNotification() {
-        String notificationTitle = notificationTitleEditText.getText().toString().trim();
         String notificationDescription = notificationDescriptionEditText.getText().toString().trim();
 
-        if (notificationTitle.isEmpty() || notificationDescription.isEmpty()) {
+        if (notificationDescription.isEmpty()) {
             Toast.makeText(getContext(), "Please fill in all fields!", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Generate current timestamp
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+        String timestamp = dateFormat.format(new Date());
+        String eventId = notificationDescriptionEditText.getTag() != null ? notificationDescriptionEditText.getTag().toString() : "";
+
+        // Get current user ID
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        NotificationDB notificationDB = new NotificationDB(FirebaseFirestore.getInstance());
+        // Create a Notification object with current user ID
+        Notification notification = new Notification("", notificationDescription, timestamp.toString(), currentUserId, eventId);
+
+        // Save the notification to the Firestore database
+        notificationDB.saveNotificationToFirestore(notification);
 
         // Notify listener that notification is created
         if (listener != null) {
             listener.onNotificationCreated();
         }
-
         dismiss();
     }
+
+
 }
 

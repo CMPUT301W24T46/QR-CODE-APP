@@ -1,5 +1,7 @@
 package com.example.eventapp.organizer;
 
+import static androidx.test.InstrumentationRegistry.getContext;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -11,6 +13,7 @@ import androidx.navigation.ui.NavigationUI;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
@@ -19,9 +22,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OrganizerActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
+public class OrganizerActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreateNotificationFragment.CreateNotificationListener {
 
     private NavController back_organizerNavigation;
+    private boolean notificationCreatedSuccessfully;
 
     /**
      * Called when the activity is starting. This method performs basic application startup logic
@@ -79,6 +83,9 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             } else if (destinationId == R.id.organizer_attendees_list) {
                 getSupportActionBar().setTitle("Event Information");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }else if (destinationId == R.id.organizer_update_event) {
+                getSupportActionBar().setTitle("Update Event Information");
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         });
@@ -143,8 +150,12 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                     return true;
 
                 }else if (destinationId == R.id.organizer_attendees_list) {
-                        back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
-                        return true;
+                    back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
+                    return true;
+                }
+                else if (destinationId == R.id.organizer_update_event) {
+                    back_organizerNavigation.navigate(R.id.action_organizer_update_event_to_organizer_edit_event_selection);
+                    return true;
                 }else {
                     Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
                 }
@@ -170,5 +181,15 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
             navController.navigate(R.id.action_organizerHome_to_organizerEvent);
         }
 
+    }
+
+    @Override
+    public void onNotificationCreated() {
+        // Show a toast message indicating whether the notification was successfully created or not
+        if (notificationCreatedSuccessfully) {
+            Toast.makeText(getContext(), "Notification created successfully", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Error creating notification", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -4,16 +4,23 @@ public class Notification {
     private String title;
     private String message;
     private String timestamp;
+    private String creatorId;
+    private String eventId;
+    private String type;
+    public static final String TYPE_ATTENDEE_JOIN = "attendee_join";
+
 
     // Constructors
     public Notification() {
         // Firestore
     }
 
-    public Notification(String title, String message, String timestamp) {
+    public Notification(String title, String message, String timestamp, String creatorId, String eventId) {
         this.title = title;
         this.message = message;
         this.timestamp = timestamp;
+        this.creatorId = creatorId;
+        this.eventId = eventId;
     }
 
     // Getters and setters
@@ -25,4 +32,20 @@ public class Notification {
 
     public String getTimestamp() { return timestamp; }
     public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 }

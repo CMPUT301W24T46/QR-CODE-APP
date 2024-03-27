@@ -13,7 +13,7 @@ public class DeleteIdlingResource implements IdlingResource {
     }
     @Override
     public String getName() {
-        return LoginIdlingResource.class.getName();
+        return DeleteIdlingResource.class.getName();
     }
 
     @Override
