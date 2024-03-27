@@ -1,5 +1,7 @@
 package com.example.eventapp.IdlingResourcesTests;
 
+import android.util.Log;
+
 import androidx.test.espresso.IdlingResource;
 
 import com.example.eventapp.attendee.CustomizeProfile;
@@ -13,7 +15,7 @@ public class SaveImageIdlingResource implements IdlingResource{
     }
     @Override
     public String getName() {
-        return LoginIdlingResource.class.getName();
+        return SaveImageIdlingResource.class.getName();
     }
 
     @Override
@@ -21,6 +23,7 @@ public class SaveImageIdlingResource implements IdlingResource{
         // Important part: checks if the login operation is in progress in the fragment
         if(customizeProfile.isSaving()){
             resourceCallback.onTransitionToIdle();
+            Log.d("Save Image" , "Is Idle") ;
         }else{
         }
         return customizeProfile.isSaving();

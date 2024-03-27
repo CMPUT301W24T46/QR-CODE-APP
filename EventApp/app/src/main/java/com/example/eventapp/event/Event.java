@@ -9,15 +9,21 @@ public class Event {
     String eventDescription;
     private String eventId;
 
-    public Event(String eventName , String imageDescription , String imageURL){
+
+//    public Event(String eventName , String imageDescription , String imageURL){
+//        this.eventName = eventName ;
+//        this.imageDescription = imageDescription ;
+//        this.imageURL = imageURL ;
+//    }
+    public Event(String eventName, String imageURL){
         this.eventName = eventName ;
-        this.imageDescription = imageDescription ;
         this.imageURL = imageURL ;
     }
-    public Event(String eventName, String imageURL){
 
+    public Event(String eventName, String imageURL , String eventId){
         this.eventName = eventName ;
         this.imageURL = imageURL ;
+        this.eventId = eventId;
     }
     public Event(String eventName , String eventDate , String imageURL, String eventDescription){
         this.eventName = eventName;
@@ -26,11 +32,11 @@ public class Event {
         this.eventDescription = eventDescription;
     }
 
-    public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription){
+    public Event(String eventName , String eventDate , String imageURL, String eventId, String eventDescription){
         this.eventName = eventName;
         this.eventDate = eventDate;
         this.imageURL = imageURL;
-        this.creatorId = creatorId;
+        this.eventId = eventId;
         this.eventDescription = eventDescription;
     }
     public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription, String eventId){
