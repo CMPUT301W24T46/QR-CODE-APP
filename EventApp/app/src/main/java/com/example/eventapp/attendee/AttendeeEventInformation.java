@@ -186,7 +186,7 @@ public class AttendeeEventInformation extends Fragment {
     private void informEventAboutSignUp(String userId){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference documentReference = db.collection("Events").document(eventId) ;
-        CollectionReference eventSubCollection = db.collection("Events").document(eventId).collection("CheckIns");
+        CollectionReference eventSubCollection = db.collection("Events").document(eventId).collection("Registrations");
 
         Map<String, Object> data = new HashMap<>();
         data.put("Number of Check Ins", 0);

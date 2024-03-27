@@ -33,8 +33,8 @@ public class CheckIn {
     }
 
     // Setter methods
-    public void setAttendeeName(String attendeeName) {
-        this.attendeeId = attendeeName;
+    public void setAttendeeId(String attendeeId) {
+        this.attendeeId = attendeeId;
     }
 
     public void setCheckInLocation(GeoPoint checkInLocation) {
