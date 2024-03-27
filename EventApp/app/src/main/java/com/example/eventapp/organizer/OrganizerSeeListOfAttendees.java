@@ -66,7 +66,7 @@ public class OrganizerSeeListOfAttendees extends Fragment implements AttendeeMan
         if (eventId != null) {
             // Log the event ID and collection path for debugging
             Log.d("Firestore", "Event ID: " + eventId);
-            String collectionPath = "Events/" + eventId + "/checkIns";
+            String collectionPath = "Events/" + eventId + "/CheckIns";
             Log.d("Firestore", "Collection Path: " + collectionPath);
 
             // Fetch attendees from Firestore
