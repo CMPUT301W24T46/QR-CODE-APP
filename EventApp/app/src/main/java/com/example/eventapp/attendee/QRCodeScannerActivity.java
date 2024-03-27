@@ -288,7 +288,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 // Prepare the data to update
                 Map<String, Object> checkInData = new HashMap<>();
                 checkInData.put("Attendee ID", userId);
-                checkInData.put("CheckInTime", FieldValue.serverTimestamp());
+                checkInData.put("CheckInDate", FieldValue.serverTimestamp());
                 checkInData.put("CheckInTimes", checkInTimes);
                 checkInData.put("location", new GeoPoint(latitude, longitude));
 
