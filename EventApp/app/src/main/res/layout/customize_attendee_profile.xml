@@ -77,13 +77,13 @@
         android:layout_height="45dp"
         android:layout_marginTop="24dp"
         android:background="@drawable/rounded_button_background"
-        android:onClick="onCustomizeProfileSaveClicked"
         android:text="@string/AttendeeSave"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/CustomizeImage" />
+<!--    android:onClick="onCustomizeProfileSaveClicked"-->
 
     <Button
         android:id="@+id/DeleteImage"
