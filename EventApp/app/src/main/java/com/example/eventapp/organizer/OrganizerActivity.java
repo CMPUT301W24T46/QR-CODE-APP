@@ -4,6 +4,7 @@ import static androidx.test.InstrumentationRegistry.getContext;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
@@ -25,6 +26,7 @@ import java.util.Set;
 public class OrganizerActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreateNotificationFragment.CreateNotificationListener {
 
     private NavController back_organizerNavigation;
+    private EventView eventView;
     private boolean notificationCreatedSuccessfully;
 
     /**
@@ -42,7 +44,7 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer);
-
+        eventView = new ViewModelProvider(this).get(EventView.class);
 
         Set<Integer> topLevelDestinations = new HashSet<>();
         topLevelDestinations.add(R.id.organizerHome);
@@ -131,41 +133,51 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            NavDestination currentDestination = back_organizerNavigation.getCurrentDestination();
+            String eventId = eventView.getEventId().getValue(); // Directly access eventId
+            if (eventId != null) {
+                handleBackActionWithEventId(eventId);
+            } else {
+                super.onBackPressed();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void handleBackActionWithEventId(String eventId) {
+        NavDestination currentDestination = back_organizerNavigation.getCurrentDestination();
+        if (currentDestination != null) {
+            int destinationId = currentDestination.getId();
             if (currentDestination != null) {
-                int destinationId = currentDestination.getId();
                 if (destinationId == R.id.organizerEventInfo) {
                     // Navigate back from OrganizerEventInfo
                     back_organizerNavigation.navigate(R.id.action_organizerEventInfo_to_organizerEvent);
-                    return true;
                 } else if (destinationId == R.id.organizerNotification) {
                     // Navigate back from OrganizerNotification
                     back_organizerNavigation.navigate(R.id.action_organizerNotification_to_organizerHome);
-                    return true;
                 }else if (destinationId == R.id.organizer_edit_event_selection) {
-                    back_organizerNavigation.navigate(R.id.action_organizer_edit_event_selection_to_organizerEventInfo);
-                    return true;
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventId);
+                    back_organizerNavigation.navigate(R.id.action_organizer_edit_event_selection_to_organizerEventInfo, bundle);
                 }else if (destinationId == R.id.organizer_qrcode) {
-                    back_organizerNavigation.navigate(R.id.action_organizer_qrcode_to_organizer_edit_event_selection);
-                    return true;
-
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventId);
+                    back_organizerNavigation.navigate(R.id.action_organizer_qrcode_to_organizer_edit_event_selection, bundle);
                 }else if (destinationId == R.id.organizer_attendees_list) {
-                    back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection);
-                    return true;
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventId);
+                    back_organizerNavigation.navigate(R.id.action_organizer_attendees_list_to_organizer_edit_event_selection, bundle);
                 }
                 else if (destinationId == R.id.organizer_update_event) {
-                    back_organizerNavigation.navigate(R.id.action_organizer_update_event_to_organizer_edit_event_selection);
-                    return true;
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventId);
+                    back_organizerNavigation.navigate(R.id.action_organizer_update_event_to_organizer_edit_event_selection, bundle);
                 }else {
                     Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
                 }
             }
         }
-        return super.onOptionsItemSelected(item);
     }
-
-
-
 
     /**
      * Handles the event creation callback. Navigates to the organizer event page.
