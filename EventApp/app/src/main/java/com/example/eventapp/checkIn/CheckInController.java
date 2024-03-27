@@ -117,6 +117,30 @@ public class CheckInController {
         });
     }
 
+    // GEOLOCATION
+    // TODO: Get real time updates for gelocation
+    public interface OnLocationsFetched {
+        void onFetched(Map<String, GeoPoint> locations);
+    }
+
+    public void getCheckInLocations (String eventId, OnLocationsFetched callback){
+        CollectionReference checkInRef = eventRef.document(eventId).collection("CheckIns");
+
+        checkInRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            Map<String, GeoPoint> locationsMap = new HashMap<>();
+            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                String attendeeId = documentSnapshot.getString("attendeeId");
+                GeoPoint location = documentSnapshot.getGeoPoint("checkInLocation");
+                if (attendeeId != null && location != null) {
+                    locationsMap.put(attendeeId, location);
+                }
+            }
+            callback.onFetched(locationsMap);
+            Log.e("EventMap", locationsMap.toString());
+
+        }).addOnFailureListener(e -> Log.e("GeolocationController", "Error getting check-in locations: " + e));
+    }
+
 
 
 

@@ -89,6 +89,9 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
             }else if (destinationId == R.id.organizer_update_event) {
                 getSupportActionBar().setTitle("Update Event Information");
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            } else if (destinationId == R.id.organizer_event_map) {
+                getSupportActionBar().setTitle("Location of Check In");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         });
 
@@ -172,7 +175,12 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                     Bundle bundle = new Bundle();
                     bundle.putString("eventId", eventId);
                     back_organizerNavigation.navigate(R.id.action_organizer_update_event_to_organizer_edit_event_selection, bundle);
-                }else {
+                } else if (destinationId == R.id.organizer_event_map) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventId);
+                    back_organizerNavigation.navigate(R.id.action_organizer_event_map_to_organizer_edit_event_selection);
+                }
+                else {
                     Log.d("Navigation", "Unhandled navigation for ID: " + destinationId);
                 }
             }

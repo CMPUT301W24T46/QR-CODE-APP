@@ -47,7 +47,7 @@ public class EventAdapter extends ArrayAdapter<Event> {
         Event event = events.get(position) ;
         TextView eventName= view.findViewById(R.id.eventDescription);
         TextView eventDate = view.findViewById(R.id.eventDate);
-        ImageView eventImageView = view.findViewById(R.id.eventImageList) ;
+        ImageView eventImageView = view.findViewById(R.id.userProfileImage) ;
         Button viewEventButton = view.findViewById(R.id.btnViewEvent) ;
 
         // Handle button click
