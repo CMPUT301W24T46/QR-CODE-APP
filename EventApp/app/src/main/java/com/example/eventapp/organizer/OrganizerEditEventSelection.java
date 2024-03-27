@@ -56,8 +56,10 @@ public class OrganizerEditEventSelection extends Fragment {
         }
         Button btnListAttendee = view.findViewById(R.id.btn_listAttendee);
         btnListAttendee.setOnClickListener(v -> {
-            navController.navigate(R.id.action_organizer_edit_event_selection_to_organizer_attendees_list);
-            Log.e("OrganizerEditEventSelection", "Error: Event ID is null");
+            Bundle attendeeBundle = new Bundle();
+            attendeeBundle.putString("eventId", eventId1);
+            navController.navigate(R.id.action_organizer_edit_event_selection_to_organizer_attendees_list, attendeeBundle);
+//            Log.d("OrganizerEditEventSelection", "EventId passed: " + eventId1);
 
             // Navigate to the list of attendees
 //            Navigation.findNavController(v).navigate(R.id.action_organizer_edit_event_selection_to_organizer_attendees_list);
@@ -85,7 +87,6 @@ public class OrganizerEditEventSelection extends Fragment {
 //            // Handle location check-in button click
 //        });
         navController = Navigation.findNavController(view);
-
 
     }
 }
