@@ -1,0 +1,65 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="100dp"
+    android:background="@drawable/bottom_sheet_background"
+    android:layout_gravity="bottom">
+
+    <TextView
+        android:id="@+id/share_qr_code_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/share_qr_code"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/share_facebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="40dp"
+        android:contentDescription="@string/share_to_facebook"
+        android:src="@drawable/ic_facebook"
+        app:layout_constraintBottom_toTopOf="@+id/download_qrcode"
+        app:layout_constraintEnd_toStartOf="@+id/share_google"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/share_qr_code_title" />
+
+    <ImageView
+        android:id="@+id/share_google"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginBottom="40dp"
+        android:contentDescription="@string/share_to_google"
+        android:src="@drawable/ic_google"
+        app:layout_constraintBottom_toTopOf="@+id/download_qrcode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/share_facebook"
+        app:layout_constraintTop_toBottomOf="@+id/share_qr_code_title" />
+
+    <Button
+        android:id="@+id/download_qrcode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/rounded_button_background"
+        android:drawableStart="@drawable/ic_download"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:text="@string/download_qr_code"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/share_facebook" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
