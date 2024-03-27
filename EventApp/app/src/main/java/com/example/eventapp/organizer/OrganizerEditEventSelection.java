@@ -59,7 +59,7 @@ public class OrganizerEditEventSelection extends Fragment {
             Bundle attendeeBundle = new Bundle();
             attendeeBundle.putString("eventId", eventId1);
             navController.navigate(R.id.action_organizer_edit_event_selection_to_organizer_attendees_list, attendeeBundle);
-            Log.e("OrganizerEditEventSelection", "Error: Event ID is null");
+//            Log.d("OrganizerEditEventSelection", "EventId passed: " + eventId1);
 
             // Navigate to the list of attendees
 //            Navigation.findNavController(v).navigate(R.id.action_organizer_edit_event_selection_to_organizer_attendees_list);

@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.navigation.NavController;
@@ -18,6 +20,7 @@ import com.example.eventapp.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrganizerSeeListOfAttendees extends Fragment implements AttendeeManager.AttendeeRetrievalListener {
@@ -61,27 +64,49 @@ public class OrganizerSeeListOfAttendees extends Fragment implements AttendeeMan
 
     private void fetchEventIdAndAttendees() {
         if (eventId != null) {
-            AttendeeManager attendeeManager = new AttendeeManager();
-            attendeeManager.getAllAttendeesForEvent(eventId, this);
+            // Log the event ID and collection path for debugging
+            Log.d("Firestore", "Event ID: " + eventId);
+            String collectionPath = "Events/" + eventId + "/checkIns";
+            Log.d("Firestore", "Collection Path: " + collectionPath);
+
+            // Fetch attendees from Firestore
+            db.collection(collectionPath)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        Log.d("Firestore", "Number of documents retrieved: " + queryDocumentSnapshots.size());
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            List<String> attendees = new ArrayList<>();
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                String attendeeId = documentSnapshot.getId();
+                                attendees.add(attendeeId);
+                            }
+                            onAttendeesRetrieved(attendees);
+                        } else {
+                            onError("No attendees found for this event");
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Error fetching attendees: " + e.getMessage());
+                        onError("Failed to fetch attendees: " + e.getMessage());
+                    });
         } else {
             onError("Event ID is null");
         }
     }
 
 
-    interface EventIdCallback {
-        void onEventIdReceived(String eventId);
-    }
-
     @Override
     public void onAttendeesRetrieved(List<String> attendees) {
         // Process the retrieved attendees here
         Toast.makeText(requireContext(), "Retrieved " + attendees.size() + " attendees", Toast.LENGTH_SHORT).show();
+        // Update the UI by populating a ListView
+        ListView listView = requireView().findViewById(R.id.listview_attendees);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, attendees);
+        listView.setAdapter(adapter);
     }
 
     @Override
     public void onError(String errorMessage) {
-        // Handle errors during attendee retrieval
         Toast.makeText(requireContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
     }
 }
