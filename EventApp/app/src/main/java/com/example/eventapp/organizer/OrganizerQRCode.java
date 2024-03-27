@@ -6,7 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,6 +34,7 @@ public class OrganizerQRCode extends Fragment {
 
     private ImageView qrCodeImageView;
     private String eventId;
+    private String qrCodeUrl;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,6 +63,18 @@ public class OrganizerQRCode extends Fragment {
                 generateQRCode(eventId);
             }
         }
+        Button shareQRCodeButton = view.findViewById(R.id.btn_share_qrcode);
+        shareQRCodeButton.setOnClickListener(v -> {
+            if (qrCodeUrl != null && !qrCodeUrl.isEmpty()) {
+                // Pass the QR code URL to the ShareQRCodeFragment
+                ShareQRCodeFragment bottomSheet = ShareQRCodeFragment.newInstance(qrCodeUrl, eventId);
+                bottomSheet.show(getParentFragmentManager(), bottomSheet.getTag());
+            } else {
+                // Handle the case where the QR code URL is not available yet
+                Toast.makeText(getContext(), "Please wait, QR code is being prepared.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private void generateQRCode(String eventId) {
@@ -80,10 +96,9 @@ public class OrganizerQRCode extends Fragment {
             StorageReference qrCodeRef = FirebaseStorage.getInstance().getReference(path);
             UploadTask uploadTask = qrCodeRef.putBytes(data);
             uploadTask.addOnSuccessListener(taskSnapshot -> {
-                // Get the download URL and update Firestore
                 qrCodeRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    String downloadUrl = uri.toString();
-                    saveQrCodeUrlToFirestore(eventId, downloadUrl);
+                    qrCodeUrl = uri.toString();
+                    saveQrCodeUrlToFirestore(eventId, qrCodeUrl);
                 });
             }).addOnFailureListener(e -> {
                 e.printStackTrace();

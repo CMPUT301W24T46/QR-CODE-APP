@@ -28,6 +28,11 @@ import androidx.navigation.Navigation;
 
 import com.example.eventapp.R;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
@@ -39,6 +44,8 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class QRCodeScannerActivity extends AppCompatActivity {
 
@@ -137,7 +144,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_GALLERY && resultCode == RESULT_OK && data != null) {
+        if ((requestCode == REQUEST_CODE_GALLERY || requestCode == IntentIntegrator.REQUEST_CODE) && resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
@@ -163,38 +170,73 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             Result result = new MultiFormatReader().decode(binaryBitmap);
             String qrContent = result.getText();
             String eventId = extractEventIdFromUrl(qrContent);
-            // QR Code detected
-            Toast.makeText(this, "QR Code Detected: " + result.getText(), Toast.LENGTH_LONG).show();
             if (eventId != null) {
-                Intent data = new Intent();
-                data.putExtra("eventId", eventId);
-                setResult(RESULT_OK, data);
-                finish();
-            }else {
+                checkInUser(eventId);
+            } else {
                 Toast.makeText(this, "QR Code does not contain a valid event ID.", Toast.LENGTH_SHORT).show();
+                resetScanner();
             }
         } catch (Exception e) {
-            // No QR Code found, hide the previous image and show a Toast message
             selectedImageView.setVisibility(View.GONE);
-            Toast.makeText(this, "No QR Code found. Please try another image or use the scanner.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No QR Code found or QR code doesn't exist. Please try another image or use the scanner.", Toast.LENGTH_LONG).show();
+            resetScanner();
+        }
+    }
+
+    private void checkInUser(String eventId) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            String userId = firebaseUser.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference eventDocRef = db.collection("events").document(eventId);
+            // Add userid to Event Attendees field
+            eventDocRef.update("Event Attendees", FieldValue.arrayUnion(userId))
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Check-in successful!", Toast.LENGTH_SHORT).show();
+                        resetScanner();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Check-in failed: " + e.getMessage() + ". Try again.", Toast.LENGTH_SHORT).show();
+
+                    });
+        } else {
+            Toast.makeText(this, "User ID is null, cannot check in.", Toast.LENGTH_SHORT).show();
         }
     }
     private String extractEventIdFromUrl(String qrContent) {
+        // Direct event ID (simple case)
+        if (qrContent != null && qrContent.matches("^[\\w-]+$")) {
+            return qrContent;
+        }
+
+        // URL with event ID as a part of the path or query parameter
         try {
             Uri uri = Uri.parse(qrContent);
             List<String> segments = uri.getPathSegments();
-            for (String segment : segments) {
-                if (segment.contains("qr_codes")) {
-                    int index = segment.indexOf("qr_codes") + 1;
-                    if (index < segments.size()) {
-                        return segments.get(index).split("\\.")[0]; // Assuming the event ID is directly before the .png part
-                    }
+            for (int i = 0; i < segments.size(); i++) {
+                // Assuming the event ID follows a specific path segment (e.g., '/events/{eventId}')
+                if ("events".equalsIgnoreCase(segments.get(i)) && i + 1 < segments.size()) {
+                    return segments.get(i + 1);
                 }
+            }
+            // Assuming the event ID might be a query parameter (e.g., '?eventId={eventId}')
+            String eventIdQueryParam = uri.getQueryParameter("eventId");
+            if (eventIdQueryParam != null && !eventIdQueryParam.isEmpty()) {
+                return eventIdQueryParam;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // No event ID found
         return null;
+    }
+
+
+    private void resetScanner() {
+        // Hide the selected image view and clear any bitmap set to it
+        selectedImageView.setVisibility(View.GONE);
+        selectedImageView.setImageDrawable(null);
     }
 }
 

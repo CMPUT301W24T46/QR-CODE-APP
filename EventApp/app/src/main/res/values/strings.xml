@@ -91,5 +91,8 @@
     <string name="content">Content</string>
     <string name="Title">Title</string>
     <string name="Delete_notification">Delete</string>
+    <string name="share_to_facebook">facebook sharing</string>
+    <string name="share_to_google">google sharing</string>
+    <string name="download_qr_code">Download QR Code</string>
 
 </resources>
