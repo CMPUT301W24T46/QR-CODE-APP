@@ -6,6 +6,9 @@ public class Notification {
     private String timestamp;
     private String creatorId;
     private String eventId;
+    private String type;
+    public static final String TYPE_ATTENDEE_JOIN = "attendee_join";
+
 
     // Constructors
     public Notification() {
@@ -43,4 +46,6 @@ public class Notification {
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 }

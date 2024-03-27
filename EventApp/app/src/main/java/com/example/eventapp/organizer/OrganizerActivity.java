@@ -1,5 +1,7 @@
 package com.example.eventapp.organizer;
 
+import static androidx.test.InstrumentationRegistry.getContext;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -12,6 +14,7 @@ import androidx.navigation.ui.NavigationUI;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
@@ -20,10 +23,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.HashSet;
 import java.util.Set;
 
-public class OrganizerActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
+public class OrganizerActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreateNotificationFragment.CreateNotificationListener {
 
     private NavController back_organizerNavigation;
     private EventView eventView;
+    private boolean notificationCreatedSuccessfully;
 
     /**
      * Called when the activity is starting. This method performs basic application startup logic
@@ -189,5 +193,15 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
             navController.navigate(R.id.action_organizerHome_to_organizerEvent);
         }
 
+    }
+
+    @Override
+    public void onNotificationCreated() {
+        // Show a toast message indicating whether the notification was successfully created or not
+        if (notificationCreatedSuccessfully) {
+            Toast.makeText(getContext(), "Notification created successfully", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Error creating notification", Toast.LENGTH_SHORT).show();
+        }
     }
 }
