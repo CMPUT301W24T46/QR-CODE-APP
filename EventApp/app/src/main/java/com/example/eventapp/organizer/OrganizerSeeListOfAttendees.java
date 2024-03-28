@@ -7,11 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 
 import com.example.eventapp.R;
 import com.example.eventapp.checkIn.AttendeeCheckInAdapter;
@@ -35,7 +31,7 @@ public class OrganizerSeeListOfAttendees extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_list_of_attendees, container, false);
+        View view = inflater.inflate(R.layout.fragment_organizer_attendee_list, container, false);
 
         // Retrieve the eventId from the arguments
         Bundle arguments = getArguments();

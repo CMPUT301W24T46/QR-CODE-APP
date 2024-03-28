@@ -34,7 +34,7 @@
         android:id="@+id/createNotificationFragment"
         android:name="com.example.eventapp.organizer.CreateNotificationFragment"
         android:label="Create Notification"
-        tools:layout="@layout/fragment_create_notification" >
+        tools:layout="@layout/fragment_organizer_create_notification" >
     </fragment>
     <fragment
         android:id="@+id/organizerAccount"
@@ -83,7 +83,7 @@
         android:id="@+id/organizer_edit_event_selection"
         android:name="com.example.eventapp.organizer.OrganizerEditEventSelection"
         android:label="fragment_edit_event_selection"
-        tools:layout="@layout/fragment_edit_event_selection">
+        tools:layout="@layout/fragment_organizer_edit_event_selection">
         <action
             android:id="@+id/action_organizer_edit_event_selection_to_organizerEventInfo"
             app:destination="@id/organizerEventInfo" />
@@ -113,7 +113,7 @@
         android:id="@+id/organizer_attendees_list"
         android:name="com.example.eventapp.organizer.OrganizerSeeListOfAttendees"
         android:label="fragment_list_of_attendees"
-        tools:layout="@layout/fragment_list_of_attendees" >
+        tools:layout="@layout/fragment_organizer_attendee_list" >
         <action
             android:id="@+id/action_organizer_attendees_list_to_organizer_edit_event_selection"
             app:destination="@id/organizer_edit_event_selection" />
@@ -122,7 +122,7 @@
         android:id="@+id/organizer_update_event"
         android:name="com.example.eventapp.organizer.UpdateEventFragment"
         android:label="Update Event"
-        tools:layout="@layout/fragment_update_event" >
+        tools:layout="@layout/fragment_organizer_update_event" >
         <action
             android:id="@+id/action_organizer_update_event_to_organizer_edit_event_selection"
             app:destination="@id/organizer_edit_event_selection" />

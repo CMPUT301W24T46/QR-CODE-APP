@@ -27,6 +27,7 @@
         android:background="@drawable/rounded_button_background"
         android:text="@string/share_qr_code"
         android:textColor="@color/white"
+        android:backgroundTint="@color/mainAppColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"

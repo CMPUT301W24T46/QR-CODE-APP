@@ -273,8 +273,12 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             String userId = firebaseUser.getUid();
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+//            DocumentReference checkInDocRef = db.collection("Events").document(eventId)
+//                    .collection("CheckIns").document(userId);
+
             DocumentReference checkInDocRef = db.collection("Events").document(eventId)
-                    .collection("CheckIns").document(userId);
+                    .collection("CheckIns").document(); // randomly generate document id
+
 
             db.runTransaction(transaction -> {
                 DocumentSnapshot checkInSnapshot = transaction.get(checkInDocRef);
