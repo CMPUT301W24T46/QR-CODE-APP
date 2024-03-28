@@ -189,7 +189,8 @@ public class AttendeeEventInformation extends Fragment {
         CollectionReference eventSubCollection = db.collection("Events").document(eventId).collection("Registrations");
 
         Map<String, Object> data = new HashMap<>();
-        data.put("Number of Check Ins", 0);
+        data.put("attendeeId", userId);
+        data.put("registrationDate", FieldValue.serverTimestamp());
 
         // Add the document to the sub collection with the specified ID
         eventSubCollection.document(userId).set(data)
@@ -201,8 +202,6 @@ public class AttendeeEventInformation extends Fragment {
                     // Handle any errors
                     Log.d("UnSucessful" , "Sign Up") ;
                 });
-
-
     }
 
     /**

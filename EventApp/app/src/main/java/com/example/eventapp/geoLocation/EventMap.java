@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.eventapp.BuildConfig;
 import com.example.eventapp.R;
 import com.example.eventapp.checkIn.CheckInController;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,10 +20,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.protobuf.Value;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.example.eventapp.BuildConfig;
 
 public class EventMap extends Fragment implements OnMapReadyCallback {
 
@@ -31,6 +34,7 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
     private String eventId;
     private CheckInController controller;
 
+    private String apiKey = BuildConfig.GOOGLE_MAPS_API_KEY;
 
     @Nullable
     @Override
@@ -54,7 +58,6 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
         } else {
             Log.e("EventMap", "SupportMapFragment is null");
         }
-
 
         return view;
     }
