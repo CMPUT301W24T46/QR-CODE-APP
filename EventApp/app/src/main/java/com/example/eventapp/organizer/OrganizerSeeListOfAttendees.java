@@ -68,6 +68,9 @@ public class OrganizerSeeListOfAttendees extends Fragment{
         buttonCreateAnnouncement.setOnClickListener(v -> {
             // Show notify attendees dialog
             CreateNotificationFragment dialogFragment = new CreateNotificationFragment();
+            Bundle args = new Bundle();
+            args.putString("eventId", eventId);
+            dialogFragment.setArguments(args);
             dialogFragment.show(requireActivity().getSupportFragmentManager(), "CreateNotificationDialog");
         });
     }

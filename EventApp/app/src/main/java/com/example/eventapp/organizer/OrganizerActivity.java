@@ -27,7 +27,6 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
 
     private NavController back_organizerNavigation;
     private EventView eventView;
-    private boolean notificationCreatedSuccessfully;
 
     /**
      * Called when the activity is starting. This method performs basic application startup logic
@@ -205,11 +204,7 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
 
     @Override
     public void onNotificationCreated() {
-        // Show a toast message indicating whether the notification was successfully created or not
-        if (notificationCreatedSuccessfully) {
-            Toast.makeText(getContext(), "Notification created successfully", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), "Error creating notification", Toast.LENGTH_SHORT).show();
-        }
+        // Show toast message when notification created
+        Toast.makeText(getApplicationContext(), "Notification created successfully", Toast.LENGTH_SHORT).show();
     }
 }
