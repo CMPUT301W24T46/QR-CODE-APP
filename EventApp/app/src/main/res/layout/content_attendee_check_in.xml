@@ -48,9 +48,10 @@
         android:layout_marginTop="28dp"
         android:layout_marginEnd="16dp"
         android:text="@string/view"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="12sp"
         android:visibility="visible"
+        android:backgroundTint="#FFDB58"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

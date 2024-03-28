@@ -102,5 +102,5 @@
     <string name="checked_in_1_times">Checked in 1 times</string>
     <string name="last_check_in_march_25_2024">Last check-in: March 25, 2024</string>
     <string name="view">View</string>
-
+    <string name="google_maps_key">GOOGLE_MAPS_KEY</string>
 </resources>
