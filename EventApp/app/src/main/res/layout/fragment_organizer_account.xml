@@ -4,17 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".organizer.OrganizerAccount">
+    tools:context=".attendee.AttendeeAccount">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:text="@string/organizer_account"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Button
+        android:id="@+id/organizer_btnCustomizeProfile"
+        android:layout_width="375dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="124dp"
+        android:layout_marginBottom="56dp"
+        android:background="@drawable/rounded_button_background"
+        android:drawableStart="@drawable/ic_person"
+        android:onClick="onCustomizeProfileClicked"
+        android:padding="30dp"
+        android:text="@string/edit_profile"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/organizer_btnSetting"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/organizer_btnSetting"
+        android:layout_width="375dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="96dp"
+        android:background="@drawable/rounded_button_background"
+        android:drawableStart="@drawable/ic_lock"
+        android:onClick="onSettingClicked"
+        android:padding="30dp"
+        android:text="@string/Setting"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_btnCustomizeProfile" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

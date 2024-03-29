@@ -5,71 +5,256 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.SearchView;
+
 
 import com.example.eventapp.R;
+import com.example.eventapp.event.Event;
+import com.example.eventapp.event.EventAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AttendeeEvent#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment representing the attendee's view of events.
  */
 public class AttendeeEvent extends Fragment {
+    private View rootView;
+    private FirebaseFirestore db;
+    private SearchView searchView ;
+    private CollectionReference eventsRef;
+    private ArrayList<Event> eventDataList  ;
+    private ListView eventList ;
+    private String uid ;
+    private EventAdapter eventListArrayAdapter ;
+    private boolean doneSearching = false ;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    /**
+     * Constructor of an instance of AttendeeEvent
+     */
     public AttendeeEvent() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AttendeeEvent.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AttendeeEvent newInstance(String param1, String param2) {
-        AttendeeEvent fragment = new AttendeeEvent();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
+    /**
+     * called at initial creation of fragment.
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+        db = FirebaseFirestore.getInstance();
+        eventsRef = db.collection("Events") ;
+        uid = FirebaseAuth.getInstance().getUid() ;
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to. The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_attendee_event, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned,
+     * but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        this.rootView = view;
 
+        searchView = view.findViewById(R.id.eventSearcher);
+        eventList = view.findViewById(R.id.eventListView) ;
+
+        eventDataList = new ArrayList<>() ;
+
+        // Implement the OnEventClickListener
+        EventAdapter.OnEventClickListener eventClickListener = new EventAdapter.OnEventClickListener() {
+            @Override
+            public void onEventClick(Event event) {
+                Bundle bundle = new Bundle();
+                bundle.putString("eventName", event.getEventName());
+                bundle.putString("eventDate", event.getEventDate());
+                bundle.putString("imageURL", event.getImageURL());
+                bundle.putString("eventDescription", event.getEventDescription());
+                bundle.putString("eventId" , event.getEventId());
+                Navigation.findNavController(rootView).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
+            }
+        };
+
+        eventListArrayAdapter = new EventAdapter(getContext() , eventDataList, eventClickListener) ;
+        eventList.setAdapter(eventListArrayAdapter);
+
+        if(uid != null){
+            eventsRef.orderBy("eventDate").addSnapshotListener((value, error) -> {
+                if (error != null) {
+                    Log.e("Firestore", "Listen failed.", error);
+                    return;
+                }
+              
+                eventDataList.clear();
+                for (QueryDocumentSnapshot doc : value) {
+                    Event event = doc.toObject(Event.class);
+                    eventDataList.add(event);
+                }
+                eventListArrayAdapter.notifyDataSetChanged();
+            });
+        }else{
+            setStaticEventList();
+        }
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Perform search action here
+                if(uid != null){
+                    getCurrentEvenList(query , true);
+                }else{
+                    filterStaticEventList(query);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter your data based on newText
+                if(TextUtils.isEmpty(newText) && uid != null){
+                    getCurrentEvenList("" , false);
+                }else if(uid == null){
+                    setStaticEventList();
+                }
+                return false;
+            }
+        });
 
     }
+
+    /**
+     * Retrieves the current list of events from firebase based on a search query.
+     *
+     * @param searchText     The text to search for in event names.
+     * @param queryOrDisplay A boolean indicating whether to perform a query or display all events.
+     */
+    public void getCurrentEvenList(String searchText, boolean queryOrDisplay){
+        Task<QuerySnapshot> query;
+
+        query = eventsRef.orderBy("eventDate").get();
+        query.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                eventDataList.clear();
+                ArrayList<Event> searchResults = new ArrayList<>();
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    // Retrieve data from each document
+                    String eventName = documentSnapshot.getString("eventName");
+                    String URL = documentSnapshot.getString("imageURL");
+                    String eventDate = documentSnapshot.getString("eventDate");
+                    String eventId = documentSnapshot.getId() ;
+                    String eventDescription = documentSnapshot.getString("eventDescription") ;
+                    if(!queryOrDisplay){
+                        searchResults.add(new Event(eventName,  eventDate , URL , eventId , eventDescription));
+                        continue;
+                    }
+
+                    if (eventName.toLowerCase().contains(searchText.toLowerCase())) {
+                        searchResults.add(new Event(eventName,  eventDate , URL , eventId , eventDescription));
+                    }
+                }
+
+                eventListArrayAdapter.setFilter(searchResults);
+                eventListArrayAdapter.notifyDataSetChanged();
+
+                if(!searchText.equals("")){
+                    doneSearching = true ;
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Handle failure
+                Log.e("TAG", "Error getting documents: " + e);
+            }
+        });
+    }
+
+    /**
+     * Checks if the search operation is completed.
+     *
+     * @return true if the search operation is completed, false otherwise.
+     */
+    public boolean isDoneSearching(){
+        return doneSearching ;
+    }
+
+
+    /**
+     * Filters the static event list based on the provided search text.
+     * This method is called when the application is in test mode
+     * @param searchText The text to search for in event names.
+     */
+    public void filterStaticEventList(String searchText){
+        String eventStaticName ;
+        Event staticEvent ;
+        ArrayList<Event> searchResults = new ArrayList<>();
+        for(int i = 0 ; i < eventDataList.size() ; i++){
+            staticEvent = eventDataList.get(i) ;
+            eventStaticName = eventDataList.get(i).getEventName() ;
+            if (eventStaticName.toLowerCase().contains(searchText.toLowerCase())) {
+                searchResults.add(new Event(staticEvent.getEventName(),  staticEvent.getEventDate() , staticEvent.getImageURL() , staticEvent.getEventId() ,
+                        staticEvent.getEventDescription()));
+            }
+        }
+        eventListArrayAdapter.setFilter(searchResults);
+        eventListArrayAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Sets the static event list with predefined events.
+     * This method is intended to populate the event list with predefined events for testing purposes.
+     */
+    public void setStaticEventList(){
+        ArrayList<Event> staticEvents = new ArrayList<>() ;
+        staticEvents.add(new Event("First Event" , "19/72/43" , "" , "Test Id" , "Event for the Young")) ;
+        staticEvents.add(new Event("Second Event" , "19/72/43" , "" , "Test Id" , "Event for the Young")) ;
+        eventListArrayAdapter.setFilter(staticEvents);
+        eventListArrayAdapter.notifyDataSetChanged();
+    }
+
 }

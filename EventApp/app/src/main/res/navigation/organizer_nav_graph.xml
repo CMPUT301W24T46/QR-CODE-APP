@@ -9,15 +9,136 @@
         android:id="@+id/organizerHome"
         android:name="com.example.eventapp.organizer.OrganizerHome"
         android:label="fragment_organizer_home"
-        tools:layout="@layout/fragment_organizer_home" />
+        tools:layout="@layout/fragment_organizer_home" >
+        <action
+            android:id="@+id/action_organizerHome_to_organizerAccount"
+            app:destination="@id/organizerAccount" />
+        <action
+            android:id="@+id/action_organizerHome_to_organizerEvent"
+            app:destination="@id/organizerEvent" />
+        <action
+            android:id="@+id/action_organizerHome_to_organizerNotification"
+            app:destination="@id/organizerNotification" />
+    </fragment>
+    <fragment
+        android:id="@+id/notificationEventList"
+        android:name="com.example.eventapp.organizer.NotificationEventListFragment"
+        android:label="Notification Event List"
+        tools:layout="@layout/fragment_notification_event_list" >
+        <action
+            android:id="@+id/action_notificationEventList_to_createNotification"
+            app:destination="@id/createNotificationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createNotificationFragment"
+        android:name="com.example.eventapp.organizer.CreateNotificationFragment"
+        android:label="Create Notification"
+        tools:layout="@layout/fragment_organizer_create_notification" >
+    </fragment>
     <fragment
         android:id="@+id/organizerAccount"
         android:name="com.example.eventapp.organizer.OrganizerAccount"
         android:label="fragment_organizer_account"
-        tools:layout="@layout/fragment_organizer_account" />
+        tools:layout="@layout/fragment_organizer_account" >
+        <action
+            android:id="@+id/action_organizerAccount_to_organizerHome"
+            app:destination="@id/organizerHome" />
+    </fragment>
     <fragment
         android:id="@+id/organizerEvent"
         android:name="com.example.eventapp.organizer.OrganizerEvent"
         android:label="fragment_organizer_event"
-        tools:layout="@layout/fragment_organizer_event" />
+        tools:layout="@layout/fragment_organizer_event" >
+        <action
+            android:id="@+id/action_organizerEvent_to_organizerHome"
+            app:destination="@id/organizerHome" />
+        <action
+            android:id="@+id/action_organizerEvent_to_organizerEventInfo"
+            app:destination="@id/organizerEventInfo" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/organizerNotification"
+        android:name="com.example.eventapp.organizer.OrganizerNotification"
+        android:label="fragment_organizer_notification"
+        tools:layout="@layout/fragment_organizer_notification" >
+        <action
+            android:id="@+id/action_organizerNotification_to_organizerHome"
+            app:destination="@id/organizerHome" />
+    </fragment>
+    <fragment
+        android:id="@+id/organizerEventInfo"
+        android:name="com.example.eventapp.organizer.OrganizerEventInfo"
+        android:label="fragment_organizer_event_info"
+        tools:layout="@layout/fragment_organizer_event_info" >
+        <action
+            android:id="@+id/action_organizerEventInfo_to_organizerEvent"
+            app:destination="@id/organizerEvent" />
+        <action
+            android:id="@+id/action_organizerEventInfo_to_organizer_edit_event_selection"
+            app:destination="@id/organizer_edit_event_selection" />
+    </fragment>
+    <fragment
+        android:id="@+id/organizer_edit_event_selection"
+        android:name="com.example.eventapp.organizer.OrganizerEditEventSelection"
+        android:label="fragment_edit_event_selection"
+        tools:layout="@layout/fragment_organizer_edit_event_selection">
+        <action
+            android:id="@+id/action_organizer_edit_event_selection_to_organizerEventInfo"
+            app:destination="@id/organizerEventInfo" />
+        <action
+            android:id="@+id/action_organizer_edit_event_selection_to_organizer_qrcode"
+            app:destination="@id/organizer_qrcode" />
+        <action
+            android:id="@+id/action_organizer_edit_event_selection_to_organizer_attendees_list"
+            app:destination="@id/organizer_attendees_list" />
+        <action
+            android:id="@+id/action_organizer_edit_event_selection_to_organizer_update_event"
+            app:destination="@id/organizer_update_event" />
+        <action android:id="@+id/action_organizer_edit_event_selection_to_organizer_event_map"
+            app:destination="@id/organizer_event_map" />
+    </fragment>
+    <fragment
+        android:id="@+id/organizer_qrcode"
+        android:name="com.example.eventapp.organizer.OrganizerQRCode"
+        android:label="fragment_edit_event_selection"
+        tools:layout="@layout/fragment_qrcode_info">
+        <action
+            android:id="@+id/action_organizer_qrcode_to_organizer_edit_event_selection"
+            app:destination="@id/organizer_edit_event_selection" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/organizer_attendees_list"
+        android:name="com.example.eventapp.organizer.OrganizerSeeListOfAttendees"
+        android:label="fragment_list_of_attendees"
+        tools:layout="@layout/fragment_organizer_attendee_list" >
+        <action
+            android:id="@+id/action_organizer_attendees_list_to_organizer_edit_event_selection"
+            app:destination="@id/organizer_edit_event_selection" />
+    </fragment>
+    <fragment
+        android:id="@+id/organizer_update_event"
+        android:name="com.example.eventapp.organizer.UpdateEventFragment"
+        android:label="Update Event"
+        tools:layout="@layout/fragment_organizer_update_event" >
+        <action
+            android:id="@+id/action_organizer_update_event_to_organizer_edit_event_selection"
+            app:destination="@id/organizer_edit_event_selection" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/organizer_event_map"
+        android:name="com.example.eventapp.geoLocation.EventMap"
+        android:label="fragment_event_map"
+        tools:layout="@layout/fragment_organizer_event_map" >
+
+        <action
+            android:id="@+id/action_organizer_event_map_to_organizer_edit_event_selection"
+            app:destination="@id/organizer_edit_event_selection" />
+
+    </fragment>
+
+
 </navigation>

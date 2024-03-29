@@ -2,18 +2,25 @@ package com.example.eventapp.admin;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.example.eventapp.R;
+import com.example.eventapp.SelectOptionsAdapter;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AdminHome#newInstance} factory method to
- * create an instance of this fragment.
+ * A  {@link Fragment} subclass.
+ * Use the {@link AdminHome#newInstance} factory method to create an instance of this fragment.
+ * Displays  a list of administrative options like browsing profiles, events, and images.
  */
 public class AdminHome extends Fragment {
 
@@ -26,8 +33,15 @@ public class AdminHome extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private ListView adminListView;
+    private AdminOptionsAdapter adminOptionsAdapter;
+    private String[] adminOptions = new String[]{"Browse Profiles", "Browse Events", "Browse Images"};
+
+
+    /**
+     * Required empty constructor for fragment initialization.
+     */
     public AdminHome() {
-        // Required empty public constructor
     }
 
     /**
@@ -48,6 +62,10 @@ public class AdminHome extends Fragment {
         return fragment;
     }
 
+    /**
+     * Handles initial creation of the fragment.
+     * @param savedInstanceState previously saved state of fragment if the fragment has been run before
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,10 +75,53 @@ public class AdminHome extends Fragment {
         }
     }
 
+    /**
+     * Fragment instantiate its user interface view.
+     * Called after onCreate(Bundle)
+     *
+     * @param inflater           The LayoutInflater object used to inflate views
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState previously saved state of fragment if the fragment has been run before
+     * @return Return the View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_home, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_admin_home, container, false);
+
+        // Initialize the ListView and the adapter
+        adminListView = rootView.findViewById(R.id.adminOptions);
+        adminOptionsAdapter = new AdminOptionsAdapter(getContext(), adminOptions);
+
+        // Set the adapter to the ListView
+        adminListView.setAdapter(adminOptionsAdapter);
+
+        // Set the item click listener if necessary
+        adminListView.setOnItemClickListener((parent, view, position, id) -> {
+            navigateToPage(view, parent, position);
+        });
+
+        return rootView;
     }
+
+    /**
+     * Handles navigation to profile, event, and image admin pages based on the selected option in the ListView
+     *
+     * @param view     The view that was clicked.
+     * @param parent   The AdapterView for the list.
+     * @param position The position of the view in the adapter.
+     */
+    private void navigateToPage(View view , AdapterView<?> parent , int position){
+        String selectedPage = (String) parent.getItemAtPosition(position) ;
+        NavController adminNavController = Navigation.findNavController(view) ;
+        if(selectedPage.equals("Browse Profiles")){
+            adminNavController.navigate(R.id.action_adminHome_to_adminProfiles);
+        }else if(selectedPage.equals("Browse Events")){
+            adminNavController.navigate(R.id.action_adminHome_to_adminEvents);
+        }else if(selectedPage.equals("Browse Images")){
+            adminNavController.navigate(R.id.action_adminHome_to_adminImages);
+        }
+    }
+
 }

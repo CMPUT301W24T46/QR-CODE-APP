@@ -1,66 +1,67 @@
 package com.example.eventapp.attendee;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.eventapp.R;
 
 /**
+ * Account page for Attendee to access profile editing function and others.
  * A simple {@link Fragment} subclass.
- * Use the {@link AttendeeAccount#newInstance} factory method to
+ * Use the {@link AttendeeAccount} factory method to
  * create an instance of this fragment.
  */
 public class AttendeeAccount extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    /**
+     * Constructor of an instance of AttendeeAccount
+     */
     public AttendeeAccount() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Called to do initial creation of the fragment.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AttendeeAccount.
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state,
+     *                           this is the state.
      */
-    // TODO: Rename and change types and number of parameters
-    public static AttendeeAccount newInstance(String param1, String param2) {
-        AttendeeAccount fragment = new AttendeeAccount();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
+    /**
+     * Inflates the layout for the attendee account fragment and initializes UI components.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState A Bundle containing the fragment's previously saved state, if any.
+     * @return The root View of the inflated layout for the fragment.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_attendee_account, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_attendee_account, container, false);
+
+        Button btnCustomizeProfile = rootView.findViewById(R.id.btnCustomizeProfile);
+
+        btnCustomizeProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CustomizeProfile.class);
+                startActivity(intent);
+            }
+        });
+
+        return rootView;
     }
 }

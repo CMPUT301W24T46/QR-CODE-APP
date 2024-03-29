@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/attendeeInfoId"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".attendee.AttendeeEventInformation">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        android:id="@+id/eventTitleDescrip"
+        android:layout_width="286dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="56dp"
+        android:gravity="center"
+        android:text="@string/hello_blank_fragment"
+        android:textColor="@color/black"
+        android:textSize="27dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/biggerEventImage"
+        android:layout_width="320dp"
+        android:layout_height="291dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/eventFullDescription"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/eventFullDescription"
+        android:layout_width="362dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="30dp"
+        android:text="Event Description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.53"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/attendee_event_date_time" />
+
+    <TextView
+        android:id="@+id/attendee_event_date_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="@string/event_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/eventTitleDescrip" />
+
+    <Button
+        android:id="@+id/signUpForEventButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:backgroundTint="@color/mainAppColor"
+        android:text="@string/sign_up_for_event"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/biggerEventImage" />
+    <TextView
+        android:id="@+id/alreadySigneUpTextView"
+        android:layout_width="128dp"
+        android:layout_height="33dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/already_signed_up"
+        android:textColor="@color/black"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpForEventButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

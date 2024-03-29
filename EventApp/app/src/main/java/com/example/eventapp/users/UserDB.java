@@ -1,6 +1,9 @@
 package com.example.eventapp.users;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,26 +15,34 @@ import android.content.Context;
 import android.app.Activity;
 
 import com.example.eventapp.R;
+import com.example.eventapp.attendee.AttendeeActivity;
+import com.example.eventapp.document_reference.DocumentReferenceChecker;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * This class is responsible for managing user data in Firestore and authentication
+ * via FirebaseAuth. It includes methods for anonymous user authentication,
+ * updating user profiles, and adding new user information to the database.
+ */
 public class UserDB {
 
     private String uid ;
-    private User user ;
     private String typeOfUser ;
-    private int navigationPageId;
-    private NavController selectAccountController ;
     private final FirebaseAuth mAuth ;
     private final FirebaseFirestore dbQRApp ;
     private final CollectionReference userRef;
@@ -39,6 +50,23 @@ public class UserDB {
     private final Context context ;
     private final Activity activity ;
 
+    /**
+     * Defines the callback interface for user authentication.
+     * This interface should be implemented by class that handles navigation based
+     * on authentication result
+     */
+    public interface AuthCallbackAttendee {
+        void onSuccess();
+    }
+
+    /**
+     * Constructor for the UserDB class. Initializes the FirebaseAuth, FirebaseFirestore,
+     * and Firestore settings for offline support.
+     *
+     * @param context The context from which this class is invoked.
+     * @param activity The activity from which this class is invoked.
+     * @param dbQRApp The FirebaseFirestore instance for database operations.
+     */
     public UserDB(Context context , Activity activity , FirebaseFirestore dbQRApp) {
         mAuth = FirebaseAuth.getInstance();
         this.dbQRApp = dbQRApp ;
@@ -53,40 +81,35 @@ public class UserDB {
         dbQRApp.setFirestoreSettings(settings);
     }
 
-    public void  getUserInfoAttendee(){
+    /**
+     * Retrieves user information for attendees. If the current user is signed in anonymously,
+     * it updates the profile in the database. Otherwise, it initiates anonymous login.
+     *
+     * @param authCallback The callback interface to handle authentication events.
+     */
+    public void  getUserInfoAttendee(AuthCallbackAttendee authCallback){
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null && currentUser.isAnonymous()) {
             // User is signed in anonymously
             uid = currentUser.getUid();
-            selectAccountController.navigate(navigationPageId);
-            Log.d("AnonymousUser", "User already signed in anonymously with UID: " + uid);
+            updateProfileInDatabase();
+            authCallback.onSuccess();
         } else {
             // No user is signed in or the signed-in user is not anonymous
-            anonymousLogin(context , activity);
+            anonymousLogin(context , activity, authCallback);
         }
     }
 
-    public void getUserInfoOrganizer(){
 
-    }
-
-    public void getUserInfoAdministrator(){
-
-    }
-
-    public void setNavController(NavController navController) {
-        this.selectAccountController = navController;
-    }
-
-    public int getNavigationPageId() {
-        return navigationPageId;
-    }
-
-    public void setNavigationPageId(int navigationPageId) {
-        this.navigationPageId = navigationPageId;
-    }
-
-    private void anonymousLogin(Context context , Activity activity){
+    /**
+     * Handles anonymous user login using FirebaseAuth. Upon success, it adds user information
+     * to the database.
+     *
+     * @param context The context from which this method is invoked.
+     * @param activity The activity from which this method is invoked.
+     * @param authCallback The callback interface to handle authentication events.
+     */
+    private void anonymousLogin(Context context , Activity activity ,AuthCallbackAttendee authCallback){
         mAuth.signInAnonymously()
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -97,7 +120,7 @@ public class UserDB {
                             FirebaseUser user = task.getResult().getUser();
                             // You can update UI or perform other actions here
                             String uid = user.getUid() ;
-                            addUserInformation(uid);
+                            addUserInformation(uid , authCallback);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInAnonymously:failure", task.getException());
@@ -108,104 +131,105 @@ public class UserDB {
                 });
     }
 
-    private void addUserInformation(String uid){
-        Log.d("Write" , uid) ;
-        HashMap<String, String> data = new HashMap<>();
+    /**
+     * Adds user information to the Firestore database. This method is called after
+     * successful anonymous authentication.
+     *
+     * @param uid The unique identifier for the user.
+     * @param authCallback The callback interface to handle post-addition events.
+     */
+    private void addUserInformation(String uid , AuthCallbackAttendee authCallback){
+        HashMap<String, Object> data = new HashMap<>();
+        DocumentReferenceChecker documentReferenceChecker = new DocumentReferenceChecker() ;
+
         data.put("id", uid);
         data.put("name", "");
         data.put("homepage", "");
         data.put("typeOfUser" , typeOfUser) ;
         data.put("contactInformation", "");
-        user = new User(uid , "" , "" , "" , null , typeOfUser) ;
+        data.put("imageUrl", documentReferenceChecker.documentReferenceWrite());
 
         userRef.document(uid)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        selectAccountController.navigate(navigationPageId);
+                        createNotificationEntry(uid);
+                        authCallback.onSuccess();
                         Log.d("Firestore", "DocumentSnapshot successfully written!");
                     }});
 
     }
 
-    public interface AuthCallback {
-        void onSuccess();
-        void onFailure(String errorMessage);
+    /**
+     * Updates the type of user in the Firestore database for the current user.
+     * This method is typically called after a successful login or user type change.
+     */
+    private void updateProfileInDatabase() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            String userId = user.getUid();
+
+            DocumentReference userRef = db.collection("Users").document(userId);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("typeOfUser", typeOfUser);
+            userRef.update(updates);
+        }
     }
 
-    // ORGANIZER SIGN UP
-    public void signUpUser(String email, String password, String userName, AuthCallback callback) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                        if (firebaseUser != null) {
-                            String uid = firebaseUser.getUid();
-                            HashMap<String, Object> userData = new HashMap<>();
-                            userData.put("email", email);
-                            userData.put("username", userName);
-                            userData.put("id", uid);
-                            userData.put("name", "");
-                            userData.put("homepage", "");
-                            userData.put("typeOfUser" , "organizer") ;
-                            userData.put("contactInformation", "");
+    /**
+     * Sets the type of user.
+     * @param typeOfUser The type of user (e.g., "Attendee", "Organizer", "Administrator").
+     */
+    public void setTypeOfUser(String typeOfUser) {
+        this.typeOfUser = typeOfUser;
+    }
 
-                            // set user data in Users collection
-                            addOrganizerInfo(uid, userData, callback);
+    private void createNotificationEntry(String userId){
+        // Create an empty array list
+        ArrayList<String> newNotificationArray = new ArrayList<>();
+
+        // Create a Map to hold the notification data
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put("allNotifications", newNotificationArray);
+
+        // Set a specific document ID
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if(userId!= null){
+            DocumentReference docRef = db.collection("Notifications").document(userId);
+
+            // Create the document with the specified ID
+            // Set the document with the array field
+            docRef.set(notificationData)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            // Document added successfully
+                            // You can handle success here
+                            Log.d("Notification" , "Document Created Successsfully") ;
                         }
-                    } else {
-                        Log.w("UserSignUp", "Failed to register user", task.getException());
-                        callback.onFailure("Authentication Failed");
-                    }
-                });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // Handle errors
+                            Log.e("Firestore", "Error creating notification document with array field", e);
+                        }
+                    });
+        }
     }
 
-    private void addOrganizerInfo(String uid, HashMap<String, Object> userData, AuthCallback callback) {
-        userRef.document(uid).set(userData)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("UserSignUp", "User details successfully added!");
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    Log.w("UserSignUp", "Error writing document", e);
-                    callback.onFailure("Failed to add user details to database");
-                });
+    public String getCurrentUserId() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            return currentUser.getUid();
+        } else {
+            return null; // or handle the case when user is not signed in
+        }
     }
 
-    // ORGANIZER LOGIN
-    public void organizerLogin(String username, String password, AuthCallback callback) {
-        // find email based on username
-        userRef
-                .whereEqualTo("username", username)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                        String email = document.getString("email");
-
-                        // Authenticate email and password credentials
-                        signInWithEmail(email, password, callback);
-                    } else {
-                        // Failed to find a user with the given username
-                        Log.w("TAG", "Failed to find user by username", task.getException());
-                        callback.onFailure("Failed to find user by username");
-                    }
-                });
-    }
-
-    private void signInWithEmail(String email, String password, AuthCallback callback) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // inform user and redirect after a successful attempt
-                        Log.d("TAG", "signInWithEmail:success");
-                        callback.onSuccess();
-                    } else {
-                        // Invalid credentials
-                        Log.w("TAG", "Sign In Filaed", task.getException());
-                        callback.onFailure("Authentication failed.");
-                    }
-                });
-    }
 }

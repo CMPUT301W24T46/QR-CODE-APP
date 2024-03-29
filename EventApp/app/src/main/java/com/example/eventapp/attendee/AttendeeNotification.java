@@ -1,5 +1,6 @@
 package com.example.eventapp.attendee;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,71 +9,129 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.eventapp.R;
+import com.example.eventapp.attendeeNotification.AttendeeNotifAdapter;
+import com.example.eventapp.helpers.ReverseEventList;
+import com.example.eventapp.notification.Notification;
+import com.example.eventapp.notification.NotificationAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AttendeeNotification#newInstance} factory method to
+ * Use the {@link AttendeeNotification} factory method to
  * create an instance of this fragment.
  */
-public class AttendeeNotification extends Fragment {
+public class AttendeeNotification extends AppCompatActivity {
+    private FirebaseFirestore db;
+    private ListView notificationListView;
+    private AttendeeNotifAdapter notificationAdapter ;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    private ArrayList<String> notificationList;
+    /**
+     * Constructor of an instance of AttendeeNotification
+     */
     public AttendeeNotification() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AttendeeNotification.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AttendeeNotification newInstance(String param1, String param2) {
-        AttendeeNotification fragment = new AttendeeNotification();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        setContentView(R.layout.fragment_attendee_notification);
+        getSupportActionBar().setTitle("Notification");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        db = FirebaseFirestore.getInstance();
+
+        notificationListView = findViewById(R.id.AttendeeNotificationListView);
+        notificationList = new ArrayList<>() ;
+        notificationAdapter = new AttendeeNotifAdapter(this , notificationList) ;
+
+        notificationListView.setAdapter(notificationAdapter);
+
+
+        String uid = FirebaseAuth.getInstance().getUid();
+
+        if(uid != null){
+            fetchNotifications();
+        }else{
+            staticNotificationList();
+            Log.d("I am" , "NULL") ;
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_attendee_notification, container, false);
+    /**
+     * Fetches notifications from the "Notifications" collection in Firestore. Updates the list
+     * and refreshes the adapter upon successful retrieval.
+     */
+    private void fetchNotifications() {
+        String uid = FirebaseAuth.getInstance().getUid() ;
+        if(uid != null){
+            DocumentReference notifiyDocUser = db.collection("Notifications").document(uid) ;
+            notifiyDocUser.addSnapshotListener(this, (value, error) -> {
+                if (error != null) {
+                    // Handle errors
+                    return;
+                }
+
+                if (value != null && value.exists()) {
+                    // Get the updated array field from the document
+                    ArrayList<String> updatedArray = (ArrayList<String>)value.get("allNotifications");
+                    if (updatedArray != null) {
+                        ReverseEventList reverseArray = new ReverseEventList() ;
+                        reverseArray.reverseArrayList(updatedArray);
+                        notificationList.clear();
+                        notificationList.addAll(updatedArray);
+                        notificationAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+
+
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+    private void staticNotificationList(){
+        ArrayList<String> updatedArray = new ArrayList<>() ;
+        updatedArray.add("Event: From Yeno is about to start") ;
+        updatedArray.add("Event True: From Yeno is about to start") ;
+        ReverseEventList reverseArray = new ReverseEventList() ;
+        reverseArray.reverseArrayList(updatedArray);
+        notificationList.clear();
+        notificationList.addAll(updatedArray);
+        notificationAdapter.notifyDataSetChanged();
     }
+
+    /**
+     *Handles the selection of menu items in the activity's options menu.
+     * @param item The menu item that was selected.
+     *
+     * @return super.onOptionsItemSelected(item);
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

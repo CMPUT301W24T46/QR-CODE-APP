@@ -5,8 +5,8 @@ public class Organizer extends User{
     private String username;
     private String email;
 
-    public Organizer(String id , String name , String username, String email, String contactInformation , String homepage, byte[] imagePhoto , String typeOfUser){
-        super(id , name , contactInformation , homepage , imagePhoto , typeOfUser);
+    public Organizer(String id , String name , String username, String email, String contactInformation , String homepage, String imageUrl , String typeOfUser){
+        super(id , name , contactInformation , homepage , imageUrl , typeOfUser);
         this.setUsername(username);
         this.setEmail(email);
     }
