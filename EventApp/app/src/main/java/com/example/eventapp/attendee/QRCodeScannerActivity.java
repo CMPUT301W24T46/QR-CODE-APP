@@ -294,7 +294,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 checkInData.put("attendeeId", userId);
                 checkInData.put("checkInDate", FieldValue.serverTimestamp());
 //                checkInData.put("checkInTimes", checkInTimes);
-                checkInData.put("location", new GeoPoint(latitude, longitude));
+                checkInData.put("checkInLocation", new GeoPoint(latitude, longitude));
                 // Update the document with the new data
                 transaction.set(checkInDocRef, checkInData);
                 return null; // To satisfy the Transaction.Function interface
