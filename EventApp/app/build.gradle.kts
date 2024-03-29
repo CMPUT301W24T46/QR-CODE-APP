@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -9,6 +12,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     defaultConfig {
@@ -19,8 +23,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
         testInstrumentationRunnerArguments(mapOf("clearPackageData" to "true"))
+
+        val localProperties = Properties().apply {
+            load(FileInputStream(rootProject.file("local.properties")))
+        }
+        val googleMapsApiKey = localProperties.getProperty("google_maps_api_key", "")
+        buildConfigField("String", "GOOGLE_MAPS_API_KEY", "\"$googleMapsApiKey\"")
+        manifestPlaceholders["google_maps_key"] = googleMapsApiKey;
+
     }
 
     testOptions {
