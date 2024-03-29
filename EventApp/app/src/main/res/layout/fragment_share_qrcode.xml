@@ -38,12 +38,26 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="45dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="40dp"
         android:contentDescription="@string/share_to_google"
         android:src="@drawable/ic_google"
         app:layout_constraintBottom_toTopOf="@+id/download_qrcode"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/share_gmail"
         app:layout_constraintStart_toEndOf="@+id/share_facebook"
+        app:layout_constraintTop_toBottomOf="@+id/share_qr_code_title" />
+
+    <ImageView
+        android:id="@+id/share_gmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginBottom="40dp"
+        android:src="@drawable/ic_gmail"
+        app:layout_constraintBottom_toTopOf="@+id/download_qrcode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/share_google"
         app:layout_constraintTop_toBottomOf="@+id/share_qr_code_title" />
 
     <Button
@@ -61,5 +75,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/share_facebook" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

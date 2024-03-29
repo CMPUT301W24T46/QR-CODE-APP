@@ -28,6 +28,13 @@ import java.util.Objects;
 public class ShareQRCodeFragment extends BottomSheetDialogFragment {
     private static String qrCodeUrl;
     private static String eventId;
+
+    /**
+     * Creates a new instance of ShareQRCodeFragment with QR code URL and event ID.
+     * @param qrCodeUrl The URL of the QR code to be shared.
+     * @param eventId The ID of the event associated with the QR code.
+     * @return A ShareQRCodeFragment instance with QR code URL and event ID passed as arguments.
+     */
     public static ShareQRCodeFragment newInstance(String qrCodeUrl, String eventId) {
         ShareQRCodeFragment fragment = new ShareQRCodeFragment();
         Bundle args = new Bundle();
@@ -37,6 +44,10 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
         return fragment;
     }
     //TODO:ADD OTHER SHARING METHOD
+    /**
+     * Initializes the fragment. Retrieves and stores QR code URL and event ID from the fragment's arguments.
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +56,19 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
             eventId = getArguments().getString("eventId");
         }
     }
+
+    /**
+     * Inflates the layout for this fragment.
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_share_qrcode, container, false);
     }
 
+    /**
+     * Sets up click listeners for the view components after the view has been created.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -60,6 +78,11 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
             }
         });
     }
+
+    /**
+     * Downloads a QR code image from the given URL and saves it to the device's gallery.
+     * @param qrCodeUrl URL of the QR code image to download.
+     */
     private void downloadAndSaveQRCode(String qrCodeUrl) {
         new Thread(() -> {
             try {
@@ -72,6 +95,10 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
         }).start();
     }
 
+    /**
+     * Saves the given bitmap image to the device's gallery with a unique file name that includes the event ID.
+     * @param bitmap The bitmap image to be saved.
+     */
     private void saveImageToGallery(Bitmap bitmap) {
         if (eventId == null || eventId.isEmpty()) {
             Log.e("ShareQRCodeFragment", "Event ID is null or empty. Cannot save image with event ID.");
@@ -87,8 +114,6 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             values.put(MediaStore.Images.Media.IS_PENDING, 1);
-            // Optional: Specify a custom directory within Pictures directory
-            // values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/YourAppName");
         }
 
         ContentResolver resolver = getActivity().getContentResolver();
@@ -118,6 +143,4 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
             resolver.update(uri, values, null, null);
         }
     }
-
-
 }
