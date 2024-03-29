@@ -67,7 +67,7 @@ public class CreateNotificationFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.fragment_create_notification, null);
+        View view = inflater.inflate(R.layout.fragment_organizer_create_notification, null);
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         notificationTitleEditText = view.findViewById(R.id.CreateAnnouncementTitle);
         notificationDescriptionEditText = view.findViewById(R.id.EditEventDescription);

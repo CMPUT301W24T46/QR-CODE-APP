@@ -19,6 +19,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["google_maps_key"] = "AIzaSyD2uoBic6LBl3GZrfsuVD-PUfigX9mZlKI"
 
         testInstrumentationRunnerArguments(mapOf("clearPackageData" to "true"))
     }
