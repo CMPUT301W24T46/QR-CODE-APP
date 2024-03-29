@@ -108,10 +108,10 @@ public class CreateNotificationFragment extends DialogFragment {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         NotificationDB notificationDB = new NotificationDB(FirebaseFirestore.getInstance());
         // Create a Notification object with current user ID
-        Notification notification = new Notification("", notificationDescription, timestamp.toString(), currentUserId, eventId);
+//        Notification notification = new Notification("", notificationDescription, timestamp.toString(), currentUserId, eventId);
 
         // Save the notification to the Firestore database
-        notificationDB.saveNotificationToFirestore(notification);
+//        notificationDB.saveNotificationToFirestore(notification);
 
         // Notify listener that notification is created
         if (listener != null) {
