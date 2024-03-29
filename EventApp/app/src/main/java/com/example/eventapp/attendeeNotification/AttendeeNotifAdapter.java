@@ -10,28 +10,40 @@ import android.widget.TextView;
 import com.example.eventapp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class AttendeeNotifAdapter extends ArrayAdapter<String> {
+public class AttendeeNotifAdapter extends ArrayAdapter<NotificationItem> {
     private final Context context;
-    private final ArrayList<String>  allNotifications;
+    private final ArrayList<NotificationItem> notificationItems;
 
-    public AttendeeNotifAdapter(Context context, ArrayList<String> allNotifications) {
-        super(context, R.layout.notification_list_item, allNotifications);
+    public AttendeeNotifAdapter(Context context, ArrayList<NotificationItem> notificationItems) {
+        super(context, R.layout.fragment_notification_list_item, notificationItems);
         this.context = context;
-        this.allNotifications = allNotifications;
+        this.notificationItems = notificationItems;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.notification_list_item, parent, false);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View rowView = inflater.inflate(R.layout.fragment_notification_list_item, parent, false);
 
-        // Get references to views in the custom layout
-        TextView notificationView = rowView.findViewById(R.id.notificationInfo);
+        TextView notificationTitle = rowView.findViewById(R.id.notificationTitle);
+        TextView notificationDate = rowView.findViewById(R.id.notificationDate);
+        TextView notificationContent = rowView.findViewById(R.id.notificationContent);
 
-        // Bind data to views
-        notificationView.setText(allNotifications.get(position));
+        NotificationItem notificationItem = notificationItems.get(position);
+        notificationTitle.setText(notificationItem.getTitle());
+        notificationDate.setText(notificationItem.getTimestamp());
+        notificationContent.setText(notificationItem.getContent());
 
         return rowView;
     }
+    public void setData(List<NotificationItem> newData) {
+        clear();
+        if (newData != null) {
+            addAll(newData);
+            notifyDataSetChanged();
+        }
+    }
+
 }

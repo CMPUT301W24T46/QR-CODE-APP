@@ -23,6 +23,7 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.protobuf.Value;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 //import com.example.eventapp.BuildConfig;
@@ -83,20 +84,35 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
                     return;
                 }
 
-                List<LatLng> markerPositions = new ArrayList<>();
+                // Check if any location has multiple check ins
+                Map<LatLng, List<String>> aggregatedLocations = new HashMap<>();
                 for (Map.Entry<String, GeoPoint> entry : locationsMap.entrySet()) {
-                    GeoPoint point = entry.getValue();
-                    LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
-                    markerPositions.add(latLng);
-
-                    // Add markers to the map for each check-in location
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(entry.getKey()));
+                    LatLng latLng = new LatLng(entry.getValue().getLatitude(), entry.getValue().getLongitude());
+                    aggregatedLocations.putIfAbsent(latLng, new ArrayList<>());
+                    aggregatedLocations.get(latLng).add(entry.getKey());
                 }
 
-                // After adding all markers, calculate the densest area and focus the camera there
-                LatLng denseCenter = calculateDenseCenter(markerPositions);
-                if (denseCenter != null) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(denseCenter, 10));
+                // Add markers to the map
+                for (Map.Entry<LatLng, List<String>> entry : aggregatedLocations.entrySet()) {
+                    LatLng position = entry.getKey();
+                    List<String> ids = entry.getValue();
+                    String markerTitle;
+                    if (ids.size() == 1) {
+                        // If there's only one check-in, use the attendee ID as the title
+                        markerTitle = ids.get(0);
+                    } else {
+                        // For multiple check-ins, indicate the number of check-ins at this location
+                        markerTitle = ids.size() + " check-ins in this location";
+                    }
+                    mMap.addMarker(new MarkerOptions().position(position).title(markerTitle));
+                }
+
+                // Focus the camera on the densest area on map
+                if (!aggregatedLocations.isEmpty()) {
+                    LatLng denseCenter = calculateDenseCenter(new ArrayList<>(aggregatedLocations.keySet()));
+                    if (denseCenter != null) {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(denseCenter, 10));
+                    }
                 }
             });
         } else {
@@ -104,10 +120,10 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
         }
     }
 
+
     private LatLng calculateDenseCenter(List<LatLng> positions) {
         if (positions.isEmpty()) return null;
 
-        // Simple approach: use the first marker as a reference for finding the densest area
         LatLng reference = positions.get(0);
         double minDistanceSum = Double.MAX_VALUE;
         LatLng densestPoint = null;
@@ -123,9 +139,6 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
                 densestPoint = position;
             }
         }
-
-        // Optionally, refine the center by averaging the positions of the closest markers to the densestPoint
-        // For simplicity, this step is skipped here, but could be added for a more accurate center
 
         return densestPoint;
     }
