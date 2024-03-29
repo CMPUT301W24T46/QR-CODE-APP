@@ -34,7 +34,7 @@
         android:id="@+id/createNotificationFragment"
         android:name="com.example.eventapp.organizer.CreateNotificationFragment"
         android:label="Create Notification"
-        tools:layout="@layout/fragment_create_notification" >
+        tools:layout="@layout/fragment_organizer_create_notification" >
     </fragment>
     <fragment
         android:id="@+id/organizerAccount"

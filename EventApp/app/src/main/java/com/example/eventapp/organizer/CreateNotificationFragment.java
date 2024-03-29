@@ -17,7 +17,6 @@ import androidx.fragment.app.DialogFragment;
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventDB;
-import com.example.eventapp.notification.Notification;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -58,7 +57,7 @@ public class CreateNotificationFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.fragment_create_notification, null);
+        View view = inflater.inflate(R.layout.fragment_organizer_create_notification, null);
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         notificationTitleEditText = view.findViewById(R.id.CreateAnnouncementTitle);
         notificationDescriptionEditText = view.findViewById(R.id.EditEventDescription);
