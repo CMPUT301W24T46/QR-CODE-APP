@@ -1,55 +1,38 @@
 package com.example.eventapp.attendee;
 
-import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.eventapp.R;
 import com.example.eventapp.attendeeNotification.AttendeeNotifAdapter;
-import com.example.eventapp.helpers.ReverseEventList;
-import com.example.eventapp.notification.Notification;
-import com.example.eventapp.notification.NotificationAdapter;
+import com.example.eventapp.attendeeNotification.NotificationItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import android.widget.Spinner;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AttendeeNotification} factory method to
- * create an instance of this fragment.
- */
+
 public class AttendeeNotification extends AppCompatActivity {
     private FirebaseFirestore db;
     private ListView notificationListView;
-    private AttendeeNotifAdapter notificationAdapter ;
-
-    private ArrayList<String> notificationList;
-    /**
-     * Constructor of an instance of AttendeeNotification
-     */
-    public AttendeeNotification() {
-        // Required empty public constructor
-    }
+    private AttendeeNotifAdapter notificationAdapter;
+    private ArrayList<NotificationItem> originalNotificationList;
+    private ArrayList<NotificationItem> notificationList;
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,20 +44,12 @@ public class AttendeeNotification extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         notificationListView = findViewById(R.id.AttendeeNotificationListView);
-        notificationList = new ArrayList<>() ;
-        notificationAdapter = new AttendeeNotifAdapter(this , notificationList) ;
-
+        notificationList = new ArrayList<>();
+        notificationAdapter = new AttendeeNotifAdapter(this, notificationList);
         notificationListView.setAdapter(notificationAdapter);
-
-
-        String uid = FirebaseAuth.getInstance().getUid();
-
-        if(uid != null){
-            fetchNotifications();
-        }else{
-            staticNotificationList();
-            Log.d("I am" , "NULL") ;
-        }
+        spinner = findViewById(R.id.spinner);
+        // Fetch notifications for the current user
+        fetchNotifications();
     }
 
     /**
@@ -82,56 +57,101 @@ public class AttendeeNotification extends AppCompatActivity {
      * and refreshes the adapter upon successful retrieval.
      */
     private void fetchNotifications() {
-        String uid = FirebaseAuth.getInstance().getUid() ;
-        if(uid != null){
-            DocumentReference notifiyDocUser = db.collection("Notifications").document(uid) ;
-            notifiyDocUser.addSnapshotListener(this, (value, error) -> {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid != null) {
+            DocumentReference notifyDocUser = db.collection("Notifications").document(uid);
+            notifyDocUser.addSnapshotListener(this, (value, error) -> {
                 if (error != null) {
-                    // Handle errors
+                    // error
+                    Log.e("AttendeeNotification", "Error fetching notification: " + error.getMessage(), error);
                     return;
                 }
 
                 if (value != null && value.exists()) {
-                    // Get the updated array field from the document
-                    ArrayList<String> updatedArray = (ArrayList<String>)value.get("allNotifications");
+                    // Get updated array field from document
+                    ArrayList<HashMap<String, String>> updatedArray = (ArrayList<HashMap<String, String>>) value.get("allNotifications");
                     if (updatedArray != null) {
-                        ReverseEventList reverseArray = new ReverseEventList() ;
-                        reverseArray.reverseArrayList(updatedArray);
-                        notificationList.clear();
-                        notificationList.addAll(updatedArray);
-                        notificationAdapter.notifyDataSetChanged();
+                        // Update original list
+                        originalNotificationList = new ArrayList<>();
+                        for (HashMap<String, String> notificationMap : updatedArray) {
+                            String title = notificationMap.get("title");
+                            String timestamp = notificationMap.get("timestamp");
+                            String content = notificationMap.get("message");
+
+                            // Create NotificationItem
+                            NotificationItem notificationItem = new NotificationItem(title, timestamp, content);
+
+                            // Add to original list
+                            originalNotificationList.add(notificationItem);
+                        }
+
+                        // Populate the spinner with distinct titles
+                        Set<String> distinctTitles = new HashSet<>();
+                        for (NotificationItem item : originalNotificationList) {
+                            distinctTitles.add(item.getTitle());
+                        }
+                        ArrayList<String> distinctTitlesList = new ArrayList<>(distinctTitles);
+                        Collections.sort(distinctTitlesList); // Sort titles alphabetically
+                        distinctTitlesList.add(0, "All"); // Add "All" option at beginning
+                        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, distinctTitlesList);
+                        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinner.setAdapter(spinnerAdapter);
+
+                        // Set up Spinner function
+                        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                String selectedItem = parent.getItemAtPosition(position).toString();
+                                filterNotifications(selectedItem);
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+                                //nothing
+                            }
+                        });
                     }
                 }
             });
+        } else {
+            // If UID is null, log an error
+            Log.e("AttendeeNotification", "UID is null");
         }
-
-
-    }
-
-    private void staticNotificationList(){
-        ArrayList<String> updatedArray = new ArrayList<>() ;
-        updatedArray.add("Event: From Yeno is about to start") ;
-        updatedArray.add("Event True: From Yeno is about to start") ;
-        ReverseEventList reverseArray = new ReverseEventList() ;
-        reverseArray.reverseArrayList(updatedArray);
-        notificationList.clear();
-        notificationList.addAll(updatedArray);
-        notificationAdapter.notifyDataSetChanged();
     }
 
     /**
-     *Handles the selection of menu items in the activity's options menu.
-     * @param item The menu item that was selected.
+     * Filter notifications based on the selected item from the spinner.
+     * @param selectedItem The title of the item selected for filtering.
+     */
+    private void filterNotifications(String selectedItem) {
+        ArrayList<NotificationItem> filteredList = new ArrayList<>();
+        if (selectedItem.equals("All")) {
+            // show all notifications from original list
+            filteredList.addAll(originalNotificationList);
+        } else {
+            // Filter by selected item from original list every time
+            for (NotificationItem item : originalNotificationList) {
+                if (item.getTitle().equals(selectedItem)) {
+                    filteredList.add(item);
+                }
+            }
+        }
+        notificationAdapter.setData(filteredList);
+    }
+
+
+    /**
+     * Handles the selection of menu items in the activity's options menu.
      *
+     * @param item The menu item that was selected.
      * @return super.onOptionsItemSelected(item);
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
 }
