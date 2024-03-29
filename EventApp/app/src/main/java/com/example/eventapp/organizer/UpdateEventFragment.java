@@ -56,6 +56,10 @@ public class UpdateEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Sets up the view for updating event details including initializing input fields, image view, and confirm button.
+     * Adds listeners for image selection, date input, and confirming updates.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -91,6 +95,11 @@ public class UpdateEventFragment extends Fragment {
             }
     );
 
+    /**
+     * Fetches the details of the event specified by eventId from Firestore and updates the UI elements accordingly.
+     * If the event contains an image URL, it loads the image into the ImageView using Glide.
+     * Shows a toast message in case the event is not found or if there's an error fetching event details.
+     */
     private void fetchEventDetails(String eventId) {
         FirebaseFirestore.getInstance().collection("Events").document(eventId).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -107,6 +116,12 @@ public class UpdateEventFragment extends Fragment {
         }).addOnFailureListener(e -> Toast.makeText(getContext(), "Error fetching event details", Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Updates the event details including name, date, description, and optionally the image.
+     * If an imageUri is provided, uploads the image to Firebase Storage, retrieves its URL, and saves the event details to Firestore.
+     * If no imageUri is provided, saves the event details to Firestore without an image URL.
+     * Displays a toast message on success or failure of image upload.
+     */
     private void updateEventDetails() {
         String name = eventNameInput.getText().toString().trim();
         String date = eventDateInput.getText().toString().trim();
@@ -123,6 +138,7 @@ public class UpdateEventFragment extends Fragment {
         }
     }
 
+    /** Saves updated event details to Firestore. Displays toast on success/failure. */
     private void saveEventToFirestore(String name, String date, String description, @Nullable String imageUrl) {
         Map<String, Object> eventUpdates = new HashMap<>();
         eventUpdates.put("eventName", name);
@@ -138,6 +154,7 @@ public class UpdateEventFragment extends Fragment {
                 .addOnFailureListener(e -> Toast.makeText(getContext(), "Error updating event: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
+    /** Displays a date picker dialog. On date selection, calls time picker dialog. */
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -152,6 +169,7 @@ public class UpdateEventFragment extends Fragment {
         }, year, month, dayOfMonth).show();
     }
 
+    /** Displays a time picker dialog. On time selection, updates the event date input field. */
     private void showTimePickerDialog(Calendar calendar) {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
