@@ -134,8 +134,8 @@ public class CreateNotificationFragment extends DialogFragment {
                                     .get()
                                     .addOnSuccessListener(queryDocumentSnapshots -> {
                                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                            String attendeeId = documentSnapshot.getId();
-
+                                            String attendeeId = documentSnapshot.getString("attendeeId");
+                                            Log.d("CreateNotification", "Attendee ID: " + attendeeId);
                                             // Create a new document for each attendee
                                             firestore.collection("Notifications").document(attendeeId)
                                                     .get()
