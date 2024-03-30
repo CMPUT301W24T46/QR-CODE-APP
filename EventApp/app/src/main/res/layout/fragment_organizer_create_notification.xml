@@ -37,6 +37,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="50dp"
         android:background="@drawable/edittext_frame"
+        android:maxLength="1000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -70,6 +71,17 @@
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/EditEventDescription" />
+
+    <TextView
+        android:id="@+id/Restriction_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/restrictiontext"
+        app:layout_constraintBottom_toTopOf="@+id/EditEventDescription"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/CreateAnnouncementDescription" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
