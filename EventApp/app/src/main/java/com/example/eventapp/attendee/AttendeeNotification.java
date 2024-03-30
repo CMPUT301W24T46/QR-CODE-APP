@@ -85,6 +85,9 @@ public class AttendeeNotification extends AppCompatActivity {
                             originalNotificationList.add(notificationItem);
                         }
 
+                        // Reverse the notification list to sort it by how recent the notification is
+                        Collections.reverse(originalNotificationList);
+
                         // Populate the spinner with distinct titles
                         Set<String> distinctTitles = new HashSet<>();
                         for (NotificationItem item : originalNotificationList) {
