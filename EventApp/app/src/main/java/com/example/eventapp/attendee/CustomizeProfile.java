@@ -23,9 +23,12 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.eventapp.R;
 import com.example.eventapp.document_reference.DocumentReferenceChecker;
 import com.example.eventapp.Image.UploadImage;
+import com.example.eventapp.helpers.CheckCustomizeProfileData;
 import com.example.eventapp.users.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -304,7 +307,29 @@ public class CustomizeProfile extends AppCompatActivity {
             userRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+//                    We are going to add a methhod here to automatically generate profile picture
+                    userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()){
+                                DocumentSnapshot document = task.getResult();
+                                if (document != null && document.exists()) {
+                                    // Access the updated field
+                                    String updatedName = document.getString("name");
+                                    DocumentReference imageRef = document.getDocumentReference("imageUrl") ;
+                                    // Do something with the updated value
+                                    automatedProfilePicture(updatedName , imageRef);
+                                    Log.d("Document Reference Collected" , "Yes");
+                                } else {
+                                    Log.d("FirestoreExample", "No such document");
+                                }
+                            }else{
+                                Log.d("Profile Pic Generation" , "No such Document") ;
+                            }
+                        }
+                    }) ;
                     Toast.makeText(CustomizeProfile.this, "Profile updated successfully.", Toast.LENGTH_SHORT).show();
+                    Log.d("Profile Successfully: " , "Updated") ;
                     isSaved = true;
                 }
             })
@@ -377,5 +402,36 @@ public class CustomizeProfile extends AppCompatActivity {
      */
     public boolean isSaving(){
         return isSaved ;
+    }
+
+    public void automatedProfilePicture(String name , DocumentReference imageRef){
+        DocumentReferenceChecker docChekerDefault = new DocumentReferenceChecker() ;
+        DocumentReference defaultRef = docChekerDefault.documentReferenceWrite() ;
+        String uid = FirebaseAuth.getInstance().getUid() ;
+        FirebaseFirestore db = FirebaseFirestore.getInstance() ;
+
+        if(name.equals("")){
+            return;
+        }
+
+        if(defaultRef.equals(imageRef) && uid != null){
+            DocumentReference userRef = db.collection("Users").document(uid) ;
+            if(CheckCustomizeProfileData.determineProfilePic(name).equals("First")){
+                DocumentReference defaultOne = db.collection("defaultImage").document("First") ;
+                userRef.update("imageUrl", defaultOne)
+                        .addOnSuccessListener(aVoid -> Log.d("TAG", "Document successfully updated!"))
+                        .addOnFailureListener(e -> Log.w("TAG", "Error updating document", e));
+            }else if(CheckCustomizeProfileData.determineProfilePic(name).equals("Second")){
+                DocumentReference defaultTwo = db.collection("defaultImage").document("Second") ;
+                userRef.update("imageUrl", defaultTwo)
+                        .addOnSuccessListener(aVoid -> Log.d("TAG", "Document successfully updated!"))
+                        .addOnFailureListener(e -> Log.w("TAG", "Error updating document", e));
+            }else if(CheckCustomizeProfileData.determineProfilePic(name).equals("Third")){
+                DocumentReference defaultThree = db.collection("defaultImage").document("Third") ;
+                userRef.update("imageUrl", defaultThree)
+                        .addOnSuccessListener(aVoid -> Log.d("TAG", "Document successfully updated!"))
+                        .addOnFailureListener(e -> Log.w("TAG", "Error updating document", e));
+            }
+        }
     }
 }

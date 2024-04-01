@@ -135,6 +135,7 @@ public class AttendeeEventInformation extends Fragment {
         }
         Button signUpButton = view.findViewById(R.id.signUpForEventButton) ;
         alreadySignedUpTextView = view.findViewById(R.id.alreadySigneUpTextView);
+        alreadySignedUpTextView.setVisibility(View.INVISIBLE);
 
         signUpButton.setOnClickListener(v -> {
             if(FirebaseAuth.getInstance().getUid() != null){
@@ -165,7 +166,7 @@ public class AttendeeEventInformation extends Fragment {
             DocumentReference documentReference = db.collection("Users").document(userId) ;
             documentReference.update("EventList", FieldValue.arrayUnion(eventId))
                     .addOnSuccessListener(aVoid -> {
-                        Log.d("User", "Event Signed Up for,  Event Id: " + eventId) ;
+                        Log.d("User", "Event Signed Up for,  Event Id: " + eventId + " " + userId) ;
                         informEventAboutSignUp(userId);
 
                     })
@@ -234,7 +235,10 @@ public class AttendeeEventInformation extends Fragment {
 
                         if(alreadySignedUp){
                             alreadySignedUpTextView.setVisibility(View.VISIBLE);
-                            Log.d("User" , "Alreay Signed Up") ;
+                            Log.d("User" , "Alreay Signed Up " + eventId) ;
+                        }else{
+                            alreadySignedUpTextView.setVisibility(View.INVISIBLE);
+                            Log.d("User" , "NotSignedUp") ;
                         }
                     }
                 } else {
