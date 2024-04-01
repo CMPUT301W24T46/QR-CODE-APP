@@ -16,26 +16,22 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.eventapp.R;
 import com.example.eventapp.attendeeNotification.AttendeeNotifAdapter;
 import com.example.eventapp.attendeeNotification.NotificationItem;
-import com.example.eventapp.notification.Notification;
-import com.example.eventapp.notification.NotificationAdapter;
-import com.example.eventapp.notification.NotificationDB;
-import com.example.eventapp.notification.NotificationDB.NotificationRetrievalListener;
-import com.example.eventapp.users.UserDB;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class OrganizerNotification extends AppCompatActivity {
@@ -44,7 +40,6 @@ public class OrganizerNotification extends AppCompatActivity {
     private ListView notificationListView;
     private AttendeeNotifAdapter notificationAdapter;
     private ArrayList<NotificationItem> originalNotificationList;
-    private ArrayList<NotificationItem> notificationList;
     private Spinner spinner;
 
     @Override
@@ -57,8 +52,7 @@ public class OrganizerNotification extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         notificationListView = findViewById(R.id.OrganizerNotificationListView);
-        notificationList = new ArrayList<>();
-        notificationAdapter = new AttendeeNotifAdapter(this, notificationList);
+        notificationAdapter = new AttendeeNotifAdapter(this, new ArrayList<>());
         notificationListView.setAdapter(notificationAdapter);
         spinner = findViewById(R.id.spinner2);
         fetchNotifications();
@@ -83,26 +77,27 @@ public class OrganizerNotification extends AppCompatActivity {
             DocumentReference milestonesDocOrganizer = db.collection("Milestones").document(organizerId);
             milestonesDocOrganizer.addSnapshotListener(this, (value, error) -> {
                 if (error != null) {
-                    Log.e("OrganizerNotification", "Error fetching notifications: " + error.getMessage(), error);
+                    Log.e("OrganizerNotification", "Error fetching milestones: " + error.getMessage(), error);
                     return;
                 }
 
                 if (value != null && value.exists()) {
-                    // Get updated array field from document
-                    ArrayList<HashMap<String, String>> updatedArray = (ArrayList<HashMap<String, String>>) value.get("allMilestones");
+                    ArrayList<HashMap<String, Object>> updatedArray = (ArrayList<HashMap<String, Object>>) value.get("allMilestones");
                     if (updatedArray != null) {
                         originalNotificationList = new ArrayList<>();
-                        for (HashMap<String, String> notificationMap : updatedArray) {
-                            String title = notificationMap.get("title");
-                            String timestamp = notificationMap.get("timestamp");
-                            String content = notificationMap.get("message");
-
-                            NotificationItem notificationItem = new NotificationItem(title, timestamp, content);
-                            originalNotificationList.add(notificationItem);
+                        for (HashMap<String, Object> milestoneMap : updatedArray) {
+                            String title = (String) milestoneMap.get("title");
+                            // Assuming timestamp is stored as a String
+                            String timestampString = (String) milestoneMap.get("timestamp");
+                            String content = (String) milestoneMap.get("message");
+                            NotificationItem milestoneItem = new NotificationItem(title, timestampString, content);
+                            originalNotificationList.add(milestoneItem);
                         }
 
-                        // Reverse the notification list to sort it by how recent the notification is
+                        // Reverse the list to display most recent first
                         Collections.reverse(originalNotificationList);
+                        // Update UI with notifications
+                        notificationAdapter.setData(originalNotificationList);
 
                         // Populate the spinner with distinct titles
                         Set<String> distinctTitles = new HashSet<>();
@@ -112,6 +107,8 @@ public class OrganizerNotification extends AppCompatActivity {
                         ArrayList<String> distinctTitlesList = new ArrayList<>(distinctTitles);
                         Collections.sort(distinctTitlesList); // Sort titles alphabetically
                         distinctTitlesList.add(0, "All"); // Add "All" option at beginning
+
+                        // Set up spinner adapter
                         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, distinctTitlesList);
                         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         spinner.setAdapter(spinnerAdapter);
@@ -126,7 +123,7 @@ public class OrganizerNotification extends AppCompatActivity {
 
                             @Override
                             public void onNothingSelected(AdapterView<?> parent) {
-                                //nothing
+                                // Do nothing
                             }
                         });
                     }
@@ -136,6 +133,7 @@ public class OrganizerNotification extends AppCompatActivity {
             Log.e("OrganizerNotification", "Organizer ID is null");
         }
     }
+
 
     /**
      * Filter notifications based on the selected item from the spinner.
@@ -156,6 +154,4 @@ public class OrganizerNotification extends AppCompatActivity {
         }
         notificationAdapter.setData(filteredList);
     }
-
-
 }
