@@ -32,6 +32,7 @@ import com.example.eventapp.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -49,6 +50,9 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -304,6 +308,69 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 Log.d("QRCodeScanner", "Scanned Bitmap URI: " + bitmapUri);
                 resetScanner();
                 finish(); // Close the activity
+// Add milestone message after successful check-in
+                DocumentReference eventDocRef = db.collection("Events").document(eventId);
+                eventDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String eventName = documentSnapshot.getString("eventName");
+                        String organizerId = documentSnapshot.getString("creatorId");
+                        if (organizerId != null) {
+                            // Retrieve attendee username
+                            DocumentReference attendeeRef = db.collection("Users").document(userId);
+                            attendeeRef.get().addOnSuccessListener(attendeeSnapshot -> {
+                                if (attendeeSnapshot.exists()) {
+                                    String attendeeUsername = attendeeSnapshot.getString("name");
+                                    // Construct milestone message
+                                    String milestoneMessage = attendeeUsername + " checked in to event " + eventName;
+                                    // Get current timestamp
+                                    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
+                                    String timestamp = dateFormat.format(new Date());
+
+                                    // Create milestone data
+                                    Map<String, Object> milestoneData = new HashMap<>();
+                                    milestoneData.put("title", "Check-in Alert!");
+                                    milestoneData.put("message", milestoneMessage);
+                                    milestoneData.put("timestamp", timestamp);
+
+
+                                    // Proceed with adding the milestone message
+                                    DocumentReference milestoneRef = db.collection("Milestones").document(organizerId);
+                                    milestoneRef.get().addOnSuccessListener(organizerSnapshot -> {
+                                        if (!organizerSnapshot.exists()) {
+                                            // Organizer's Milestones document doesn't exist, create it
+                                            Map<String, Object> initialData = new HashMap<>();
+                                            initialData.put("allMilestones", new ArrayList<>());
+                                            db.collection("Milestones").document(organizerId)
+                                                    .set(initialData)
+                                                    .addOnSuccessListener(aVoid1 -> {
+                                                        Log.d("QRCodeScanner", "Milestones document created for organizer " + organizerId);
+                                                        // Now add the milestone message
+                                                        milestoneRef.update("allMilestones", FieldValue.arrayUnion(milestoneData))
+                                                                .addOnSuccessListener(aVoid2 -> Log.d("QRCodeScanner", "Milestone added for check-in"))
+                                                                .addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to add milestone for check-in", e));
+                                                    })
+                                                    .addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to create Milestones document for organizer " + organizerId, e));
+                                        } else {
+                                            // Organizer's Milestones document exists, directly add the milestone message
+                                            milestoneRef.update("allMilestones", FieldValue.arrayUnion(milestoneData))
+                                                    .addOnSuccessListener(aVoid1 -> Log.d("QRCodeScanner", "Milestone added for check-in"))
+                                                    .addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to add milestone for check-in", e));
+                                        }
+                                    }).addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to check Milestones document for organizer " + organizerId, e));
+                                } else {
+                                    Log.e("QRCodeScanner", "Attendee document not found for ID " + userId);
+                                }
+                            }).addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to retrieve attendee document for ID " + userId, e));
+                        } else {
+                            Log.e("QRCodeScanner", "Organizer ID not found for event " + eventId);
+                        }
+                    } else {
+                        Log.e("QRCodeScanner", "Event document not found for ID " + eventId);
+                    }
+                }).addOnFailureListener(e -> {
+                    Log.e("QRCodeScanner", "Failed to retrieve event document for ID " + eventId, e);
+                });
+
             }).addOnFailureListener(e -> {
                 Log.e("QRCodeScanner", "Check-in failed for user " + userId + " at event " + eventId, e);
                 Toast.makeText(QRCodeScannerActivity.this, "Check-in failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
