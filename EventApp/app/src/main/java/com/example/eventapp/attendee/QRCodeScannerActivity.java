@@ -35,11 +35,15 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.MultiFormatReader;
@@ -52,10 +56,13 @@ import com.google.zxing.integration.android.IntentResult;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -324,6 +331,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 Log.d("QRCodeScanner", "Scanned Bitmap URI: " + bitmapUri);
                 resetScanner();
                 finish(); // Close the activity
+
                 // Add milestone message after successful check-in
                 DocumentReference eventDocRef = db.collection("Events").document(eventId);
                 eventDocRef.get().addOnSuccessListener(documentSnapshot -> {
@@ -337,7 +345,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                                 if (attendeeSnapshot.exists()) {
                                     String attendeeUsername = attendeeSnapshot.getString("name");
                                     // Construct milestone message
-                                    String milestoneMessage = attendeeUsername + " checked in to event " + eventName;
+                                    String milestoneMessage = attendeeUsername + " has checked in to event " + eventName;
                                     // Get current timestamp
                                     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm:ss a");
                                     String timestamp = dateFormat.format(new Date());
@@ -348,12 +356,77 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                                     milestoneData.put("message", milestoneMessage);
                                     milestoneData.put("timestamp", timestamp);
 
+                                    // Check if the distinct user count has reached a certain amount
+                                    CollectionReference checkInsRef = db.collection("Events").document(eventId).collection("CheckIns");
+                                    checkInsRef.get().addOnCompleteListener(checkInTask -> {
+                                        if (checkInTask.isSuccessful()) {
+                                            QuerySnapshot querySnapshot = checkInTask.getResult();
+                                            if (querySnapshot != null) {
+                                                Set<String> attendeeIds = new HashSet<>();
+                                                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                                    String attendeeId = document.getString("attendeeId");
+                                                    if (attendeeId != null) {
+                                                        attendeeIds.add(attendeeId);
+                                                    }
+                                                }
+                                                int distinctAttendeeCount = attendeeIds.size();
+                                                if (distinctAttendeeCount == 5 || distinctAttendeeCount == 10 || distinctAttendeeCount == 50 || distinctAttendeeCount == 100) {
+                                                    // Construct milestone message
+                                                    String eventMilestoneMessage = distinctAttendeeCount + " users have checked in to event " + eventName + "!";
+                                                    // Get current timestamp
+                                                    String eventTimestamp = dateFormat.format(new Date());
 
-                                    // Proceed with adding the milestone message
+                                                    // Create milestone data
+                                                    Map<String, Object> eventMilestoneData = new HashMap<>();
+                                                    eventMilestoneData.put("title", "Event Milestone");
+                                                    eventMilestoneData.put("message", eventMilestoneMessage);
+                                                    eventMilestoneData.put("timestamp", eventTimestamp);
+
+                                                    // Check if same message exist in milestones
+                                                    db.collection("Milestones").document(organizerId)
+                                                            .get()
+                                                            .addOnCompleteListener(milestoneTask -> {
+                                                                if (milestoneTask.isSuccessful()) {
+                                                                    DocumentSnapshot milestoneSnapshot = milestoneTask.getResult();
+                                                                    if (milestoneSnapshot != null && milestoneSnapshot.exists()) {
+                                                                        List<Map<String, Object>> allMilestones = (List<Map<String, Object>>) milestoneSnapshot.get("allMilestones");
+                                                                        boolean messageExists = false;
+                                                                        if (allMilestones != null) {
+                                                                            for (Map<String, Object> milestone : allMilestones) {
+                                                                                if (milestone.get("message").equals(eventMilestoneMessage)) {
+                                                                                    messageExists = true;
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        if (!messageExists) {
+                                                                            // Message not exist, add it
+                                                                            DocumentReference milestoneRef = db.collection("Milestones").document(organizerId);
+                                                                            milestoneRef.update("allMilestones", FieldValue.arrayUnion(eventMilestoneData))
+                                                                                    .addOnSuccessListener(aVoids -> Log.d("QRCodeScanner", "Event milestone added"))
+                                                                                    .addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to add event milestone", e));
+                                                                        } else {
+                                                                            // Message exists, don't add
+                                                                            Log.d("QRCodeScanner", "Event milestone already exists: " + eventMilestoneMessage);
+                                                                        }
+                                                                    }
+                                                                } else {
+                                                                    Log.e("QRCodeScanner", "Error checking event milestone: ", milestoneTask.getException());
+                                                                }
+                                                            });
+                                                }
+                                            }
+                                        } else {
+                                            Log.e("QRCodeScanner", "Error checking if attendees joined: ", checkInTask.getException());
+                                        }
+                                    });
+
+
+                                    // add the milestone message
                                     DocumentReference milestoneRef = db.collection("Milestones").document(organizerId);
                                     milestoneRef.get().addOnSuccessListener(organizerSnapshot -> {
                                         if (!organizerSnapshot.exists()) {
-                                            // Organizer's Milestones document doesn't exist, create it
+                                            // if organizer's Milestones document doesn't exist, create it
                                             Map<String, Object> initialData = new HashMap<>();
                                             initialData.put("allMilestones", new ArrayList<>());
                                             db.collection("Milestones").document(organizerId)
@@ -362,12 +435,12 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                                                         Log.d("QRCodeScanner", "Milestones document created for organizer " + organizerId);
                                                         // Now add the milestone message
                                                         milestoneRef.update("allMilestones", FieldValue.arrayUnion(milestoneData))
-                                                                .addOnSuccessListener(aVoid2 -> Log.d("QRCodeScanner", "Milestone added for check-in"))
+                                                                .addOnSuccessListener(aVoids -> Log.d("QRCodeScanner", "Milestone added for check-in"))
                                                                 .addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to add milestone for check-in", e));
                                                     })
                                                     .addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to create Milestones document for organizer " + organizerId, e));
                                         } else {
-                                            // Organizer's Milestones document exists, directly add the milestone message
+                                            // else if organizer's Milestones document exists, directly add the milestone message
                                             milestoneRef.update("allMilestones", FieldValue.arrayUnion(milestoneData))
                                                     .addOnSuccessListener(aVoid1 -> Log.d("QRCodeScanner", "Milestone added for check-in"))
                                                     .addOnFailureListener(e -> Log.e("QRCodeScanner", "Failed to add milestone for check-in", e));
