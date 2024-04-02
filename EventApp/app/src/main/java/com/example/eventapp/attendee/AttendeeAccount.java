@@ -53,11 +53,19 @@ public class AttendeeAccount extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_attendee_account, container, false);
 
         Button btnCustomizeProfile = rootView.findViewById(R.id.btnCustomizeProfile);
+        Button btnHistory = rootView.findViewById(R.id.EventHistory);
 
         btnCustomizeProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), CustomizeProfile.class);
+                startActivity(intent);
+            }
+        });
+        btnHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), AttendedEvents.class);
                 startActivity(intent);
             }
         });
