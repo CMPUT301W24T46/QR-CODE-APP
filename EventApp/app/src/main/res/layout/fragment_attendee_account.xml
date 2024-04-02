@@ -23,15 +23,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/btnSetting"
+        android:id="@+id/EventHistory"
         android:layout_width="375dp"
         android:layout_height="200dp"
         android:layout_marginBottom="96dp"
         android:background="@drawable/rounded_button_background"
-        android:drawableStart="@drawable/ic_lock"
-        android:onClick="onSettingClicked"
+        android:drawableStart="@drawable/ic_history"
+        android:onClick="onEventHistoryClicked"
         android:padding="30dp"
-        android:text="@string/Setting"
+        android:text="@string/history"
         android:textColor="#FFFFFF"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -277,8 +277,24 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             String userId = firebaseUser.getUid();
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-//            DocumentReference checkInDocRef = db.collection("Events").document(eventId)
-//                    .collection("CheckIns").document(userId);
+            // Document reference for the AttendedEvents document
+            DocumentReference attendedEventsRef = db.collection("AttendedEvents").document(userId);
+
+            // Create or get the AttendedEvents document
+            attendedEventsRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        updateAttendedEventsArray(db, document.getReference(), eventId);
+                    } else {
+                        // Document does not exist, create a new one and then update the allAttendedEvents array
+                        createNewAttendedEventsDocument(userId, db, eventId);
+                    }
+
+                } else {
+                    Log.d("QRCodeScanner", "Failed to get document: ", task.getException());
+                }
+            });
 
             DocumentReference checkInDocRef = db.collection("Events").document(eventId)
                     .collection("CheckIns").document(); // randomly generate document id
@@ -308,7 +324,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 Log.d("QRCodeScanner", "Scanned Bitmap URI: " + bitmapUri);
                 resetScanner();
                 finish(); // Close the activity
-// Add milestone message after successful check-in
+                // Add milestone message after successful check-in
                 DocumentReference eventDocRef = db.collection("Events").document(eventId);
                 eventDocRef.get().addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -380,6 +396,89 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         }
     }
 
+    private void createNewAttendedEventsDocument(String userId, FirebaseFirestore db, String eventId) {
+        db.collection("Events").document(eventId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String eventName = documentSnapshot.getString("eventName");
+                        String eventDate = documentSnapshot.getString("eventDate");
+                        String eventDescription = documentSnapshot.getString("eventDescription");
+                        String imageURL = documentSnapshot.getString("imageURL");
+
+                        Map<String, Object> attendedEventsData = new HashMap<>();
+                        List<Map<String, Object>> allAttendedEvents = new ArrayList<>();
+
+                        // put info
+                        Map<String, Object> attendedEvent = new HashMap<>();
+                        attendedEvent.put("eventId", eventId);
+                        attendedEvent.put("eventName", eventName);
+                        attendedEvent.put("eventDate", eventDate);
+                        attendedEvent.put("eventDescription", eventDescription);
+                        attendedEvent.put("imageURL", imageURL);
+
+                        // Add to list
+                        allAttendedEvents.add(attendedEvent);
+                        attendedEventsData.put("allAttendedEvents", allAttendedEvents);
+
+                        // Create the document in AttendedEvents collection
+                        db.collection("AttendedEvents").document(userId)
+                                .set(attendedEventsData)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("QRCodeScanner", "New AttendedEvents document created for user: " + userId);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("QRCodeScanner", "Error creating AttendedEvents document for user: " + userId, e);
+                                });
+                    } else {
+                        Log.e("QRCodeScanner", "Event document not found for ID: " + eventId);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("QRCodeScanner", "Error fetching event details for event ID: " + eventId, e);
+                });
+    }
+
+    private void updateAttendedEventsArray(FirebaseFirestore db, DocumentReference attendedEventsRef, String eventId) {
+        db.collection("Events").document(eventId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String eventName = documentSnapshot.getString("eventName");
+                        String eventDate = documentSnapshot.getString("eventDate");
+                        String eventDescription = documentSnapshot.getString("eventDescription");
+                        String imageURL = documentSnapshot.getString("imageURL");
+
+                        // put info
+                        Map<String, Object> attendedEvent = new HashMap<>();
+                        attendedEvent.put("eventId", eventId);
+                        attendedEvent.put("eventName", eventName);
+                        attendedEvent.put("eventDate", eventDate);
+                        attendedEvent.put("eventDescription", eventDescription);
+                        attendedEvent.put("imageURL", imageURL);
+
+
+                        // Check if the event already exists in list
+                        List<Map<String, Object>> allAttendedEvents = (List<Map<String, Object>>) documentSnapshot.get("allAttendedEvents");
+                        if (allAttendedEvents == null || !allAttendedEvents.contains(attendedEvent)) {
+                            attendedEventsRef.update("allAttendedEvents", FieldValue.arrayUnion(attendedEvent))
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("QRCodeScanner", "Event added to AttendedEvents for user: " + attendedEventsRef.getId());
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("QRCodeScanner", "Error updating AttendedEvents for user: " + attendedEventsRef.getId(), e);
+                                    });
+                        } else {
+                            Log.d("QRCodeScanner", "Event already exists in the array");
+                        }
+                    } else {
+                        Log.e("QRCodeScanner", "Event document not found for ID: " + eventId);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("QRCodeScanner", "Error fetching event details for event ID: " + eventId, e);
+                });
+    }
 
     private String extractEventIdFromUrl(String qrContent) {
         // Direct event ID (simple case)

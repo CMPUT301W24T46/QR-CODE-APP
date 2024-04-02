@@ -104,4 +104,5 @@
     <string name="view">View</string>
     <string name="google_maps_key">GOOGLE_MAPS_KEY</string>
     <string name="restrictiontext">Maximum 1000 characters including spaces</string>
+    <string name="history">History</string>
 </resources>

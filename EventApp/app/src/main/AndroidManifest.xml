@@ -33,9 +33,14 @@
         <activity
             android:name=".attendee.AttendeeEvent"
             android:exported="false"/>
-   
         <activity
             android:name=".attendee.CustomizeProfile"
+            android:exported="false" />
+        <activity
+            android:name=".attendee.AttendedEventInformationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".attendee.AttendedEvents"
             android:exported="false" />
         <activity android:name=".attendee.AttendeeNotification"
             android:exported="false" />
