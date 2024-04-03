@@ -105,4 +105,8 @@
     <string name="google_maps_key">GOOGLE_MAPS_KEY</string>
     <string name="restrictiontext">Maximum 1000 characters including spaces</string>
     <string name="history">History</string>
+    <string-array name="event_action_options">
+        <item>Check-ins</item>
+        <item>Sign-ups</item>
+    </string-array>
 </resources>
