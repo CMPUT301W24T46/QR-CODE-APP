@@ -3,6 +3,8 @@ package com.example.eventapp.checkIn;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.example.eventapp.registrations.Registration;
+import com.example.eventapp.registrations.RegistrationAdapter;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
@@ -36,6 +38,8 @@ public class CheckInController {
         this.userRef = db.collection("Users");
 
     }
+
+
 
     public void subscribeToEventCheckIns(String eventId, AttendeeCheckInAdapter adapter) {
         CollectionReference checkInRef = eventRef.document(eventId).collection("CheckIns");
@@ -141,7 +145,78 @@ public class CheckInController {
         }).addOnFailureListener(e -> Log.e("GeolocationController", "Error getting check-in locations: " + e));
     }
 
+//    Registrations
+public void subscribeToEventRegistrations(String eventId, RegistrationAdapter adapter) {
+    CollectionReference registrationRef = eventRef.document(eventId).collection("Registrations");
 
+    registrationRef.addSnapshotListener((querySnapshots, error) -> {
+        if (error != null) {
+            Log.e("Firestore", error.toString());
+            return;
+        }
+
+        if (querySnapshots != null) {
+            HashMap<String, Registration> registrationMap = new HashMap<>();
+            for (QueryDocumentSnapshot doc : querySnapshots) {
+                String attendeeId = doc.getString("attendeeId");
+                Timestamp registrationDate = doc.getTimestamp("registrationDate");
+
+
+                // Aggregate check-ins properly
+                Registration registration = registrationMap.getOrDefault(attendeeId,
+                        new Registration(attendeeId, registrationDate, ""));
+                registrationMap.put(attendeeId, registration);
+
+
+            }
+
+            // Proceed to update details for each attendee
+            fetchUserDetailsForRegistrations(registrationMap, adapter);
+            }
+        });
+    }
+    private void fetchUserDetailsForRegistrations(HashMap<String, Registration> registrationMap, RegistrationAdapter adapter) {
+        List<Task<?>> tasks = new ArrayList<>();
+
+        for (String userId : registrationMap.keySet()) {
+            Task<DocumentSnapshot> fetchUserTask = userRef.document(userId).get();
+            Registration registration = registrationMap.get(userId);
+
+            Task<?> task = fetchUserTask.continueWithTask(userTask -> {
+                DocumentSnapshot userDoc = userTask.getResult();
+                if (userDoc != null && userDoc.exists()) {
+                    String name = userDoc.getString("name");
+                    DocumentReference imageDocRef = userDoc.getDocumentReference("imageUrl");
+                    if (!TextUtils.isEmpty(name)) {
+                        registration.setAttendeeId(name);
+                    }
+
+                    if (imageDocRef != null) {
+                        // Fetch the document referenced for image URL
+                        return imageDocRef.get();
+                    }
+                }
+                // Return null task if user document is not found or imageDocRef is null
+                return Tasks.forResult(null);
+            }).continueWith(imageTask -> {
+                DocumentSnapshot imageDoc = (DocumentSnapshot) imageTask.getResult();
+                String imageUrl = null;
+                if (imageDoc != null && imageDoc.exists()) {
+                    imageUrl = imageDoc.getString("URL");
+                }
+                if (registration != null) {
+                    registration.setAttendeeImageURL(imageUrl);
+                }
+                return null; // You may adjust the return value based on your logic
+            });
+
+            tasks.add(task);
+        }
+
+        Tasks.whenAllComplete(tasks).addOnCompleteListener(allTasks -> {
+            adapter.setFilter(new ArrayList<>(registrationMap.values()));
+        });
+    }
 
 
 }
