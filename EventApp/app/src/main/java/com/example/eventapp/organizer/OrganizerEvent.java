@@ -32,7 +32,6 @@ public class OrganizerEvent extends Fragment {
     private EventAdapter adapter;
     private ArrayList<Event> allEvents = new ArrayList<>();
     private SearchView searchView;
-    private View limitEditText;
 
     public OrganizerEvent() {
         // Required empty public constructor
@@ -43,8 +42,6 @@ public class OrganizerEvent extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organizer_event, container, false);
         return view;
-
-
     }
 
     @Override
@@ -77,8 +74,6 @@ public class OrganizerEvent extends Fragment {
                         Log.d("EventFetch", "Error getting documents: ", task.getException());
                     }
                 });
-
-
     }
 
     /**
