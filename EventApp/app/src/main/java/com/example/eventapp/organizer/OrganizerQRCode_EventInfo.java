@@ -20,7 +20,6 @@ import com.example.eventapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
@@ -28,12 +27,11 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class OrganizerQRCode extends Fragment {
+public class OrganizerQRCode_EventInfo extends Fragment {
 
     private ImageView qrCodeImageView;
     private String eventId;
@@ -51,8 +49,8 @@ public class OrganizerQRCode extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_qrcode_info, container, false);
-        qrCodeImageView = view.findViewById(R.id.organizer_qrcode_view);
+        View view = inflater.inflate(R.layout.fragment_qrcode_eventinfo, container, false);
+        qrCodeImageView = view.findViewById(R.id.organizer_qrcode_view_1);
         return view;
     }
 
@@ -77,7 +75,7 @@ public class OrganizerQRCode extends Fragment {
                 Toast.makeText(getContext(), "Please wait, QR code is being prepared.", Toast.LENGTH_SHORT).show();
             }
         });
-        Button regenerateQRCodeButton = view.findViewById(R.id.btn_regenerateQRCode);
+        Button regenerateQRCodeButton = view.findViewById(R.id.btn_regenerateQRCode_1);
         regenerateQRCodeButton.setOnClickListener(v -> {
             deleteExistingQRCode(eventId, () -> generateQRCode(eventId));
         });
@@ -86,7 +84,7 @@ public class OrganizerQRCode extends Fragment {
     private void checkAndDisplayExistingQRCode(String eventId) {
         FirebaseFirestore.getInstance().collection("QRCode")
                 .whereEqualTo("eventId", eventId)
-                .whereEqualTo("type", "CheckIn")
+                .whereEqualTo("type", "EventInfo")
                 .limit(1)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -102,7 +100,7 @@ public class OrganizerQRCode extends Fragment {
                         generateQRCode(eventId);
                     }
                 })
-                .addOnFailureListener(e -> Log.e("OrganizerQRCode", "Error checking for existing QR code", e));
+                .addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error checking for existing QR code", e));
     }
 
 
@@ -110,7 +108,7 @@ public class OrganizerQRCode extends Fragment {
         String qrCodeId = UUID.randomUUID().toString(); // Generate unique QR code ID with 36 hex digit
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            String qrCodeContent = "{ \"eventId\": \"" + eventId + "\", \"qrCodeId\": \"" + qrCodeId + "\", \"type\": \"CheckIn\" }";
+            String qrCodeContent = "{ \"eventId\": \"" + eventId + "\", \"qrCodeId\": \"" + qrCodeId + "\", \"type\": \"EventInfo\" }";
             BitMatrix bitMatrix = qrCodeWriter.encode(qrCodeContent, BarcodeFormat.QR_CODE, 600, 600);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
             Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
@@ -118,7 +116,7 @@ public class OrganizerQRCode extends Fragment {
             saveQRCodeToFirebase(qrCodeId, eventId, bitmap);
             Toast.makeText(getContext(), "QR Code regenerated successfully.", Toast.LENGTH_SHORT).show();
         } catch (WriterException e) {
-            Log.e("OrganizerQRCode", "Error generating QR code: ", e);
+            Log.e("OrganizerQRCode_EventInfo", "Error generating QR code: ", e);
         }
     }
     private void saveQRCodeToFirebase(String qrCodeId, String eventId, Bitmap bitmap) {
@@ -132,25 +130,25 @@ public class OrganizerQRCode extends Fragment {
                 qrCodeUrl = uri.toString();
                 saveQrCodeDetailsToFirestore(qrCodeId, eventId, qrCodeUrl);
             });
-        }).addOnFailureListener(e -> Log.e("OrganizerQRCode", "Error saving QR code to Firebase Storage: ", e));
+        }).addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error saving QR code to Firebase Storage: ", e));
     }
 
     private void saveQrCodeDetailsToFirestore(String qrCodeId, String eventId, String qrCodeUrl) {
         Map<String, Object> qrCodeDetails = new HashMap<>();
         qrCodeDetails.put("eventId", eventId);
-        qrCodeDetails.put("type", "CheckIn");
+        qrCodeDetails.put("type", "EventInfo");
         qrCodeDetails.put("qrCodeUrl", qrCodeUrl);
         FirebaseFirestore.getInstance().collection("QRCode").document(qrCodeId)
                 .set(qrCodeDetails)
-                .addOnSuccessListener(aVoid -> Log.d("OrganizerQRCode", "QR code details saved successfully"))
-                .addOnFailureListener(e -> Log.e("OrganizerQRCode", "Error saving QR code details to Firestore", e));
+                .addOnSuccessListener(aVoid -> Log.d("OrganizerQRCode_EventInfo", "QR code details saved successfully"))
+                .addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error saving QR code details to Firestore", e));
     }
 
     private void deleteExistingQRCode(String eventId, Runnable onSuccess) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("QRCode")
                 .whereEqualTo("eventId", eventId)
-                .whereEqualTo("type", "CheckIn")
+                .whereEqualTo("type", "EventInfo")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
@@ -164,7 +162,7 @@ public class OrganizerQRCode extends Fragment {
                             // Delete the file from Firebase Storage
                             FirebaseStorage.getInstance().getReference().child(filePath).delete()
                                     .addOnSuccessListener(aVoid -> onSuccess.run())
-                                    .addOnFailureListener(e -> Log.e("OrganizerQRCode", "Error deleting QR code from Firebase Storage", e));
+                                    .addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error deleting QR code from Firebase Storage", e));
                         } else {
                             onSuccess.run();
                         }
@@ -172,7 +170,7 @@ public class OrganizerQRCode extends Fragment {
                         onSuccess.run();
                     }
                 })
-                .addOnFailureListener(e -> Log.e("OrganizerQRCode", "Error finding existing QR code to delete", e));
+                .addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error finding existing QR code to delete", e));
     }
 
     private String extractFilePathFromUrl(String qrCodeUrl) {
@@ -191,7 +189,7 @@ public class OrganizerQRCode extends Fragment {
                 }
             }
         } catch (Exception e) {
-            Log.e("OrganizerQRCode", "Error extracting file path from URL", e);
+            Log.e("OrganizerQRCode_EventInfo", "Error extracting file path from URL", e);
         }
         return null;
     }

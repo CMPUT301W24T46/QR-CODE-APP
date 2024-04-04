@@ -68,7 +68,7 @@
     <string name="no_notification_at_this_time">No Notification at this time</string>
     <string name="create_notify">Create Notification</string>
     <string name="see_list_of_attendees">See List Of Attendees</string>
-    <string name="QR_code_info">QR Code Info</string>
+    <string name="QR_code_info">CheckIn QR Code</string>
     <string name="update_event_info">Update Event Information</string>
     <string name="text_location_checkin">Location Of Check In</string>
     <string name="share_qr_code">Share QR Code</string>
@@ -105,6 +105,7 @@
     <string name="google_maps_key">GOOGLE_MAPS_KEY</string>
     <string name="restrictiontext">Maximum 1000 characters including spaces</string>
     <string name="history">History</string>
+    <string name="QR_code_eventinfo">Event Information QR Code</string>
     <string-array name="event_action_options">
         <item>Check-ins</item>
         <item>Sign-ups</item>

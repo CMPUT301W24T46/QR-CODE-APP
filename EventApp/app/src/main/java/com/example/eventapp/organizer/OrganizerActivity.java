@@ -165,6 +165,10 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
                     Bundle bundle = new Bundle();
                     bundle.putString("eventId", eventId);
                     back_organizerNavigation.navigate(R.id.action_organizer_qrcode_to_organizer_edit_event_selection, bundle);
+                }else if (destinationId == R.id.organizerQRCodeEventInfo) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventId);
+                    back_organizerNavigation.navigate(R.id.action_organizer_edit_event_selection_to_organizerQRCodeEventInfo, bundle);
                 }else if (destinationId == R.id.organizer_attendees_list) {
                     Bundle bundle = new Bundle();
                     bundle.putString("eventId", eventId);
