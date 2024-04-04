@@ -9,6 +9,7 @@ public class Event {
     String eventDescription;
     private String eventId;
     private String qrcodeId;
+    private Integer attendeeLimit;
 
 
 //    public Event(String eventName , String imageDescription , String imageURL){
@@ -16,6 +17,18 @@ public class Event {
 //        this.imageDescription = imageDescription ;
 //        this.imageURL = imageURL ;
 //    }
+    public Event(String eventName, String imageURL, Integer attendeeLimit) {
+        this.eventName = eventName;
+        this.imageURL = imageURL;
+        this.attendeeLimit = attendeeLimit;
+    }
+
+    public Event(String eventName, String eventDate, String imageURL, Integer attendeeLimit) {
+        this.eventName = eventName;
+        this.eventDate = eventDate;
+        this.imageURL = imageURL;
+        this.attendeeLimit = attendeeLimit;
+    }
     public Event(String eventName, String imageURL){
         this.eventName = eventName ;
         this.imageURL = imageURL ;
@@ -31,6 +44,13 @@ public class Event {
         this.eventDate = eventDate;
         this.imageURL = imageURL;
         this.eventDescription = eventDescription;
+    }
+    public Event(String eventName , String eventDate , String imageURL, String eventDescription, Integer attendeeLimit){
+        this.eventName = eventName;
+        this.eventDate = eventDate;
+        this.imageURL = imageURL;
+        this.eventDescription = eventDescription;
+        this.attendeeLimit = attendeeLimit;
     }
 
     public Event(String eventName , String eventDate , String imageURL, String eventId, String eventDescription){
@@ -117,5 +137,12 @@ public class Event {
 
     public void setQrcodeId(String qrcodeId) {
         this.qrcodeId = qrcodeId;
+    }
+    public Integer getAttendeeLimit() {
+        return attendeeLimit;
+    }
+
+    public void setAttendeeLimit(Integer attendeeLimit) {
+        this.attendeeLimit = attendeeLimit;
     }
 }
