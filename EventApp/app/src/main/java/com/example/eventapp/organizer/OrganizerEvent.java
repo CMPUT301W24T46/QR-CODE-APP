@@ -7,10 +7,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -29,6 +32,7 @@ public class OrganizerEvent extends Fragment {
     private EventAdapter adapter;
     private ArrayList<Event> allEvents = new ArrayList<>();
     private SearchView searchView;
+    private View limitEditText;
 
     public OrganizerEvent() {
         // Required empty public constructor
@@ -39,6 +43,8 @@ public class OrganizerEvent extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organizer_event, container, false);
         return view;
+
+
     }
 
     @Override
@@ -71,6 +77,8 @@ public class OrganizerEvent extends Fragment {
                         Log.d("EventFetch", "Error getting documents: ", task.getException());
                     }
                 });
+
+
     }
 
     /**
