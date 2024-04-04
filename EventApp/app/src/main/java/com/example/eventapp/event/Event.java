@@ -16,7 +16,7 @@ public class Event {
 //        this.imageDescription = imageDescription ;
 //        this.imageURL = imageURL ;
 //    }
-    public Event(String name, String eventDate, Integer attendeeLimit, String eventName, String imageURL){
+    public Event(String eventName, String imageURL){
         this.eventName = eventName ;
         this.imageURL = imageURL ;
     }
