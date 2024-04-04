@@ -28,6 +28,7 @@ import java.util.Objects;
 public class ShareQRCodeFragment extends BottomSheetDialogFragment {
     private static String qrCodeUrl;
     private static String eventId;
+    private static String qrCodeId;
 
     /**
      * Creates a new instance of ShareQRCodeFragment with QR code URL and event ID.
@@ -40,6 +41,7 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
         Bundle args = new Bundle();
         args.putString("qrCodeUrl", qrCodeUrl);
         args.putString("eventId", eventId);
+        args.putString("qrCodeId", qrCodeId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,6 +56,7 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
         if (getArguments() != null) {
             qrCodeUrl = getArguments().getString("qrCodeUrl");
             eventId = getArguments().getString("eventId");
+            qrCodeId = getArguments().getString("qrCodeId");
         }
     }
 
@@ -105,7 +108,7 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
             return;
         }
 
-        String fileName = "QRCode_" + eventId + "_" + System.currentTimeMillis(); // Include eventId in file name
+        String fileName = "QRCode_" + eventId + "_" + qrCodeId + "_" + System.currentTimeMillis();
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, fileName);
         values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);

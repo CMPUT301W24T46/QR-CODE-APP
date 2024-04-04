@@ -76,6 +76,15 @@ public class OrganizerEditEventSelection extends Fragment {
 
         });
 
+        Button btnQRCodeEventInfo = view.findViewById(R.id.btn_qrcode_eventinfo);
+        btnQRCodeEventInfo.setOnClickListener(v -> {
+            Bundle qrBundle = new Bundle();
+            qrBundle.putString("eventId", eventId1);
+            navController.navigate(R.id.action_organizer_edit_event_selection_to_organizerQRCodeEventInfo, qrBundle);
+//            Log.d("OrganizerEditEventSelection", "EventId passed: " + eventId1);
+
+        });
+
         Button btnUpdateEvent = view.findViewById(R.id.btn_updateEvent);
         btnUpdateEvent.setOnClickListener(v -> {
             Bundle updateBundle = new Bundle();

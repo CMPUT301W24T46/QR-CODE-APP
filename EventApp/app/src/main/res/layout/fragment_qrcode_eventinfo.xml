@@ -7,13 +7,13 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/organizer_qrcode_title"
+        android:id="@+id/organizer_qrcode_title_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:text="QR CODE FOR CHECKIN"
+        android:text="QR CODE FOR EVENTINFO"
         android:textColor="@color/black"
-        android:textSize="34sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,10 +31,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_qrcode_title" />
+        app:layout_constraintTop_toBottomOf="@+id/organizer_qrcode_title_1" />
 
     <ImageView
-        android:id="@+id/organizer_qrcode_view"
+        android:id="@+id/organizer_qrcode_view_1"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="15dp"
@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_share_qrcode" />
 
     <Button
-        android:id="@+id/btn_regenerateQRCode"
+        android:id="@+id/btn_regenerateQRCode_1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
@@ -53,9 +53,8 @@
         android:text="Regenerate"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_qrcode_view" />
+        app:layout_constraintTop_toBottomOf="@+id/organizer_qrcode_view_1" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

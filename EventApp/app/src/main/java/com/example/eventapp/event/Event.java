@@ -8,6 +8,7 @@ public class Event {
     String creatorId;
     String eventDescription;
     private String eventId;
+    private String qrcodeId;
 
 
 //    public Event(String eventName , String imageDescription , String imageURL){
@@ -108,5 +109,13 @@ public class Event {
 
     public void setEventId(String eventId) {
         this.eventId = eventId;
+    }
+
+    public String getQrcodeId() {
+        return qrcodeId;
+    }
+
+    public void setQrcodeId(String qrcodeId) {
+        this.qrcodeId = qrcodeId;
     }
 }
