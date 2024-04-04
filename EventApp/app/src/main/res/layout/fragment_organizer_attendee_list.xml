@@ -23,6 +23,17 @@
         android:textColor="@android:color/white"
         android:layout_marginBottom="16dp" />
 
+    <Spinner
+        android:id="@+id/spinner_eventActions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/spinner_custom_background"
+        android:padding="8dp"
+        android:popupBackground="#FFFFFF"
+        android:entries="@array/event_action_options"
+        android:layout_marginBottom="16dp"
+        android:dropDownVerticalOffset="10dp" />
+
     <ListView
         android:id="@+id/listview_attendees"
         android:layout_width="match_parent"
