@@ -106,8 +106,12 @@
     <string name="restrictiontext">Maximum 1000 characters including spaces</string>
     <string name="history">History</string>
     <string name="QR_code_eventinfo">Event Information QR Code</string>
+    <string name="Number_of_limite_attendees">number_of_limite_attendees</string>
+    <string name="Number_of_limit_attendees">Number_of_limit_attendees</string>
+    <string name="sign_up_limit">Sign Up Limit(Optional)</string>
     <string-array name="event_action_options">
         <item>Check-ins</item>
         <item>Sign-ups</item>
     </string-array>
+
 </resources>
