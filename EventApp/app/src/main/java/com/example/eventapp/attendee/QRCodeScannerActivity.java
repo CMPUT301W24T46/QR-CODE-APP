@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.eventapp.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -48,6 +49,8 @@ import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.integration.android.IntentIntegrator;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -72,6 +75,8 @@ public class QRCodeScannerActivity extends AppCompatActivity {
     private ImageView selectedImageView;
 
     private FusedLocationProviderClient fusedLocationClient;
+
+    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -252,36 +257,29 @@ public class QRCodeScannerActivity extends AppCompatActivity {
 
         try {
             Result result = new MultiFormatReader().decode(binaryBitmap);
-            String qrCodeId = result.getText();
+            String qrCodeData = result.getText();
+            Log.d("QRCodeData", "QRCodeData: " + qrCodeData);
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("QRCode")
-                    .whereEqualTo("qrCodeId", qrCodeId)
-                    .limit(1)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
-                            String type = documentSnapshot.getString("type");
-                            String eventId = documentSnapshot.getString("eventId");
+            // Parse the QR code data
+            JSONObject qrData = new JSONObject(qrCodeData);
+            String qrCodeId = qrData.getString("qrCodeId");
+            String eventId = qrData.getString("eventId");
+            String type = qrData.getString("type");
 
-                            if ("CheckIn".equals(type)) {
-                                checkInUser(eventId, latitude, longitude);
-                            } else if ("EventInfo".equals(type)) {
-                                navigateToEventInfoPage(eventId);
-                            } else {
-                                showInvalidQRCodeMessage();
-                            }
-                        } else {
-                            showInvalidQRCodeMessage();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("QRCodeScanner", "Failed to fetch QR code data from Firebase", e);
-                        showInvalidQRCodeMessage();
-                    });
+            validateQRCode(qrCodeId, eventId, type, latitude, longitude);
         } catch (Exception e) {
-            Log.e("QRCodeScanner", "Failed to decode QR code", e);
+            Log.e("QRCodeScanner", "Error in QR code data processing", e);
+            showInvalidQRCodeMessage();
+        }
+    }
+    private void validateQRCode(String qrCodeId, String eventId, String type, double latitude, double longitude) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (type.equals("CheckIn")) {
+            checkInUser(eventId,latitude, longitude);
+        } else if (type.equals("EventInfo")) {
+            navigateToEventInfoPage(eventId);
+        } else {
+            // QR code data does not match expected structure or values
             showInvalidQRCodeMessage();
         }
     }
@@ -601,10 +599,10 @@ public class QRCodeScannerActivity extends AppCompatActivity {
     }
 
     private void navigateToEventInfoPage(String eventId) {
-        Bundle bundle = new Bundle();
-        bundle.putString("eventId", eventId);
-        NavController navController = Navigation.findNavController(this, R.id.attendeeActivity);
-        navController.navigate(R.id.action_attendeeQRCodeScan_to_noCheckInInfo, bundle);
+        Intent data = new Intent();
+        data.putExtra("eventId", eventId);
+        setResult(RESULT_OK, data);
+        finish();
     }
 
 }
