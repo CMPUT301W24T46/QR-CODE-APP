@@ -55,8 +55,13 @@
         <activity
             android:name=".attendee.AttendedEvents"
             android:exported="false" />
-        <activity
-            android:name=".attendee.AttendeeNotification"
+        <activity android:name=".attendee.AttendeeNotification"
+            android:exported="false" />
+        <activity android:name=".attendee.AttendeeNoSignUpEvent"
+            android:exported="false"/>
+        <activity android:name=".organizer.OrganizerNotification"
+            android:exported="false" />
+        <activity android:name=".organizer.NotificationEventListActivity"
             android:exported="false" />
         <activity
             android:name=".organizer.OrganizerNotification"
@@ -107,12 +112,12 @@
         <activity
             android:name=".attendee.QRCodeScanFragment"
             android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".attendee.QRCodeScannerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".organizer.UpdateEventFragment"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".attendee.QRCodeScannerActivity"
+            android:exported="false"/>
+        <activity android:name=".organizer.UpdateEventFragment"
+            android:exported="false"/>
+        <activity android:name=".organizer.OrganizerQRCode_EventInfo"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

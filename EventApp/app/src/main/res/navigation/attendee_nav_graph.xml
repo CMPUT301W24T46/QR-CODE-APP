@@ -63,5 +63,14 @@
         <action
             android:id="@+id/action_attendeeQRCodeScan_to_attendeeEventInformation"
             app:destination="@id/attendeeEventInformation" />
+        <action
+            android:id="@+id/action_attendeeQRCodeScan_to_noCheckInInfo"
+            app:destination="@id/noCheckInInfo" />
+    </fragment>
+    <fragment
+        android:id="@+id/noCheckInInfo"
+        android:name="com.example.eventapp.attendee.AttendeeNoSignUpEvent"
+        android:label="fragment_attendee_event_checkin_info"
+        tools:layout="@layout/fragment_attendee_nosignup_event" >
     </fragment>
 </navigation>

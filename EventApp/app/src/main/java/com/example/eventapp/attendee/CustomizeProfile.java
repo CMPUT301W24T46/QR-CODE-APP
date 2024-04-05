@@ -1,8 +1,12 @@
 package com.example.eventapp.attendee;
 
+import static com.example.eventapp.geoLocation.EventUserLocation.LOCATION_PERMISSION_REQUEST_CODE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -16,6 +20,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
@@ -23,8 +30,15 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.eventapp.R;
 import com.example.eventapp.document_reference.DocumentReferenceChecker;
 import com.example.eventapp.Image.UploadImage;
+import com.example.eventapp.geoLocation.GeolocationController;
 import com.example.eventapp.helpers.CheckCustomizeProfileData;
 import com.example.eventapp.users.User;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,6 +51,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import android.Manifest;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +80,9 @@ public class CustomizeProfile extends AppCompatActivity {
     private Button profileDeleteImageButton;
     private User attendeeUser ;
     private ImageView profilePhotView ;
+    private SwitchCompat geolocationToggle;
+    private GeolocationController geoController;
+    private String userId;
     private Context context ;
     /**
      * Called when the activity is first created. Responsible for initializing the activity's UI components,
@@ -92,7 +111,9 @@ public class CustomizeProfile extends AppCompatActivity {
         profilePhotView = findViewById(R.id.attendeeProfilePic) ;
         profileEditImageButton = findViewById(R.id.CustomizeImage);
         profileDeleteImageButton = findViewById(R.id.DeleteImage) ;
+        geolocationToggle = findViewById(R.id.switch_enable_geolocation);
 
+        geoController = new GeolocationController(this);
 
         storageReference = FirebaseStorage.getInstance().getReference() ;
 
@@ -117,7 +138,53 @@ public class CustomizeProfile extends AppCompatActivity {
                     uploadImage();
             }
         });
+
+        // Geolocation toggle listener
+        geolocationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!buttonView.isPressed()) return;
+
+            if (isChecked) {
+                // Trying to enable geolocation tracking
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    // Permissions are granted, enable geolocation tracking in database
+                    updateUserGeolocationPreference(true);
+                } else {
+                    // Request location permissions
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+                }
+            } else {
+                // Disable geolocation tracking in database
+                updateUserGeolocationPreference(false);
+            }
+        });
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission was granted
+                updateUserGeolocationPreference(true);
+                geolocationToggle.setChecked(true); // set toggle to true
+            } else {
+                // Permission was denied
+                Toast.makeText(this, "Location permission denied.", Toast.LENGTH_SHORT).show();
+                geolocationToggle.setChecked(false);  // set toggle to false
+            }
+        }
+    }
+    private void updateUserGeolocationPreference(boolean isEnabled) {
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(userId);
+
+        // Update the user's preference in Firestore or SharedPreferences
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("isGeolocationEnabled", isEnabled);
+        // Assuming 'userRef' is a DocumentReference pointing to the user's document
+        userRef.update(updates).addOnSuccessListener(aVoid -> Log.d("GeoToggle", "User geolocation preference updated."))
+                .addOnFailureListener(e -> Log.e("GeoToggle", "Error updating user geolocation preference.", e));
+    }
+
 
     /**
      * Initiates an intent to pick an image from the device's gallery.
@@ -142,6 +209,22 @@ public class CustomizeProfile extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // Handles geolocation request
+        if (requestCode == 1001) {
+            if (resultCode == RESULT_OK) {
+                // The user agreed to make required location settings changes.
+                geolocationToggle.setChecked(true);
+                geoController.enableGeolocationFeatures(userId);
+                return;
+            } else {
+                // The user did not agree to make required location settings changes.
+                geolocationToggle.setChecked(false);
+                geoController.disableGeolocationFeatures(userId);
+                return;
+            }
+        }
+
         if (resultCode == Activity.RESULT_OK) {
             Log.d("Valid", "RESULT_OK");
             if (requestCode == GALLERY_REQUEST_CODE) {
@@ -157,6 +240,7 @@ public class CustomizeProfile extends AppCompatActivity {
                     }
                 }
             }
+
         }
     }
 
@@ -191,7 +275,7 @@ public class CustomizeProfile extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-            String userId = user.getUid();
+            userId = user.getUid();
 
             DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(userId);
             userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -203,12 +287,29 @@ public class CustomizeProfile extends AppCompatActivity {
                         String contactText = documentSnapshot.getString("contactInformation");
                         String descriptionText = documentSnapshot.getString("homepage");
 
+                        Boolean isGeolocationEnabled = false;
+
+                        // Check if isGeolocationEnable field is present
+                        if (documentSnapshot.contains("isGeolocationEnabled")) {
+                            isGeolocationEnabled = documentSnapshot.getBoolean("isGeolocationEnabled");
+                        } else {
+                            Map<String, Object> updates = new HashMap<>();
+                            updates.put("isGeolocationEnabled", false);
+
+                            userRef.update(updates).addOnSuccessListener(aVoid -> {
+                                Log.d("Firestore", "isGeolocationEnabled field created with default value.");
+                            }).addOnFailureListener(e -> {
+                                Log.e("Firestore", "Error updating document", e);
+                            });
+                        }
+
                         attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
 
                         // Set data to EditText views
                         username.setText(attendeeUser.getName());
                         contact.setText(attendeeUser.getContactInformation());
                         description.setText(attendeeUser.getContactInformation());
+                        geolocationToggle.setChecked(isGeolocationEnabled);
 
                         // Check if 'imageUrl' field is present and of type DocumentReference
                         Object imageUrlObject = documentSnapshot.get("imageUrl");
@@ -434,4 +535,6 @@ public class CustomizeProfile extends AppCompatActivity {
             }
         }
     }
+
+
 }

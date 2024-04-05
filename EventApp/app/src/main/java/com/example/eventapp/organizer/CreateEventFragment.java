@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -81,6 +82,10 @@ public class CreateEventFragment extends DialogFragment {
         Button buttonConfirm = view.findViewById(R.id.buttonConfirm); // Confirm Button
         Button buttonArrow = view.findViewById(R.id.buttonArrow); // Previous Button
         eventImageView = view.findViewById(R.id.EventImageView); // Initialize the ImageView
+        EditText limitAttendeeEditText = view.findViewById(R.id.LimitAttendeesView);
+
+        // Set input type to accept only numbers
+        limitAttendeeEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         eventImageView.setOnClickListener(v -> pickImage());
 
@@ -90,9 +95,15 @@ public class CreateEventFragment extends DialogFragment {
             String eventDate = eventDateEditText.getText().toString().trim();
             String eventDescription = eventDescriptionEditText.getText().toString().trim();
             String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Fetching the creatorId
+            Integer attendeeLimit = -1;
+            // Check if the attendee limit EditText is not empty
+            if (!limitAttendeeEditText.getText().toString().isEmpty()) {
+                // If not empty, parse the input value to an integer
+                attendeeLimit = Integer.parseInt(limitAttendeeEditText.getText().toString().trim());
+            }
 
             if (!eventName.isEmpty() && !eventDate.isEmpty() && creatorId != null && !eventDescription.isEmpty()) {
-                createEvent(eventName, eventDate, creatorId, eventDescription, imageUri);
+                createEvent(eventName, eventDate, creatorId, eventDescription, imageUri, attendeeLimit);
             } else {
                 Toast.makeText(getContext(), "Please fill in all fields!", Toast.LENGTH_LONG).show();
             }
@@ -185,7 +196,7 @@ public class CreateEventFragment extends DialogFragment {
             }
     );
 
-    private void createEvent(String eventName, String eventDate, String creatorId, String eventDescription, Uri imageUri) {
+    private void createEvent(String eventName, String eventDate, String creatorId, String eventDescription, Uri imageUri, Integer attendeeLimit) {
         // If user decide to upload image at this time
         if (imageUri != null) {
             StorageReference storageRef = FirebaseStorage.getInstance().getReference("event_images");
@@ -193,15 +204,20 @@ public class CreateEventFragment extends DialogFragment {
 
             imageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                 String imageUrl = uri.toString();
-                Event event = new Event(eventName, eventDate, imageUrl, eventDescription);
+                Event event;
+                if (attendeeLimit != null) {
+                    event = new Event(eventName, eventDate, imageUrl, eventDescription, attendeeLimit);
+                } else {
+                    event = new Event(eventName, eventDate, imageUrl, eventDescription);
+                }
                 event.setCreatorId(creatorId);
                 saveEventToFirestore(event);
             })).addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        // Otherwise
+            // Otherwise
         } else {
             // Create event without image URL
             String imageUrl = "NonImage"; // Default image URL
-            Event event = new Event(eventName, eventDate, imageUrl, eventDescription);
+            Event event = new Event(eventName, eventDate, imageUrl, eventDescription, attendeeLimit);
             event.setCreatorId(creatorId);
             saveEventToFirestore(event);
         }
@@ -215,6 +231,7 @@ public class CreateEventFragment extends DialogFragment {
         eventMap.put("imageURL", event.getImageURL());
         eventMap.put("creatorId", event.getCreatorId());
         eventMap.put("eventDescription", event.getEventDescription());
+        eventMap.put("attendeeLimit", event.getAttendeeLimit());
 
         db.collection("Events").add(eventMap)
                 .addOnSuccessListener(documentReference -> {
@@ -229,5 +246,4 @@ public class CreateEventFragment extends DialogFragment {
                     Toast.makeText(getContext(), "Failed to create event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
 }

@@ -81,16 +81,17 @@ public class QRCodeScanFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK && data != null) {
             String eventId = data.getStringExtra("eventId");
+            if (eventId != null && !eventId.isEmpty()) {
 
-            // Create a bundle to pass the eventId
-            Bundle bundle = new Bundle();
-            bundle.putString("eventId", eventId);
+                Bundle bundle = new Bundle();
+                bundle.putString("eventId", eventId);
 
-            // Perform navigation with NavController and action ID
-            NavController navController = Navigation.findNavController(getView());
-            navController.navigate(R.id.action_attendeeQRCodeScan_to_attendeeEventInformation, bundle);
+                // Perform navigation with NavController and action ID
+                NavController navController = Navigation.findNavController(getView());
+                navController.navigate(R.id.action_attendeeQRCodeScan_to_noCheckInInfo, bundle);
+            }
         }
     }
 }

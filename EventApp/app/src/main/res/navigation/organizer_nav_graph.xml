@@ -98,6 +98,9 @@
             app:destination="@id/organizer_update_event" />
         <action android:id="@+id/action_organizer_edit_event_selection_to_organizer_event_map"
             app:destination="@id/organizer_event_map" />
+        <action
+            android:id="@+id/action_organizer_edit_event_selection_to_organizerQRCodeEventInfo"
+            app:destination="@id/organizerQRCodeEventInfo" />
     </fragment>
     <fragment
         android:id="@+id/organizer_qrcode"
@@ -138,6 +141,15 @@
             android:id="@+id/action_organizer_event_map_to_organizer_edit_event_selection"
             app:destination="@id/organizer_edit_event_selection" />
 
+    </fragment>
+    <fragment
+        android:id="@+id/organizerQRCodeEventInfo"
+        android:name="com.example.eventapp.organizer.OrganizerQRCode_EventInfo"
+        android:label="fragment_qrcode_eventinfo"
+        tools:layout="@layout/fragment_qrcode_eventinfo" >
+        <action
+            android:id="@+id/action_organizerQRCodeEventInfo_to_organizer_edit_event_selection"
+            app:destination="@id/organizer_edit_event_selection" />
     </fragment>
 
 

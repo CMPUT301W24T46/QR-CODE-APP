@@ -8,7 +8,7 @@
     <Button
         android:id="@+id/btn_listAttendee"
         android:layout_width="350dp"
-        android:layout_height="110dp"
+        android:layout_height="90dp"
         android:layout_marginTop="70dp"
         android:background="@drawable/rounded_button_background"
         android:text="@string/see_list_of_attendees"
@@ -20,7 +20,7 @@
     <Button
         android:id="@+id/btn_QRCode"
         android:layout_width="350dp"
-        android:layout_height="110dp"
+        android:layout_height="90dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_button_background"
         android:text="@string/QR_code_info"
@@ -32,24 +32,39 @@
     <Button
         android:id="@+id/btn_updateEvent"
         android:layout_width="350dp"
-        android:layout_height="110dp"
+        android:layout_height="90dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_button_background"
         android:text="@string/update_event_info"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_QRCode" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_qrcode_eventinfo" />
 
     <Button
         android:id="@+id/btn_locationCheckIn"
         android:layout_width="350dp"
-        android:layout_height="110dp"
+        android:layout_height="90dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_button_background"
         android:text="@string/text_location_checkin"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_updateEvent" />
+
+    <Button
+        android:id="@+id/btn_qrcode_eventinfo"
+        android:layout_width="350dp"
+        android:layout_height="90dp"
+        android:layout_marginTop="20dp"
+
+        android:background="@drawable/rounded_button_background"
+        android:text="@string/QR_code_eventinfo"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_QRCode" />
 </androidx.constraintlayout.widget.ConstraintLayout>

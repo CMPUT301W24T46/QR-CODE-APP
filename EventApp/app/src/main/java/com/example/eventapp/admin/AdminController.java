@@ -22,6 +22,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -328,22 +330,42 @@ public class AdminController {
      * @param adapter Adapter to be updated with image data.
      */
     public void subscribeToImageDB(ImageGridAdapter adapter) {
-        imageRef.addSnapshotListener((querySnapshots, error) -> {
-            if (error != null) {
-                Log.e("Firestore", "Error listening to Image snapshots", error);
-                return;
-            }
-            if (querySnapshots != null) {
-                List<Image> images = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : querySnapshots) {
-                    String imageId = doc.getId();
-                    String imageURL = doc.getString("URL");
-                    Log.d("Firestore", String.format("Name(%s, %s) fetched", imageId, imageURL));
-                    images.add(new Image(imageURL, imageId));
-                }
-                adapter.setFilter(images);
-                adapter.notifyDataSetChanged();
-            }
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference listRef = storage.getReference().child("event_images/");
+
+        listRef.listAll()
+                .addOnSuccessListener(listResult -> {
+                    List<Image> images = new ArrayList<>();
+                    for (StorageReference item : listResult.getItems()) {
+                        // Note: Firebase Storage doesn't directly provide file URLs in list operations
+                        // You must fetch them individually
+                        item.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String imageURL = uri.toString();
+                            String imageId = item.getName(); // Using file name as ID
+                            images.add(new Image(imageURL, imageId));
+                            adapter.setFilter(images);
+                            adapter.notifyDataSetChanged();
+                        }).addOnFailureListener(e -> Log.e("Storage", "Error fetching URL for item " + item.getPath(), e));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Storage", "Error listing images", e));
+
+    }
+
+
+    /**
+     * Deletes an image from Firestore based on its ID.
+     * @param imageId ID of the image to be deleted.
+     * @return Task representing the result of the delete operation.
+     */
+    public Task<Void> deleteImage(String imageId) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference imageRef = storage.getReference().child("event_images/" + imageId); // Assuming 'imageId' is the file name
+
+        return imageRef.delete().addOnSuccessListener(aVoid -> {
+            Toast.makeText(context, "Image deleted successfully", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> {
+            Toast.makeText(context, "Error deleting image", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -378,37 +400,7 @@ public class AdminController {
         }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
     }
 
-    /**
-     * Deletes an image from Firestore based on its ID.
-     * @param imageId ID of the image to be deleted.
-     * @return Task representing the result of the delete operation.
-     */
-    public Task<Void> deleteImage(String imageId) {
-        idlingResource.increment(); // Increment IdlingResource for Espresso synchronization
-        TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
 
-        if (imageId != null && !imageId.isEmpty()) {
-            // Delete the image document based on ID
-            imageRef.document(imageId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(context, "Image deleted successfully", Toast.LENGTH_SHORT).show();
-                        tcs.setResult(null); // Set the result on success
-                        idlingResource.decrement(); // Decrement IdlingResource
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(context, "Error deleting image", Toast.LENGTH_SHORT).show();
-                        tcs.setException(e); // Set exception on failure
-                        idlingResource.decrement(); // Decrement IdlingResource
-                    });
-        } else {
-            Toast.makeText(context, "Error: Image ID not found.", Toast.LENGTH_SHORT).show();
-            tcs.setException(new IllegalArgumentException("Image ID not provided.")); // Set exception if image ID is empty
-            idlingResource.decrement(); // Decrement IdlingResource
-        }
-
-        return tcs.getTask(); // Return the Task
-    }
 
 
 

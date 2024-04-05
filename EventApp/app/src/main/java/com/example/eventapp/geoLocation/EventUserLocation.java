@@ -29,7 +29,7 @@ import java.util.Random;
 
 public class EventUserLocation extends Fragment {
 
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    public static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private TextView eventMapTitle, address, city, country, latitude, longitude, ipAddress;
     private Button buttonGetLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;

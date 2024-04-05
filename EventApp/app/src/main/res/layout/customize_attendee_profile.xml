@@ -11,10 +11,11 @@
         android:id="@+id/editTextTextEmailAddress"
         android:layout_width="329dp"
         android:layout_height="40dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="48dp"
         android:ems="10"
         android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBaseline_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/attendeeProfilePic" />
 
@@ -71,46 +72,66 @@
         app:layout_constraintHorizontal_bias="0.097"
         app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
+
+    <!--    android:onClick="onCustomizeProfileSaveClicked"-->
+
+    <!-- Adjusted to use start constraint -->
+
+
+    <!--        android:onClick="onCustomizeProfileDeleteImageClicked"-->
+
+
+    <!--        android:onClick="onCustomizeProfileCustomizeImageClicked"-->
+
+
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch_enable_geolocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="28dp"
+        android:text="Enable Geolocation"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
+
+    <Button
         android:id="@+id/AttendeeAccountSave"
         android:layout_width="158dp"
         android:layout_height="45dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/rounded_button_background"
         android:text="@string/AttendeeSave"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/CustomizeImage" />
-<!--    android:onClick="onCustomizeProfileSaveClicked"-->
 
     <Button
         android:id="@+id/DeleteImage"
         android:layout_width="158dp"
         android:layout_height="45dp"
-        android:layout_marginTop="51dp"
+        android:layout_marginTop="76dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/rounded_button_background"
         android:text="@string/DeleteImage"
         android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
-    <!--        android:onClick="onCustomizeProfileDeleteImageClicked"-->
-
 
     <Button
         android:id="@+id/CustomizeImage"
         android:layout_width="158dp"
         android:layout_height="45dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="51dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="76dp"
         android:background="@drawable/rounded_button_background"
         android:text="@string/CustomizeImage"
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
-    <!--        android:onClick="onCustomizeProfileCustomizeImageClicked"-->
 
     <ImageView
         android:id="@+id/attendeeProfilePic"
