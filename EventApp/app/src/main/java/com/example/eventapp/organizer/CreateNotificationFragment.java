@@ -153,7 +153,7 @@ public class CreateNotificationFragment extends DialogFragment {
                                                                     .update("allNotifications", FieldValue.arrayUnion(notification))
                                                                     .addOnSuccessListener(aVoid -> {
                                                                         Log.d("CreateNotification", "Notification added for attendee: " + attendeeId);
-                                                                        sendPushNotifications();
+                                                                        sendPushNotifications(eventName , notification.getMessage());
                                                                     })
                                                                     .addOnFailureListener(e -> {
                                                                         Log.e("CreateNotification", "Error adding notification for attendee: " + attendeeId, e);
@@ -166,6 +166,7 @@ public class CreateNotificationFragment extends DialogFragment {
                                                                     .set(data)
                                                                     .addOnSuccessListener(aVoid -> {
                                                                         Log.d("CreateNotification", "New document created with notification for attendee: " + attendeeId);
+                                                                        sendPushNotifications(eventName , notification.getMessage());
                                                                     })
                                                                     .addOnFailureListener(e -> {
                                                                         Log.e("CreateNotification", "Error creating new document with notification for attendee: " + attendeeId, e);
@@ -180,7 +181,7 @@ public class CreateNotificationFragment extends DialogFragment {
                                         if (listener != null) {
                                             listener.onNotificationCreated();
                                         }
-//                                        dismiss();
+                                        dismiss();
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(getContext(), "Error retrieving attendees: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -200,7 +201,8 @@ public class CreateNotificationFragment extends DialogFragment {
                 });
     }
 
-    public void sendPushNotifications(){
+    public void sendPushNotifications(String eventName , String notification){
+//        Log.d("Push Notification" , "Called") ;
         DocumentReference docRef = FirebaseFirestore.getInstance().collection("Events")
                 .document(eventId)
                 .collection("RegistrationTokens")
@@ -217,9 +219,8 @@ public class CreateNotificationFragment extends DialogFragment {
                                 List<String> arrayTokens= (List<String>) document.get("token");
                                 // Do something with your array
                                 Log.d("Push Notification" , "Called") ;
-                                NotificationSend notificationSend = new NotificationSend(arrayTokens, "Yes" , "letsgo") ;
+                                NotificationSend notificationSend = new NotificationSend(arrayTokens, eventName , notification) ;
                                 notificationSend.sendNotifications();
-                                dismiss();
                             } else {
                                 Log.d("TAG", "No such document");
                             }

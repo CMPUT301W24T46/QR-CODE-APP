@@ -1,5 +1,7 @@
 package com.example.eventapp.firestoreservice;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -31,6 +33,7 @@ public class NotificationSend {
     }
 
     public void sendNotifications() {
+        Log.d("Function Send " , "Called") ;
         executor.execute(new Runnable() {
             @Override
             public void run() {
