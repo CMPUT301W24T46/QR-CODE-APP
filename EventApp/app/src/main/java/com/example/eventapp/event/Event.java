@@ -1,6 +1,7 @@
 package com.example.eventapp.event;
 
 public class Event {
+    private Long eventLim;
     String eventName ;
     String imageDescription ;
     String imageURL ;
@@ -11,8 +12,13 @@ public class Event {
     private String qrcodeId;
     private Integer attendeeLimit;
 
+    private Long numberOfSignUps ;
 
-//    public Event(String eventName , String imageDescription , String imageURL){
+    public Long getNumberOfSignUps() {
+        return numberOfSignUps;
+    }
+
+    //    public Event(String eventName , String imageDescription , String imageURL){
 //        this.eventName = eventName ;
 //        this.imageDescription = imageDescription ;
 //        this.imageURL = imageURL ;
@@ -60,6 +66,17 @@ public class Event {
         this.eventId = eventId;
         this.eventDescription = eventDescription;
     }
+
+    public Event(String eventName , String eventDate , String imageURL, String eventId, String eventDescription, Long eventLim , Long number0fSignUps){
+        this.eventName = eventName;
+        this.eventDate = eventDate;
+        this.imageURL = imageURL;
+        this.eventId = eventId;
+        this.eventDescription = eventDescription;
+        this.eventLim = eventLim ;
+        this.numberOfSignUps = number0fSignUps ;
+    }
+
     public Event(String eventName , String eventDate , String imageURL, String creatorId, String eventDescription, String eventId){
         this.eventName = eventName;
         this.eventDate = eventDate;
@@ -140,6 +157,10 @@ public class Event {
     }
     public Integer getAttendeeLimit() {
         return attendeeLimit;
+    }
+
+    public Long getEventLim() {
+        return eventLim;
     }
 
     public void setAttendeeLimit(Integer attendeeLimit) {

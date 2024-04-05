@@ -232,6 +232,7 @@ public class CreateEventFragment extends DialogFragment {
         eventMap.put("creatorId", event.getCreatorId());
         eventMap.put("eventDescription", event.getEventDescription());
         eventMap.put("attendeeLimit", event.getAttendeeLimit());
+        eventMap.put("Total Number of Sign Ups" , 0) ;
 
         db.collection("Events").add(eventMap)
                 .addOnSuccessListener(documentReference -> {
