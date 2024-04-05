@@ -18,8 +18,12 @@ import androidx.fragment.app.DialogFragment;
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventDB;
+import com.example.eventapp.firestoreservice.NotificationSend;
 import com.example.eventapp.notification.Notification;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,6 +36,9 @@ import java.util.Map;
 import java.util.Objects;
 import com.google.firebase.Timestamp;
 import com.example.eventapp.notification.NotificationDB;
+
+import org.w3c.dom.Document;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -146,6 +153,7 @@ public class CreateNotificationFragment extends DialogFragment {
                                                                     .update("allNotifications", FieldValue.arrayUnion(notification))
                                                                     .addOnSuccessListener(aVoid -> {
                                                                         Log.d("CreateNotification", "Notification added for attendee: " + attendeeId);
+                                                                        sendPushNotifications();
                                                                     })
                                                                     .addOnFailureListener(e -> {
                                                                         Log.e("CreateNotification", "Error adding notification for attendee: " + attendeeId, e);
@@ -172,7 +180,7 @@ public class CreateNotificationFragment extends DialogFragment {
                                         if (listener != null) {
                                             listener.onNotificationCreated();
                                         }
-                                        dismiss();
+//                                        dismiss();
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(getContext(), "Error retrieving attendees: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -192,4 +200,33 @@ public class CreateNotificationFragment extends DialogFragment {
                 });
     }
 
+    public void sendPushNotifications(){
+        DocumentReference docRef = FirebaseFirestore.getInstance().collection("Events")
+                .document(eventId)
+                .collection("RegistrationTokens")
+                .document("Tokens") ;
+
+        docRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // Retrieve the array
+                                List<String> arrayTokens= (List<String>) document.get("token");
+                                // Do something with your array
+                                Log.d("Push Notification" , "Called") ;
+                                NotificationSend notificationSend = new NotificationSend(arrayTokens, "Yes" , "letsgo") ;
+                                notificationSend.sendNotifications();
+                                dismiss();
+                            } else {
+                                Log.d("TAG", "No such document");
+                            }
+                        } else {
+                            Log.d("TAG", "get failed with ", task.getException());
+                        }
+                    }
+                });
+    }
 }

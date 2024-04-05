@@ -53,7 +53,7 @@ public class SearchEventTest {
     }
 
     @Test
-    public void searchEventTest() {
+    public void testEventSearch() {
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeEventMenu)).perform(click()) ;
@@ -66,7 +66,7 @@ public class SearchEventTest {
     }
 
     @Test
-    public void searchEventTestViewInfo() {
+    public void testEventViewInfo() {
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeEventMenu)).perform(click()) ;
@@ -82,7 +82,27 @@ public class SearchEventTest {
     }
 
     @Test
-    public void searchEventTestSignUp() {
+    public void testEventSignUp() {
+
+        onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
+        onView(withId(R.id.attendeeEventMenu)).perform(click()) ;
+
+        onView(withId(R.id.eventSearcher)).check(matches(isDisplayed())) ;
+
+        onView(withId(R.id.eventSearcher))
+                .perform(click()) // Click on the SearchView to expand it
+                .perform(typeText("First Event"), pressKey(KeyEvent.KEYCODE_ENTER));
+
+        onView(withId(R.id.btnViewEvent)).check(matches(isDisplayed())) ;
+        onView(withId(R.id.btnViewEvent)).perform(click()) ;
+
+        // Clicks the signup button and check whether it is displayed
+        onView(withId(R.id.signUpForEventButton)).check(matches(isDisplayed())) ;
+        onView(withId(R.id.signUpForEventButton)).perform(click()) ;
+    }
+
+    @Test
+    public void testEventAlreadySignedUp() {
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeEventMenu)).perform(click()) ;

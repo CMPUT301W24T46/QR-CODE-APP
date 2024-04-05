@@ -115,7 +115,7 @@ public class ImageTest {
     }
 
     @Test
-    public void deleteImage(){
+    public void testDeleteImage(){
         onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
         onData(anything())  // You can use a matcher here to match specific data
                 .inAdapterView(withId(R.id.accountOptionList))
@@ -137,7 +137,7 @@ public class ImageTest {
     }
 
     @Test
-    public void saveImageTest(){
+    public void testSaveUserInfo(){
         onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
         onData(anything())  // You can use a matcher here to match specific data
                 .inAdapterView(withId(R.id.accountOptionList))

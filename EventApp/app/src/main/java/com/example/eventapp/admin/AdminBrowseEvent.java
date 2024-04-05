@@ -3,6 +3,7 @@ package com.example.eventapp.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -14,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.eventapp.R;
 import com.example.eventapp.event.Event;
 import com.example.eventapp.event.EventAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
@@ -29,6 +32,7 @@ public class AdminBrowseEvent extends AppCompatActivity {
     private ListView eventList;
     private EventAdapter eventAdapter;
 
+    String uid ;
     /**
      * Called when the activity is starting
      *
@@ -70,7 +74,14 @@ public class AdminBrowseEvent extends AppCompatActivity {
         }
 
         setUpSearchView();
-        adminController.subscribeToEventDB(eventAdapter);
+
+        uid = FirebaseAuth.getInstance().getUid();
+
+        if(uid != null){
+            adminController.subscribeToEventDB(eventAdapter);
+        }else{
+            testBrowseEvent();
+        }
     }
 
     /**
@@ -80,15 +91,22 @@ public class AdminBrowseEvent extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if(uid == null){
+                    filterStaticEventList(query);
+                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 if(TextUtils.isEmpty(newText)) {
-                    adminController.getCurrentEventList("", false, eventAdapter);
+                    if(uid!=null){
+                        adminController.getCurrentEventList("", false, eventAdapter);
+                    }
                 } else {
-                    adminController.getCurrentEventList(newText, true, eventAdapter);
+                    if(uid!=null){
+                        adminController.getCurrentEventList(newText, true, eventAdapter);
+                    }
                 }
                 return false;
             }
@@ -119,5 +137,29 @@ public class AdminBrowseEvent extends AppCompatActivity {
             return onSupportNavigateUp();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void testBrowseEvent(){
+        ArrayList<Event> staticEvents = new ArrayList<>() ;
+        staticEvents.add(new Event("TestEvent1", "eventDate", "imageURL", "eventDescription"));
+        staticEvents.add(new Event("TestEvent2", "eventDate", "imageURL", "eventDescription"));
+        eventAdapter.setFilter(staticEvents);
+        eventAdapter.notifyDataSetChanged();
+    }
+
+    public void filterStaticEventList(String searchText){
+        String eventStaticName ;
+        Event staticEvent ;
+        ArrayList<Event> searchResults = new ArrayList<>();
+        for(int i = 0 ; i < eventDataList.size() ; i++){
+            staticEvent = eventDataList.get(i) ;
+            eventStaticName = eventDataList.get(i).getEventName() ;
+            if (eventStaticName.toLowerCase().contains(searchText.toLowerCase())) {
+                searchResults.add(new Event(staticEvent.getEventName(),  staticEvent.getEventDate() , staticEvent.getImageURL() , staticEvent.getEventId() ,
+                        staticEvent.getEventDescription()));
+            }
+        }
+        eventAdapter.setFilter(searchResults);
+        eventAdapter.notifyDataSetChanged();
     }
 }

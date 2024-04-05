@@ -272,6 +272,7 @@ public class AdminController {
     }
 
 
+
     /**
      * Deletes an event from Firestore based on the event name.
      * @param eventName Name of the event to be deleted.
@@ -367,6 +368,8 @@ public class AdminController {
             Toast.makeText(context, "Error deleting image", Toast.LENGTH_SHORT).show();
         });
     }
+
+
 
     /**
      * Fetches and updates the image list based on provided search criteria.
