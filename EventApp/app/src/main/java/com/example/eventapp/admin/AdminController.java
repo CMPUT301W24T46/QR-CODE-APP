@@ -270,6 +270,7 @@ public class AdminController {
     }
 
 
+
     /**
      * Deletes an event from Firestore based on the event name.
      * @param eventName Name of the event to be deleted.
@@ -345,6 +346,8 @@ public class AdminController {
             }
         });
     }
+
+
 
     /**
      * Fetches and updates the image list based on provided search criteria.

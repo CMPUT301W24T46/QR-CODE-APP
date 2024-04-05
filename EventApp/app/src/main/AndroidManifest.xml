@@ -3,9 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- Camera permission -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- Gallery permission -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Permissions for accessing location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:allowBackup="true"
@@ -19,20 +24,28 @@
         android:theme="@style/Theme.EVENTAPP"
         tools:targetApi="31">
         <activity
-            android:name=".admin.AdminActivity"
-            android:windowSoftInputMode="adjustPan"
+            android:name=".firestoreservice.NotificationSetupService"
             android:exported="false" />
+        <activity
+            android:name=".firestoreservice.NotificationActivitySetUp"
+            android:exported="false"
+            android:label="@string/title_activity_notification_set_up"
+            android:theme="@style/Theme.EVENTAPP" />
+        <activity
+            android:name=".admin.AdminActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".organizer.OrganizerActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".attendee.AttendeeActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".attendee.AttendeeEvent"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".attendee.CustomizeProfile"
             android:exported="false" />
@@ -42,59 +55,68 @@
         <activity
             android:name=".attendee.AttendedEvents"
             android:exported="false" />
-        <activity android:name=".attendee.AttendeeNotification"
-            android:exported="false" />
-        <activity android:name=".organizer.OrganizerNotification"
-            android:exported="false" />
-        <activity android:name=".organizer.NotificationEventListActivity"
-            android:exported="false" />
-        <!--  ADMIN        -->
-        <activity android:name=".admin.AdminBrowseProfile"
-            android:exported="false" />
-        <activity android:name=".admin.AdminDeleteProfile"
-            android:exported="false" />
-        <activity android:name=".admin.AdminBrowseEvent"
-            android:exported="false" />
-        <activity android:name=".admin.AdminDeleteEvent"
-            android:exported="false" />
-        <activity android:name=".admin.AdminBrowseImage"
-            android:exported="false" />
-        <activity android:name=".admin.AdminDeleteImage"
-            android:exported="false" />
-
         <activity
-            android:name=".organizer.OrganizerCustomizeProfile">
-        </activity>
+            android:name=".attendee.AttendeeNotification"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerNotification"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.NotificationEventListActivity"
+            android:exported="false" /> <!-- ADMIN -->
+        <activity
+            android:name=".admin.AdminBrowseProfile"
+            android:exported="false" />
+        <activity
+            android:name=".admin.AdminDeleteProfile"
+            android:exported="false" />
+        <activity
+            android:name=".admin.AdminBrowseEvent"
+            android:exported="false" />
+        <activity
+            android:name=".admin.AdminDeleteEvent"
+            android:exported="false" />
+        <activity
+            android:name=".admin.AdminBrowseImage"
+            android:exported="false" />
+        <activity
+            android:name=".admin.AdminDeleteImage"
+            android:exported="false" />
+        <activity android:name=".organizer.OrganizerCustomizeProfile" />
         <activity
             android:name=".organizer.OrganizerHome"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".organizer.OrganizerEventInfo"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".organizer.OrganizerEvent"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".organizer.OrganizerAccount"
-            android:exported="false"/>
-        <activity android:name=".organizer.OrganizerEditEventSelection"
-            android:exported="false"/>
-        <activity android:name=".organizer.OrganizerQRCode"
-            android:exported="false"/>
-        <activity android:name=".organizer.OrganizerSeeListOfAttendees"
-            android:exported="false"/>
-        <activity android:name=".attendee.QRCodeScanFragment"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerEditEventSelection"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerQRCode"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerSeeListOfAttendees"
+            android:exported="false" />
+        <activity
+            android:name=".attendee.QRCodeScanFragment"
             android:exported="false"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".attendee.QRCodeScannerActivity"
-            android:exported="false"/>
-        <activity android:name=".organizer.UpdateEventFragment"
-            android:exported="false"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".attendee.QRCodeScannerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.UpdateEventFragment"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
-
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -102,23 +124,18 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".firestoreservice.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${google_maps_key}"/>
+            android:value="${google_maps_key}" />
 
     </application>
-
-    <!-- Camera permission -->
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <!-- Gallery permission -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!-- Permissions for accessing location -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
-
-
-
 
 </manifest>

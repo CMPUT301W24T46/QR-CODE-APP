@@ -77,7 +77,10 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.7.7")
     implementation("androidx.navigation:navigation-ui:2.7.7")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    // Firebase Messaging
+    implementation("com.google.firebase:firebase-messaging:23.4.1")
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:3.2.4")
     androidTestImplementation("org.mockito:mockito-core:3.2.4")
     implementation("androidx.test.espresso:espresso-intents:3.5.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

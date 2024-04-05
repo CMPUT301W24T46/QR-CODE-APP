@@ -13,12 +13,14 @@ import android.widget.SearchView;
 
 
 import com.example.eventapp.R;
+import com.example.eventapp.event.Event;
 import com.example.eventapp.users.Admin;
 import com.example.eventapp.users.User;
 import com.example.eventapp.users.UserAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -44,6 +46,7 @@ public class AdminBrowseProfile extends AppCompatActivity {
     private Map<String, DocumentReference> userImageRefMap;
     private AdminController adminController;
 
+    private  String uid ;
     public AdminBrowseProfile() {
         // Required empty public constructor
     }
@@ -79,7 +82,14 @@ public class AdminBrowseProfile extends AppCompatActivity {
         }
 
         setUpSearchView();
-        adminController.subscribeToUserDB(userAdapter);
+        uid = FirebaseAuth.getInstance().getUid();
+
+        if(uid != null){
+            adminController.subscribeToUserDB(userAdapter);
+        }else{
+            testBrowseUsers();
+        }
+
 
     }
 
@@ -90,6 +100,9 @@ public class AdminBrowseProfile extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if(uid == null){
+                    filterStaticEventList(query);
+                }
                 return false;
             }
 
@@ -135,5 +148,29 @@ public class AdminBrowseProfile extends AppCompatActivity {
             return onSupportNavigateUp();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void testBrowseUsers(){
+        ArrayList<User> staticUsers= new ArrayList<>() ;
+        staticUsers.add(new User("TestProfile1", "TestProfile1", "imageURL", "","FakeUrl", "Admin"));
+        staticUsers.add(new User("User2", "User2", "imageURL", "","FakeUrl", "Admin"));
+        userAdapter.setFilter(staticUsers);
+        userAdapter.notifyDataSetChanged();
+    }
+
+    public void filterStaticEventList(String searchText){
+        String eventStaticName ;
+        User staticUser ;
+        ArrayList<User> searchResults = new ArrayList<>();
+        for(int i = 0 ; i < userDataList.size() ; i++){
+            staticUser = userDataList.get(i) ;
+            eventStaticName = userDataList.get(i).getName() ;
+            if (eventStaticName.toLowerCase().contains(searchText.toLowerCase())) {
+                searchResults.add(new User(staticUser.getId(), staticUser.getName(), staticUser.getContactInformation() , staticUser.getImageURL(),
+                        staticUser.getTypeOfUser(), staticUser.getTypeOfUser()));
+            }
+        }
+        userAdapter.setFilter(searchResults);
+        userAdapter.notifyDataSetChanged();
     }
 }

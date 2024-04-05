@@ -40,6 +40,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -198,6 +199,7 @@ public class AttendeeEventInformation extends Fragment {
                 .addOnSuccessListener(aVoid -> {
                     // Document added successfully
                     Log.d("Sucessful" , "Sign Up") ;
+                    retrieveAndStoreToken(userId,eventId);
                 })
                 .addOnFailureListener(e -> {
                     // Handle any errors
@@ -247,4 +249,70 @@ public class AttendeeEventInformation extends Fragment {
             }
         });
     }
+
+    public void retrieveAndStoreToken(String userId, String eventId) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    // Get new FCM registration token
+                    String token = task.getResult();
+
+                    // Log and store the token
+                    Log.d("FCM", "FCM Token: " + token);
+                    sendRegistrationToServer(token , eventId, userId) ;
+                });
+    }
+
+    private void sendRegistrationToServer(String token , String eventId ,String userId) {
+        // Assume you have a Firestore instance setup
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", token);
+
+        if(userId != null){
+            // Save token with a user identifier if available, or create a document for each token
+            DocumentReference docRef = db.collection("Events")
+                    .document(eventId)
+                    .collection("RegistrationTokens")
+                    .document("Tokens") ;
+
+
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // Check if the document exists
+                    if (task.getResult().exists()) {
+                        // Document exists, update it
+                        docRef.update("token", FieldValue.arrayUnion(token))
+                                .addOnSuccessListener(aVoid -> {
+                                    // Handle success
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle failure
+                                });
+                    } else {
+                        // Document doesn't exist, create it
+                        Map<String, Object> arrayData = new HashMap<>();
+                        arrayData.put("token", FieldValue.arrayUnion(token));
+                        docRef.set(arrayData)
+                                .addOnSuccessListener(aVoid -> {
+                                    // Handle success
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle failure
+                                });
+                    }
+                } else {
+                    // Handle the failure of the get operation
+                }
+            });
+
+        }
+    }
+
 }
