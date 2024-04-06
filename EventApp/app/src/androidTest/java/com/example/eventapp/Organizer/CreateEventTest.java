@@ -238,6 +238,26 @@ public class CreateEventTest {
         onView(withText("Check-ins")).perform(click());
     }
 
+    @Test
+    public void testMapCheckIn(){
+        onView(withId(R.id.bottomNavigationOrganizerView)).check(matches(isDisplayed())) ;
+        onView(withId(R.id.organizerEvent)).perform(click()) ;
+        onView(withId(R.id.organizer_eventSearcher)).check(matches(isDisplayed())) ;
+
+        onView(withId(R.id.organizer_eventSearcher))
+                .perform(click()) // Click on the SearchView to expand it
+                .perform(typeText("Event 1"), pressKey(KeyEvent.KEYCODE_ENTER));
+
+        onView(withId(R.id.btnViewEvent)).check(matches(isDisplayed())) ;
+        onView(withId(R.id.btnViewEvent)).perform(click()) ;
+
+        onView(withId(R.id.button_editEvent_info)).check(matches(isDisplayed())) ;
+        onView(withId(R.id.button_editEvent_info)).perform(click()) ;
+
+        onView(withId(R.id.btn_locationCheckIn)).check(matches(isDisplayed())) ;
+        onView(withId(R.id.btn_locationCheckIn)).perform(click());
+    }
+
     private Instrumentation.ActivityResult createGalleryPickActivityResultStub() {
         Uri imageUri = Uri.parse("Test");
         Intent resultIntent = new Intent();
