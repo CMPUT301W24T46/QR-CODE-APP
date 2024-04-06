@@ -99,27 +99,22 @@ public class QRCodeScanFragment extends Fragment {
 
         buttonScan = view.findViewById(R.id.testButton);
         buttonScan.setOnClickListener(v -> {
-            // Use forSupportFragment to initiate scan from Fragment
-            getLastLocationAndCheckIn();
-//            IntentIntegrator.forSupportFragment(QRCodeScanFragment.this)
-//                    .setCaptureActivity(CaptureActivity.class)
-//                    .initiateScan();
+
+            String uid = FirebaseAuth.getInstance().getUid();
+
+            if(uid == null){
+                IntentIntegrator.forSupportFragment(QRCodeScanFragment.this)
+                    .setCaptureActivity(CaptureActivity.class)
+                    .initiateScan();
+            }else{
+                getLastLocationAndCheckIn();
+            }
         });
 
         requestLocationPermission() ;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity()) ;
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == REQUEST_CODE_CAMERA && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            // Permission granted, start the QRCodeScannerActivity
-//            startActivity(new Intent(getContext(), QRCodeScannerActivity.class));
-//        } else {
-//            Toast.makeText(getContext(), "Camera permission is needed to scan QR codes", Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
     private void requestLocationPermission() {
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
@@ -173,12 +168,10 @@ public class QRCodeScanFragment extends Fragment {
                 String qrCodeId ;
                 String eventId ;
                 String type ;
+
+
                 try {
                     qrData = new JSONObject(qrCodeData);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
                     qrCodeId = qrData.getString("qrCodeId");
                     eventId = qrData.getString("eventId");
                     type = qrData.getString("type");
@@ -195,8 +188,28 @@ public class QRCodeScanFragment extends Fragment {
                         Log.d("Location " ,  String.valueOf(latitude) + " " + String.valueOf(longitude));
                     }
                 } catch (JSONException e) {
-                    throw new RuntimeException(e);
+                    checkQRCodeInFirestore(qrCodeData , latitude , longitude ) ;
                 }
+
+//                try {
+//                    qrCodeId = qrData.getString("qrCodeId");
+//                    eventId = qrData.getString("eventId");
+//                    type = qrData.getString("type");
+//
+//                    if(type.equals("EventInfo")){
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString("eventId", eventId);
+//                        // Perform navigation with NavController and action ID
+//                        NavController navController = Navigation.findNavController(getView());
+//                        navController.navigate(R.id.action_attendeeQRCodeScan_to_noCheckInInfo, bundle);
+//                    }else if(type.equals("CheckIn")){
+//                        Log.d("Check In" , "Time to CheckIn") ;
+//                        checkInUser(eventId , latitude , longitude);
+//                        Log.d("Location " ,  String.valueOf(latitude) + " " + String.valueOf(longitude));
+//                    }
+//                } catch (JSONException e) {
+//                    throw new RuntimeException(e);
+//                }
                 Log.d("Scanned Event" , result.getContents()) ;
             }
         } else {
@@ -205,7 +218,7 @@ public class QRCodeScanFragment extends Fragment {
     }
 
 
-    private void checkQRCodeInFirestore(String qrCodeInfo, Double latitude, Double longitude, Runnable onNotFound) {
+    private void checkQRCodeInFirestore(String qrCodeInfo, Double latitude, Double longitude) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("QRCode")
                 .whereEqualTo("qrCodeInfo", qrCodeInfo)
@@ -220,12 +233,12 @@ public class QRCodeScanFragment extends Fragment {
                         }
                     } else {
                         // No direct match found, try JSON parsing
-                        onNotFound.run();
+//                        onNotFound.run();
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("QRCodeScanner", "Error fetching QR code data from Firestore", e);
-                    onNotFound.run();
+//                    onNotFound.run();
                 });
     }
 
@@ -569,6 +582,31 @@ public class QRCodeScanFragment extends Fragment {
         // You'll need to implement the logic to verify if the permissions are granted
         return ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void validateQRCode(String qrCodeId, String eventId, String type, Double latitude, Double longitude) {
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (type.equals("CheckIn")) {
+            checkInUser(eventId,latitude, longitude);
+        } else if (type.equals("EventInfo")) {
+            navigateToEventInfoPage(eventId);
+        } else {
+            // QR code data does not match expected structure or values
+            showInvalidQRCodeMessage();
+        }
+    }
+
+    private void navigateToEventInfoPage(String eventId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("eventId", eventId);
+        // Perform navigation with NavController and action ID
+        NavController navController = Navigation.findNavController(getView());
+        navController.navigate(R.id.action_attendeeQRCodeScan_to_noCheckInInfo, bundle);
+    }
+
+    private void showInvalidQRCodeMessage() {
+        Toast.makeText(getContext(), "Invalid QR Code. Please try another.", Toast.LENGTH_LONG).show();
     }
 
 }
