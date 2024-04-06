@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -110,11 +111,17 @@ public class AttendeeEvent extends Fragment {
             @Override
             public void onEventClick(Event event) {
                 Bundle bundle = new Bundle();
+                Log.d("Entered View Event" , event.getEventName()) ;
                 bundle.putString("eventName", event.getEventName());
                 bundle.putString("eventDate", event.getEventDate());
                 bundle.putString("imageURL", event.getImageURL());
                 bundle.putString("eventDescription", event.getEventDescription());
                 bundle.putString("eventId" , event.getEventId());
+                bundle.putLong("eventLim" , event.getEventLim());
+                Log.d("Error Lim" , String.valueOf(event.getEventLim()));
+//                bundle.putLong("eventLim" , 11) ;
+                bundle.putLong("eventSignUps" , event.getNumberOfSignUps());
+//                bundle.putLong("eventSignUps" , 5);
                 Navigation.findNavController(rootView).navigate(R.id.action_attendeeEvent_to_attendeeEventInformation , bundle);
             }
         };
@@ -128,11 +135,10 @@ public class AttendeeEvent extends Fragment {
                     Log.e("Firestore", "Listen failed.", error);
                     return;
                 }
-              
+
                 eventDataList.clear();
                 for (QueryDocumentSnapshot doc : value) {
-                    Event event = doc.toObject(Event.class);
-                    eventDataList.add(event);
+                    loadEventList(doc);
                 }
                 eventListArrayAdapter.notifyDataSetChanged();
             });
@@ -188,13 +194,26 @@ public class AttendeeEvent extends Fragment {
                     String eventDate = documentSnapshot.getString("eventDate");
                     String eventId = documentSnapshot.getId() ;
                     String eventDescription = documentSnapshot.getString("eventDescription") ;
+                    Long eventLimit = documentSnapshot.getLong("attendeeLimit") ;
+                    Long numberOfSignUps = documentSnapshot.getLong("Total Number of Sign Ups") ;
+
+                    if(eventLimit == null){
+                        eventLimit = (long) -1;
+                    }
+
+                    if(numberOfSignUps == null){
+                        numberOfSignUps = 0L;
+                    }
+
+                    Log.d("Event Limit" ,  String.valueOf(eventLimit)) ;
+
                     if(!queryOrDisplay){
-                        searchResults.add(new Event(eventName,  eventDate , URL , eventId , eventDescription));
+                        searchResults.add(new Event(eventName,  eventDate , URL , eventId , eventDescription, eventLimit, numberOfSignUps));
                         continue;
                     }
 
                     if (eventName.toLowerCase().contains(searchText.toLowerCase())) {
-                        searchResults.add(new Event(eventName,  eventDate , URL , eventId , eventDescription));
+                        searchResults.add(new Event(eventName,  eventDate , URL , eventId , eventDescription, eventLimit, numberOfSignUps));
                     }
                 }
 
@@ -255,6 +274,26 @@ public class AttendeeEvent extends Fragment {
         staticEvents.add(new Event("Second Event" , "19/72/43" , "" , "Test Id" , "Event for the Young")) ;
         eventListArrayAdapter.setFilter(staticEvents);
         eventListArrayAdapter.notifyDataSetChanged();
+    }
+
+    public void loadEventList(QueryDocumentSnapshot documentSnapshot){
+        String eventName = documentSnapshot.getString("eventName");
+        String URL = documentSnapshot.getString("imageURL");
+        String eventDate = documentSnapshot.getString("eventDate");
+        String eventId = documentSnapshot.getId() ;
+        String eventDescription = documentSnapshot.getString("eventDescription") ;
+        Long eventLimit = documentSnapshot.getLong("attendeeLimit") ;
+        Long numberOfSignUps = documentSnapshot.getLong("Total Number of Sign Ups") ;
+
+        if(eventLimit == null){
+            eventLimit = (long) -1;
+        }
+
+        if(numberOfSignUps == null){
+            numberOfSignUps = 0L;
+        }
+
+        eventDataList.add(new Event(eventName,  eventDate , URL , eventId , eventDescription, eventLimit, numberOfSignUps));
     }
 
 }

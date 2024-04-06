@@ -54,6 +54,10 @@ import java.util.Map;
 public class AttendeeEventInformation extends Fragment {
 
     private ImageView bigEventImageView ;
+
+    private  Long eventLim ;
+
+    private  Long numberOfEventSignUps ;
     private TextView eventNameView ;
 
     private List<String> eventArrayList = new ArrayList<>();
@@ -122,6 +126,8 @@ public class AttendeeEventInformation extends Fragment {
             String URL = args.getString("imageURL");
             String eventDate = args.getString("eventDate");
             String eventDescription = args.getString("eventDescription");
+            eventLim = args.getLong("eventLim") ;
+            numberOfEventSignUps = args.getLong("eventSignUps") ;
             eventId = args.getString("eventId") ;
             eventNameView = view.findViewById(R.id.eventTitleDescrip) ;
             bigEventImageView = view.findViewById(R.id.biggerEventImage) ;
@@ -163,6 +169,12 @@ public class AttendeeEventInformation extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userId = user.getUid();
 
+        Log.d("Event limit test" , String.valueOf(eventLim)) ;
+        if(((numberOfEventSignUps + 1) > eventLim) && eventLim != -1){
+            Toast.makeText(getContext(), "Event Limit Reached", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if(userId != null){
             DocumentReference documentReference = db.collection("Users").document(userId) ;
             documentReference.update("EventList", FieldValue.arrayUnion(eventId))
@@ -193,6 +205,8 @@ public class AttendeeEventInformation extends Fragment {
         Map<String, Object> data = new HashMap<>();
         data.put("attendeeId", userId);
         data.put("registrationDate", FieldValue.serverTimestamp());
+
+        documentReference.update("Total Number of Sign Ups" , numberOfEventSignUps + 1) ;
 
         // Add the document to the sub collection with the specified ID
         eventSubCollection.document(userId).set(data)

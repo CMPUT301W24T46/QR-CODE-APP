@@ -48,8 +48,20 @@ public class OrganizerEvent extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         searchView = view.findViewById(R.id.organizer_eventSearcher);
-        fetchEvents();
+        String uid = FirebaseAuth.getInstance().getUid();
+
+        if(uid != null){
+            fetchEvents();
+        }else{
+            loadStaticEvents();
+        }
         setupSearchView();
+    }
+
+    private void loadStaticEvents() {
+        allEvents.add(new Event("Event 1" , "EventUrl" , "123456" , "sjfbdfjbdfj", "ksdnfksd" , "sdcdscsdcds")) ;
+        allEvents.add(new Event("Event 2" , "EventUrl" , "123456" , "sjfbdfjbdfj", "ksdnfksd" , "sdcdscsdcds")) ;
+        updateUI(new ArrayList<>(allEvents));
     }
 
     private void fetchEvents() {
@@ -114,6 +126,10 @@ public class OrganizerEvent extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                String uid = FirebaseAuth.getInstance().getUid();
+                if(uid == null){
+                    filterEvents(query);
+                }
                 return false;
             }
 

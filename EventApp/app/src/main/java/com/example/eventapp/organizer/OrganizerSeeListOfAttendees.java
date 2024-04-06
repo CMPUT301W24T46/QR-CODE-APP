@@ -22,13 +22,17 @@ import com.example.eventapp.checkIn.AttendeeCheckInView;
 import com.example.eventapp.checkIn.CheckInController;
 import com.example.eventapp.registrations.Registration;
 import com.example.eventapp.registrations.RegistrationAdapter;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class OrganizerSeeListOfAttendees extends Fragment{
 
     private AttendeeCheckInAdapter checkInAdapter;
+
     private ListView listViewAttendees;
     private CheckInController controller;
     String eventId;
@@ -80,14 +84,36 @@ public class OrganizerSeeListOfAttendees extends Fragment{
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String userId = FirebaseAuth.getInstance().getUid() ;
                 switch (position) {
                     case 0: // Check-ins
-                        listViewAttendees.setAdapter(checkInAdapter);
-                        controller.subscribeToEventCheckIns(eventId, checkInAdapter);
+                        if(userId != null){
+                            listViewAttendees.setAdapter(checkInAdapter);
+                            controller.subscribeToEventCheckIns(eventId, checkInAdapter);
+                        }else{
+                            listViewAttendees.setAdapter(checkInAdapter);
+                            // listViewAttendees.setAdapter(checkInAdapter);
+                            Date date = new Date(120, 0, 1, 12, 0, 0); // Creates a date object representing January 1, 2020, at 12:00:00
+
+                            Timestamp latestCheckIn = new Timestamp(date);
+                            attendeesList.add(new AttendeeCheckInView("Yeno" ,"Yenosibina" , 1 , latestCheckIn));
+                            attendeesList.add(new AttendeeCheckInView("Andrew" ,"Yenosibina" , 1 , latestCheckIn));
+                            checkInAdapter.notifyDataSetChanged();
+                        }
                         break;
                     case 1: // Registrations
-                        listViewAttendees.setAdapter(registrationAdapter);
-                        controller.subscribeToEventRegistrations(eventId, registrationAdapter);
+                        if(userId != null){
+                            listViewAttendees.setAdapter(registrationAdapter);
+                            controller.subscribeToEventRegistrations(eventId, registrationAdapter);
+                        }else{
+                            listViewAttendees.setAdapter(registrationAdapter);
+                            Date date = new Date(120, 0, 1, 12, 0, 0); // Creates a date object representing January 1, 2020, at 12:00:00
+
+                            Timestamp latestCheckIn = new Timestamp(date);
+                            registrationsList.add(new Registration("Yeno" ,latestCheckIn , "JBBASDJSD"));
+                            registrationsList.add(new Registration("Yeno2" ,latestCheckIn , "JBBASDJSD"));
+                            registrationAdapter.notifyDataSetChanged();
+                        }
                         break;
                 }
             }
@@ -107,7 +133,12 @@ public class OrganizerSeeListOfAttendees extends Fragment{
             // Show notify attendees dialog
             CreateNotificationFragment dialogFragment = new CreateNotificationFragment();
             Bundle args = new Bundle();
-            args.putString("eventId", eventId);
+            String uid = FirebaseAuth.getInstance().getUid();
+            if(uid != null){
+                args.putString("eventId", eventId);
+            }else{
+                args.putString("eventId", "eventId");
+            }
             dialogFragment.setArguments(args);
             dialogFragment.show(requireActivity().getSupportFragmentManager(), "CreateNotificationDialog");
         });

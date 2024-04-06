@@ -89,12 +89,13 @@ public class CreateEventFragment extends DialogFragment {
 
         eventImageView.setOnClickListener(v -> pickImage());
 
+
         // Setting up the Confirm button
         buttonConfirm.setOnClickListener(view1 -> {
             String eventName = eventNameEditText.getText().toString().trim();
             String eventDate = eventDateEditText.getText().toString().trim();
             String eventDescription = eventDescriptionEditText.getText().toString().trim();
-            String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Fetching the creatorId
+            String creatorId = FirebaseAuth.getInstance().getUid(); // Fetching the creatorId
             Integer attendeeLimit = -1;
             // Check if the attendee limit EditText is not empty
             if (!limitAttendeeEditText.getText().toString().isEmpty()) {
@@ -105,7 +106,10 @@ public class CreateEventFragment extends DialogFragment {
             if (!eventName.isEmpty() && !eventDate.isEmpty() && creatorId != null && !eventDescription.isEmpty()) {
                 createEvent(eventName, eventDate, creatorId, eventDescription, imageUri, attendeeLimit);
             } else {
-                Toast.makeText(getContext(), "Please fill in all fields!", Toast.LENGTH_LONG).show();
+                String uid = FirebaseAuth.getInstance().getUid();
+                if(uid != null){
+                    Toast.makeText(getContext(), "Please fill in all fields!", Toast.LENGTH_LONG).show();
+                }
             }
         });
         // Set up the event date EditText to show DatePickerDialog on click
@@ -232,6 +236,7 @@ public class CreateEventFragment extends DialogFragment {
         eventMap.put("creatorId", event.getCreatorId());
         eventMap.put("eventDescription", event.getEventDescription());
         eventMap.put("attendeeLimit", event.getAttendeeLimit());
+        eventMap.put("Total Number of Sign Ups" , 0) ;
 
         db.collection("Events").add(eventMap)
                 .addOnSuccessListener(documentReference -> {

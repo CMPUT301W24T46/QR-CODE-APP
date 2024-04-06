@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +35,13 @@ import androidx.navigation.Navigation;
 
 import com.example.eventapp.R;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.journeyapps.barcodescanner.CaptureActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
@@ -45,6 +51,8 @@ public class QRCodeScanFragment extends Fragment {
     private static final int REQUEST_CODE_SCAN = 2;
     private PreviewView previewView;
     private Camera camera;
+
+    private Button buttonScan;
     private CameraSelector cameraSelector;
 
     @Override
@@ -55,7 +63,6 @@ public class QRCodeScanFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         Button scanButton = view.findViewById(R.id.btn_scan);
         scanButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -64,6 +71,14 @@ public class QRCodeScanFragment extends Fragment {
             } else {
                 requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CODE_CAMERA);
             }
+        });
+
+        buttonScan = view.findViewById(R.id.testButton);
+        buttonScan.setOnClickListener(v -> {
+            // Use forSupportFragment to initiate scan from Fragment
+            IntentIntegrator.forSupportFragment(QRCodeScanFragment.this)
+                    .setCaptureActivity(CaptureActivity.class)
+                    .initiateScan();
         });
     }
 
@@ -78,20 +93,69 @@ public class QRCodeScanFragment extends Fragment {
         }
     }
 
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK && data != null) {
+//            String eventId = data.getStringExtra("eventId");
+//            if (eventId != null && !eventId.isEmpty()) {
+//
+//                Bundle bundle = new Bundle();
+//                bundle.putString("eventId", eventId);
+//
+//                // Perform navigation with NavController and action ID
+//                NavController navController = Navigation.findNavController(getView());
+//                navController.navigate(R.id.action_attendeeQRCodeScan_to_noCheckInInfo, bundle);
+//            }
+//        }
+//    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK && data != null) {
-            String eventId = data.getStringExtra("eventId");
-            if (eventId != null && !eventId.isEmpty()) {
+        if(FirebaseAuth.getInstance().getUid() == null){
+            Log.d("Enteredfor" , "Testing") ;
+            return ;
+        }
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getContext(), "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                // Parse the QR code data
+                String qrCodeData = result.getContents() ;
+                JSONObject qrData = null;
+                String qrCodeId ;
+                String eventId ;
+                String type ;
+                try {
+                    qrData = new JSONObject(qrCodeData);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    qrCodeId = qrData.getString("qrCodeId");
+                    eventId = qrData.getString("eventId");
+                    type = qrData.getString("type");
 
-                Bundle bundle = new Bundle();
-                bundle.putString("eventId", eventId);
-
-                // Perform navigation with NavController and action ID
-                NavController navController = Navigation.findNavController(getView());
-                navController.navigate(R.id.action_attendeeQRCodeScan_to_noCheckInInfo, bundle);
+                    if(type.equals("EventInfo")){
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId", eventId);
+                        // Perform navigation with NavController and action ID
+                        NavController navController = Navigation.findNavController(getView());
+                        navController.navigate(R.id.action_attendeeQRCodeScan_to_noCheckInInfo, bundle);
+                    }else if(type.equals("CheckIn")){
+                        Log.d("Check In" , "Time to CheckIn") ;
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                Log.d("Scanned Event" , result.getContents()) ;
             }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+
 }
