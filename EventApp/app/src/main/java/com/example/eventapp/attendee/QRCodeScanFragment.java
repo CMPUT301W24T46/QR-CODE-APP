@@ -35,6 +35,7 @@ import androidx.navigation.Navigation;
 
 import com.example.eventapp.R;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.CaptureActivity;
@@ -111,6 +112,10 @@ public class QRCodeScanFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(FirebaseAuth.getInstance().getUid() == null){
+            Log.d("Enteredfor" , "Testing") ;
+            return ;
+        }
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {

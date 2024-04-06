@@ -1,6 +1,11 @@
 package com.example.eventapp.firestoreservice;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,6 +37,10 @@ public class NotificationSend {
         this.body = body;
     }
 
+    public NotificationSend() {
+
+    }
+
     public void sendNotifications() {
         Log.d("Function Send " , "Called") ;
         executor.execute(new Runnable() {
@@ -61,5 +70,22 @@ public class NotificationSend {
                 }
             }
         });
+    }
+
+    public static void testNotification(Context context, String channelId, String title, String content){
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, "Notification Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager.notify(1, builder.build());
     }
 }
