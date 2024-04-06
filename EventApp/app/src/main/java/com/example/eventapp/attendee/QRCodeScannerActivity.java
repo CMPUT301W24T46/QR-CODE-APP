@@ -4,9 +4,12 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,6 +23,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
@@ -50,9 +55,11 @@ import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.integration.android.IntentIntegrator;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -75,8 +82,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
     private ImageView selectedImageView;
 
     private FusedLocationProviderClient fusedLocationClient;
-
-    private NavController navController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,13 +160,38 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 Preview preview = new Preview.Builder().build();
                 CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
 
+                ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .build();
+
+                imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), imageProxy -> {
+                    @SuppressLint("UnsafeOptInUsageError") Image image = imageProxy.getImage();
+                    if (image != null) {
+                        scanImage(image, imageProxy);
+                    }
+                });
+
                 preview.setSurfaceProvider(previewView.getSurfaceProvider());
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview);
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis);
             } catch (Exception e) {
-                Toast.makeText(this, "Failed to start camera.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Failed to start camera: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }, ContextCompat.getMainExecutor(this));
     }
+    private void scanImage(Image image, ImageProxy imageProxy) {
+        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+        byte[] data = new byte[buffer.capacity()];
+        buffer.get(data);
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, null);
+        // Assume you have a method scanBitmapForQRCode that takes a Bitmap
+        if (bitmap != null) {
+            scanBitmapForQRCode(bitmap, null, 0, 0); // latitude and longitude are placeholders
+        }
+
+        imageProxy.close(); // Make sure to close the imageProxy
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -260,18 +290,30 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             String qrCodeData = result.getText();
             Log.d("QRCodeData", "QRCodeData: " + qrCodeData);
 
-            // Parse the QR code data
-            JSONObject qrData = new JSONObject(qrCodeData);
-            String qrCodeId = qrData.getString("qrCodeId");
-            String eventId = qrData.getString("eventId");
-            String type = qrData.getString("type");
-
-            validateQRCode(qrCodeId, eventId, type, latitude, longitude);
+            // Directly attempt to handle the QR code info
+            checkQRCodeInFirestore(qrCodeData, latitude, longitude, () -> {
+                // If direct handling fails, try parsing JSON
+                try {
+                    JSONObject qrData = new JSONObject(qrCodeData);
+                    String qrCodeId = qrData.optString("qrCodeId", "");
+                    String eventId = qrData.optString("eventId", "");
+                    String type = qrData.optString("type","");
+                    validateQRCode(qrCodeId, eventId, type, latitude, longitude);
+                    if (!qrCodeId.isEmpty() && !eventId.isEmpty()) {
+                        checkInUser(eventId, latitude, longitude);
+                    } else {
+                        Toast.makeText(QRCodeScannerActivity.this, "QR code info not found.", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    Toast.makeText(QRCodeScannerActivity.this, "Invalid QR code format.", Toast.LENGTH_LONG).show();
+                }
+            });
         } catch (Exception e) {
             Log.e("QRCodeScanner", "Error in QR code data processing", e);
             showInvalidQRCodeMessage();
         }
     }
+
     private void validateQRCode(String qrCodeId, String eventId, String type, double latitude, double longitude) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if (type.equals("CheckIn")) {
@@ -289,6 +331,30 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         if(selectedImageView != null) {
             selectedImageView.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private void checkQRCodeInFirestore(String qrCodeInfo, double latitude, double longitude, Runnable onNotFound) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("QRCode")
+                .whereEqualTo("qrCodeInfo", qrCodeInfo)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        // Found matching QR code info, proceed with event check-in
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        String eventId = document.getString("eventId");
+                        if (eventId != null) {
+                            checkInUser(eventId, latitude, longitude);
+                        }
+                    } else {
+                        // No direct match found, try JSON parsing
+                        onNotFound.run();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("QRCodeScanner", "Error fetching QR code data from Firestore", e);
+                    onNotFound.run();
+                });
     }
 
 
