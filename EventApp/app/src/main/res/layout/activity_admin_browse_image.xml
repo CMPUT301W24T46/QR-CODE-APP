@@ -4,30 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".admin.AdminBrowseImage"
-    >
+    tools:context=".admin.AdminBrowseImage">
+
+    <Spinner
+        android:id="@+id/imageSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/spinner_custom_background"
+        android:padding="8dp"
+        android:popupBackground="#FFFFFF"
+        android:entries="@array/event_action_options"
+        android:layout_marginTop="15sp"
+        android:layout_marginBottom="16dp"
+        android:dropDownVerticalOffset="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <SearchView
         android:id="@+id/imageSearcher"
-        android:layout_width="340dp"
+        android:layout_width="0dp"
         android:layout_height="32dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="16dp"
         android:background="#CAC9C9"
         android:visibility="visible"
         android:focusable="true"
         android:clickable="true"
         android:iconifiedByDefault="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintTop_toBottomOf="@id/imageSpinner"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <GridView
         android:id="@+id/imageGridView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="112dp"
-        android:layout_marginBottom="30dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:columnWidth="100dp"
         android:gravity="center"
         android:horizontalSpacing="10dp"
@@ -35,7 +47,8 @@
         android:stretchMode="columnWidth"
         android:verticalSpacing="10dp"
         app:layout_constraintTop_toBottomOf="@id/imageSearcher"
-        tools:layout_editor_absoluteX="0dp" />
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

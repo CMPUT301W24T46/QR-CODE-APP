@@ -329,19 +329,31 @@ public class AdminController {
      * Updates provided ImageGridAdapter with current data.
      * @param adapter Adapter to be updated with image data.
      */
-    public void subscribeToImageDB(ImageGridAdapter adapter) {
+    public void subscribeToImageDB(ImageGridAdapter adapter, String selectedFilter) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference listRef = storage.getReference().child("event_images/");
+        String path;
+
+        if ("Event Images".equals(selectedFilter)) {
+            path = "event_images/";
+        } else if ("Profile Images".equals(selectedFilter)) {
+            path = "profileImages/";
+        } else if ("QR Codes".equals(selectedFilter)) {
+            path = "qr_codes/";
+        } else {
+            // Handle default case or throw an error
+            path = "event_images/";
+        }
+
+        StorageReference listRef = storage.getReference().child(path);
 
         listRef.listAll()
                 .addOnSuccessListener(listResult -> {
                     List<Image> images = new ArrayList<>();
                     for (StorageReference item : listResult.getItems()) {
-                        // Note: Firebase Storage doesn't directly provide file URLs in list operations
-                        // You must fetch them individually
+
                         item.getDownloadUrl().addOnSuccessListener(uri -> {
                             String imageURL = uri.toString();
-                            String imageId = item.getName(); // Using file name as ID
+                            String imageId = item.getName(); // id is the file name
                             images.add(new Image(imageURL, imageId));
                             adapter.setFilter(images);
                             adapter.notifyDataSetChanged();
@@ -358,9 +370,21 @@ public class AdminController {
      * @param imageId ID of the image to be deleted.
      * @return Task representing the result of the delete operation.
      */
-    public Task<Void> deleteImage(String imageId) {
+    public Task<Void> deleteImage(String imageId, String selectedFilter) {
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference imageRef = storage.getReference().child("event_images/" + imageId); // Assuming 'imageId' is the file name
+        String path;
+
+        if ("Event Images".equals(selectedFilter)) {
+            path = "event_images/";
+        } else if ("Profile Images".equals(selectedFilter)) {
+            path = "profileImages/";
+        } else if ("QR Codes".equals(selectedFilter)) {
+            path = "qr_codes/";
+        } else {
+            // Handle default case or throw an error
+            path = "event_images/";
+        }
+        StorageReference imageRef = storage.getReference().child(path + imageId);
 
         return imageRef.delete().addOnSuccessListener(aVoid -> {
             Toast.makeText(context, "Image deleted successfully", Toast.LENGTH_SHORT).show();
@@ -377,27 +401,46 @@ public class AdminController {
      * @param queryOrDisplay Indicates whether to perform a search (true) or just display (false).
      * @param adapter Adapter to be updated with filtered results.
      */
-    public void getCurrentImageList(String searchText, boolean queryOrDisplay, ImageGridAdapter adapter) {
-        imageRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-            ArrayList<Image> searchResults = new ArrayList<>();
-            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+    public void getCurrentImageList(String searchText, boolean queryOrDisplay, ImageGridAdapter adapter, String selectedFilter) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        String path;
 
-                // Check if the document has the fields "URL"
-                String imageURL = documentSnapshot.contains("URL") ? documentSnapshot.getString("URL") : "";
-                String imageID =  documentSnapshot.getId();
+        if ("Event Images".equals(selectedFilter)) {
+            path = "event_images/";
+        } else if ("Profile Images".equals(selectedFilter)) {
+            path = "profileImages/";
+        } else if ("QR Codes".equals(selectedFilter)) {
+            path = "qr_codes/";
+        } else {
+            path = "event_images/"; // Default path
+        }
 
-                if (!queryOrDisplay) {
-                    searchResults.add(new Image(imageURL, imageID));
-                    continue;
-                }
+        StorageReference listRef = storage.getReference().child(path);
 
-                if (imageID.toLowerCase().contains(searchText.toLowerCase())) {
-                    searchResults.add(new Image(imageURL, imageID));
-                }
-            }
-            adapter.setFilter(searchResults);
-            adapter.notifyDataSetChanged();
-        }).addOnFailureListener(e -> Log.e("TAG", "Error getting documents: " + e));
+
+        listRef.listAll()
+                .addOnSuccessListener(listResult -> {
+                    List<Image> images = new ArrayList<>();
+                    for (StorageReference item : listResult.getItems()) {
+                        item.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String imageURL = uri.toString();
+                            String imageId = item.getName(); // Using file name as ID
+
+                            if (!queryOrDisplay || imageId.toLowerCase().contains(searchText.toLowerCase())) {
+                                images.add(new Image(imageURL, imageId));
+                            }
+
+                        }).addOnFailureListener(e -> Log.e("Storage", "Error fetching URL for item " + item.getPath(), e))
+                        .addOnCompleteListener(task -> {
+                            // Updates adapter
+                            if (listResult.getItems().indexOf(item) == listResult.getItems().size() - 1) {
+                                adapter.setFilter(images);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Storage", "Error listing images", e));
     }
 
 
@@ -424,7 +467,7 @@ public class AdminController {
     public void deleteMockdata(String randomId) {
         deleteUser(randomId);
         deleteEvent(randomId);
-        deleteImage(randomId);
+//        deleteImage(randomId);
     }
 
     /**
