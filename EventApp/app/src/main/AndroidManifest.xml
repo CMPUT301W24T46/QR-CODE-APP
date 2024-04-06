@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- Camera permission -->
@@ -11,7 +10,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- Permissions for accessing location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -28,6 +27,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EVENTAPP"
         tools:targetApi="31">
+        <activity
+            android:name=".attendee.QrCodeRealTimeScanner"
+            android:exported="false" />
         <activity
             android:name=".firestoreservice.NotificationSetupService"
             android:exported="false" />
@@ -60,13 +62,17 @@
         <activity
             android:name=".attendee.AttendedEvents"
             android:exported="false" />
-        <activity android:name=".attendee.AttendeeNotification"
+        <activity
+            android:name=".attendee.AttendeeNotification"
             android:exported="false" />
-        <activity android:name=".attendee.AttendeeNoSignUpEvent"
-            android:exported="false"/>
-        <activity android:name=".organizer.OrganizerNotification"
+        <activity
+            android:name=".attendee.AttendeeNoSignUpEvent"
             android:exported="false" />
-        <activity android:name=".organizer.NotificationEventListActivity"
+        <activity
+            android:name=".organizer.OrganizerNotification"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.NotificationEventListActivity"
             android:exported="false" />
         <activity
             android:name=".organizer.OrganizerNotification"
@@ -117,15 +123,19 @@
         <activity
             android:name=".attendee.QRCodeScanFragment"
             android:exported="false"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".attendee.QRCodeScannerActivity"
-            android:exported="false"/>
-        <activity android:name=".organizer.UpdateEventFragment"
-            android:exported="false"/>
-        <activity android:name=".organizer.OrganizerQRCode_EventInfo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".attendee.QRCodeScannerActivity"
             android:exported="false" />
-        <activity android:name=".organizer.QRCodeReuseActivity"
-            android:exported="false"/>
+        <activity
+            android:name=".organizer.UpdateEventFragment"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.OrganizerQRCode_EventInfo"
+            android:exported="false" />
+        <activity
+            android:name=".organizer.QRCodeReuseActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -135,11 +145,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name="com.journeyapps.barcodescanner.CaptureActivity"
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="portrait"
             android:theme="@style/zxing_CaptureTheme"
-            tools:replace="android:screenOrientation"/>
+            tools:replace="android:screenOrientation" />
 
         <service
             android:name=".firestoreservice.MyFirebaseMessagingService"
@@ -152,8 +162,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${google_maps_key}" />
-
-
     </application>
 
 </manifest>
