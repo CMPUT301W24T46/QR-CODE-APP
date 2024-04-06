@@ -26,7 +26,7 @@ public class AdminDeleteImage extends AppCompatActivity {
     private TextView imageTextView;
     private ImageView imageView;
     private Button deleteImageButton;
-    private String imageId, imageURL;
+    private String imageId, imageURL, selectedFilter;
 
 
     /**
@@ -51,6 +51,7 @@ public class AdminDeleteImage extends AppCompatActivity {
         // Extract information from the intent
         imageURL = getIntent().getStringExtra("ImageURL");
         imageId = getIntent().getStringExtra("ImageID");
+        selectedFilter = getIntent().getStringExtra("selectedFilter");
 
         imageView = findViewById(R.id.imageItem);
         imageTextView = findViewById(R.id.imageID);
@@ -67,7 +68,7 @@ public class AdminDeleteImage extends AppCompatActivity {
                 .setTitle("Delete image")
                 .setMessage("Are you sure you want to delete this image?")
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                    adminController.deleteImage(imageId)
+                    adminController.deleteImage(imageId, selectedFilter)
                             .addOnSuccessListener(aVoid -> {
                                 Toast.makeText(this, "Image deleted successfully", Toast.LENGTH_SHORT).show();
                                 this.finish();

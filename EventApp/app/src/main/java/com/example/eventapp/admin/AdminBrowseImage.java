@@ -5,8 +5,12 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.SearchView;
+import android.widget.Spinner;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -30,6 +34,8 @@ public class AdminBrowseImage extends AppCompatActivity {
     private List<Image> imageItems;
     private ImageGridAdapter imageGridAdapter;
     private SearchView searchView;
+    private Spinner imageSpinner;
+
 
 
     /**
@@ -55,10 +61,18 @@ public class AdminBrowseImage extends AppCompatActivity {
         imageGridView.setColumnWidth(columnWidth);
         searchView = findViewById(R.id.imageSearcher);
 
+        // set up search view
         imageItems = new ArrayList<>();
-
         imageGridAdapter = new ImageGridAdapter(this, imageItems, columnWidth);
         imageGridView.setAdapter(imageGridAdapter);
+
+        // set up spinner
+        imageSpinner = findViewById(R.id.imageSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.image_action_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        imageSpinner.setAdapter(adapter);
+
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -66,22 +80,38 @@ public class AdminBrowseImage extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true); // Enable the back button
         }
 
+        imageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Update gridview based on selected filter
+                String selectedFilter = parent.getItemAtPosition(position).toString();
+                adminController.getCurrentImageList("", false, imageGridAdapter, selectedFilter);
+                searchView.setQuery("", false);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Default to event images when no filter is selected
+                adminController.getCurrentImageList("", false, imageGridAdapter, "Event Images");
+            }
+        });
 
 
-        // Implement item click listener if needed
         imageGridView.setOnItemClickListener((parent, view, position, id) -> {
             Image selectedItem = imageItems.get(position);
 
+            // Navigate to delete image page
             Intent intent = new Intent(AdminBrowseImage.this, AdminDeleteImage.class);
             intent.putExtra("ImageID", selectedItem.getId());
             intent.putExtra("ImageURL", selectedItem.getURL());
+            intent.putExtra("selectedFilter", imageSpinner.getSelectedItem().toString());
             startActivity(intent);
 
         });
 
         setUpSearchView();
-        adminController.subscribeToImageDB(imageGridAdapter);
-
+        String selectedFilter = imageSpinner.getSelectedItem().toString();
+        adminController.subscribeToImageDB(imageGridAdapter, selectedFilter);
     }
 
     /**
@@ -96,11 +126,12 @@ public class AdminBrowseImage extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Filter your data based on newText
+                String selectedFilter = imageSpinner.getSelectedItem().toString();
+                // Filter data based on search query
                 if(TextUtils.isEmpty(newText)){
-                    adminController.getCurrentImageList("", false, imageGridAdapter);
+                    adminController.getCurrentImageList("", false, imageGridAdapter, selectedFilter);
                 }else{
-                    adminController.getCurrentImageList(newText, true, imageGridAdapter);
+                    adminController.getCurrentImageList(newText, true, imageGridAdapter, selectedFilter);
 
                 }
                 return true;
@@ -134,4 +165,13 @@ public class AdminBrowseImage extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    // Re-fetch image data on back navigations
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String currentFilter = imageSpinner.getSelectedItem().toString();
+        adminController.subscribeToImageDB(imageGridAdapter, currentFilter);
+    }
+
 }

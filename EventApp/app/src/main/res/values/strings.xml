@@ -156,6 +156,11 @@
         <item>Check-ins</item>
         <item>Sign-ups</item>
     </string-array>
+    <string-array name="image_action_options">
+        <item>Event Images</item>
+        <item>Profile Images</item>
+        <item>QR Codes</item>
+    </string-array>
     <string name="default_notification_channel_id">my_notification_channel_id</string>
     <string name="button">Button</string>
 </resources>
