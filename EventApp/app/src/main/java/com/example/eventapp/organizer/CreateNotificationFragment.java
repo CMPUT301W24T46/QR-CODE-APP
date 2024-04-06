@@ -75,7 +75,7 @@ public class CreateNotificationFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_organizer_create_notification, null);
-        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String currentUserId = FirebaseAuth.getInstance().getUid() ;
         notificationTitleEditText = view.findViewById(R.id.CreateAnnouncementTitle);
         notificationDescriptionEditText = view.findViewById(R.id.EditEventDescription);
         Button backButton = view.findViewById(R.id.buttonArrow);
@@ -91,18 +91,22 @@ public class CreateNotificationFragment extends DialogFragment {
         eventDB = new EventDB(FirebaseFirestore.getInstance());
 
         // Fetch events from firebase
-        eventDB.getAllEventsForUser(currentUserId, new EventDB.EventRetrievalListener() {
-            @Override
-            public void onEventsRetrieved(List<Event> eventList) {
-                events.clear();
-                events.addAll(eventList);
-            }
 
-            @Override
-            public void onError(String errorMessage) {
-                Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if(currentUserId != null){
+            eventDB.getAllEventsForUser(currentUserId, new EventDB.EventRetrievalListener() {
+                @Override
+                public void onEventsRetrieved(List<Event> eventList) {
+                    events.clear();
+                    events.addAll(eventList);
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
 
         return builder.create();
     }
