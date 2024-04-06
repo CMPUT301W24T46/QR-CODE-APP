@@ -1,0 +1,11 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Other preferences -->
+
+    <SwitchPreferenceCompat
+        android:key="enable_geolocation"
+        android:title="Enable Geolocation"
+        android:summary="Turn on to allow the app to access your location."
+        android:defaultValue="true" />
+
+    <!-- Other preferences -->
+</PreferenceScreen>

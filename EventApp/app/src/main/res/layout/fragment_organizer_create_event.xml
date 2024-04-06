@@ -144,6 +144,7 @@
         android:hint="@string/sign_up_limit"
         android:textColor="@color/gray"
         android:textSize="16sp"
+        android:maxLength="5"
         app:layout_constraintBottom_toTopOf="@+id/EventImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

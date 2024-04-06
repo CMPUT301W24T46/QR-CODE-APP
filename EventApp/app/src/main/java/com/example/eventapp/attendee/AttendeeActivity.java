@@ -2,11 +2,14 @@ package com.example.eventapp.attendee;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -17,7 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import android.Manifest ;
 //Attached to activity_attendee
 /**
  * The AttendeeActivity class represents the main activity for the attendee user.
@@ -44,6 +47,19 @@ public class AttendeeActivity extends AppCompatActivity {
         topLevelDestinations.add(R.id.attendeeEventMenu) ;
         topLevelDestinations.add(R.id.attendeeHome) ;
         topLevelDestinations.add(R.id.attendeeAccount) ;
+
+
+        // Check if the location permission has been granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted, request it
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    101);
+        } else {
+            // Permission has already been granted, proceed with the operation that requires the permission
+            Log.d("Permission" , "Already Granted") ;
+        }
 
 //        Attaches the NavController to the Bottom Navigation Menu to enable navigation between the Fragments
 //        Navigates between AttendeeAcount , AttendeeHome , and Attendee Event

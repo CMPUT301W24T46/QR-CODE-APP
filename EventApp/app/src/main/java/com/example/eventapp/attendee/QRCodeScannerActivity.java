@@ -83,6 +83,12 @@ public class QRCodeScannerActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationClient;
 
+    private NavController navController;
+
+    private boolean isCheckInPending = false;
+    private Uri pendingCheckInUri = null; // Store the URI of the pending check-in
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,12 +106,13 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             startCamera();
         } else {
             requestCameraPermissions();
+            requestLocationPermissions();
         }
         previewView.post(this::animateScanningLine);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
-    private void requestCameraPermissions(){
+    private void requestCameraPermissions() {
         ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
     }
 
@@ -132,24 +139,72 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         return true;
     }
 
-    private void getLastLocationAndCheckIn(Bitmap bitmap, String bitmapUri) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Handle permission denial gracefully
-            Toast.makeText(this, "Location permission is needed to check in.", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//    private void getLastLocationAndCheckIn(Bitmap bitmap, String bitmapUri) {
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Ensure you have the user's ID
+//        DocumentReference userRef = db.collection("Users").document(userId);
+//
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            // Handle permission denial gracefully
+//            Toast.makeText(this, "Location permission is needed to check in.", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        fusedLocationClient.getLastLocation()
+//                .addOnSuccessListener(this, location -> {
+//                    // Got last known location, it could be null
+//                    if (location != null) {
+//                        // Proceed to scan the bitmap for the QR code and check in
+//                        scanBitmapForQRCode(bitmap, bitmapUri, location.getLatitude(), location.getLongitude());
+//                    } else {
+//                        Toast.makeText(this, "Unable to retrieve location. Please ensure your location is on.", Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//    }
 
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, location -> {
-                    // Got last known location, it could be null
-                    if (location != null) {
-                        // Proceed to scan the bitmap for the QR code and check in
-                        scanBitmapForQRCode(bitmap, bitmapUri, location.getLatitude(), location.getLongitude());
-                    } else {
-                        Toast.makeText(this, "Unable to retrieve location. Please ensure your location is on.", Toast.LENGTH_LONG).show();
+    private void getLastLocationAndCheckIn(Bitmap bitmap, String bitmapUri) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DocumentReference userRef = db.collection("Users").document(userId);
+
+
+        userRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                DocumentSnapshot document = task.getResult();
+                Boolean isGeolocationEnabled = document.contains("isGeolocationEnabled") && Boolean.TRUE.equals(document.getBoolean("isGeolocationEnabled"));
+
+                // Get check in location if geolocation is enabled and permissions are granted
+                if (isGeolocationEnabled && allLocationPermissionsGranted()) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+                        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                            if (location != null) {
+                                scanBitmapForQRCode(bitmap, bitmapUri, location.getLatitude(), location.getLongitude());
+                            } else {
+                                Toast.makeText(this, "Unable to retrieve location. Please ensure your location is on.", Toast.LENGTH_LONG).show();
+                                // Location is unavailable, proceed without it
+                                scanBitmapForQRCode(bitmap, bitmapUri, 0.0, 0.0);
+                            }
+                        });
                     }
-                });
+                } else {
+                    // Geolocation is disabled
+                    scanBitmapForQRCode(bitmap, bitmapUri, 0.0, 0.0);
+                }
+            } else {
+                Log.e("QRScanner", "Failed to fetch user preferences.");
+                // Fail to fetch user preferences
+                scanBitmapForQRCode(bitmap, bitmapUri, 0.0, 0.0);
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("QRScanner", "Error accessing Firestore.", e);
+            // FireStore failure
+            scanBitmapForQRCode(bitmap, bitmapUri, 0.0, 0.0);
+        });
     }
+
+
 
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -184,39 +239,65 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         buffer.get(data);
 
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, null);
-        // Assume you have a method scanBitmapForQRCode that takes a Bitmap
         if (bitmap != null) {
-            scanBitmapForQRCode(bitmap, null, 0, 0); // latitude and longitude are placeholders
+            scanBitmapForQRCode(bitmap, null, 0.0, 0.0);
         }
+        imageProxy.close();
+    }
 
-        imageProxy.close(); // Make sure to close the imageProxy
+
+    private void updateUserGeolocationPreference(boolean isGeolocationEnabled) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            String userId = firebaseUser.getUid();
+            DocumentReference userRef = db.collection("Users").document(userId);
+
+            // Update the isGeolocationEnabled field for the user
+            userRef.update("isGeolocationEnabled", isGeolocationEnabled)
+                    .addOnSuccessListener(aVoid -> Log.d("QRCodeScanner", "User geolocation preference updated."))
+                    .addOnFailureListener(e -> Log.e("QRCodeScanner", "Error updating user geolocation preference.", e));
+        }
     }
 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                startCamera();
-            } else {
-                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        } else if (requestCode == REQUEST_LOCATION_PERMISSIONS) {
-            // Check if location permissions are granted and proceed with getting the location
+        if (requestCode == REQUEST_LOCATION_PERMISSIONS) {
             if (allLocationPermissionsGranted()) {
-                fetchLastLocationAndProceed();
+                updateUserGeolocationPreference(true);
+                // If location permission is now granted and a check-in was pending, proceed
+                if (isCheckInPending && pendingCheckInUri != null) {
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pendingCheckInUri);
+                        getLastLocationAndCheckIn(bitmap, pendingCheckInUri.toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else {
-                Toast.makeText(this, "Location permissions not granted.", Toast.LENGTH_SHORT).show();
+                // If permission is denied but a check-in was pending, proceed without location
+                if (isCheckInPending && pendingCheckInUri != null) {
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pendingCheckInUri);
+                        scanBitmapForQRCode(bitmap, pendingCheckInUri.toString(), null, null);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+            // Reset the flag and URI
+            isCheckInPending = false;
+            pendingCheckInUri = null;
         }
     }
+
     private void fetchLastLocationAndProceed() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Safety check if the permissions are not granted at this point
-            Toast.makeText(this, "Location permission is required.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Location permission is denied.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -262,15 +343,17 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             Uri imageUri = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                // Show the selected image
                 selectedImageView.setVisibility(View.VISIBLE);
                 selectedImageView.setImageBitmap(bitmap);
-                Log.d("QRCodeScanner", "Scanned Bitmap URI: " + imageUri);
 
-                if (allLocationPermissionsGranted()) {
-                    getLastLocationAndCheckIn(bitmap, imageUri.toString());
-                } else {
+                // Check for location permission before proceeding
+                if (!allLocationPermissionsGranted()) {
+                    isCheckInPending = true;
+                    pendingCheckInUri = imageUri;
                     requestLocationPermissions();
+                } else {
+                    // If permission is already granted, proceed with check-in
+                    getLastLocationAndCheckIn(bitmap, imageUri.toString());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -278,7 +361,8 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             }
         }
     }
-    private void scanBitmapForQRCode(Bitmap bitmap, String bitmapUri, double latitude, double longitude) {
+
+    private void scanBitmapForQRCode(Bitmap bitmap, String bitmapUri, Double latitude, Double longitude) {
         int[] intArray = new int[bitmap.getWidth() * bitmap.getHeight()];
         bitmap.getPixels(intArray, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
@@ -299,11 +383,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                     String eventId = qrData.optString("eventId", "");
                     String type = qrData.optString("type","");
                     validateQRCode(qrCodeId, eventId, type, latitude, longitude);
-                    if (!qrCodeId.isEmpty() && !eventId.isEmpty()) {
-                        checkInUser(eventId, latitude, longitude);
-                    } else {
-                        Toast.makeText(QRCodeScannerActivity.this, "QR code info not found.", Toast.LENGTH_LONG).show();
-                    }
                 } catch (JSONException e) {
                     Toast.makeText(QRCodeScannerActivity.this, "Invalid QR code format.", Toast.LENGTH_LONG).show();
                 }
@@ -314,7 +393,8 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         }
     }
 
-    private void validateQRCode(String qrCodeId, String eventId, String type, double latitude, double longitude) {
+    private void validateQRCode(String qrCodeId, String eventId, String type, Double latitude, Double longitude) {
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if (type.equals("CheckIn")) {
             checkInUser(eventId,latitude, longitude);
@@ -358,7 +438,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
     }
 
 
-    private void checkInUser(String eventId, double latitude, double longitude) {
+    private void checkInUser(String eventId, Double latitude, Double longitude) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
             String userId = firebaseUser.getUid();
@@ -401,7 +481,9 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                     checkInData.put("attendeeId", userId);
                     checkInData.put("checkInDate", FieldValue.serverTimestamp());
     //                checkInData.put("checkInTimes", checkInTimes);
-                    checkInData.put("checkInLocation", new GeoPoint(latitude, longitude));
+                    if (latitude != null && longitude != null) {
+                        checkInData.put("checkInLocation", new GeoPoint(latitude, longitude));
+                    }
                     // Update the document with the new data
                     transaction.set(checkInDocRef, checkInData);
                     return null; // To satisfy the Transaction.Function interface
@@ -630,32 +712,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Log.e("QRCodeScanner", "Error fetching event details for event ID: " + eventId, e);
                 });
-    }
-
-    private String extractEventIdFromUrl(String qrContent) {
-        // Direct event ID (simple case)
-        if (qrContent != null && qrContent.matches("^[\\w-]+$")) {
-            return qrContent;
-        }
-        // URL with event ID as a part of the path or query parameter
-        try {
-            Uri uri = Uri.parse(qrContent);
-            List<String> segments = uri.getPathSegments();
-            for (int i = 0; i < segments.size(); i++) {
-                // Assuming the event ID follows a specific path segment (e.g., '/events/{eventId}')
-                if ("events".equalsIgnoreCase(segments.get(i)) && i + 1 < segments.size()) {
-                    return segments.get(i + 1);
-                }
-            }
-            // Assuming the event ID might be a query parameter (e.g., '?eventId={eventId}')
-            String eventIdQueryParam = uri.getQueryParameter("eventId");
-            if (eventIdQueryParam != null && !eventIdQueryParam.isEmpty()) {
-                return eventIdQueryParam;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private void resetScanner() {
