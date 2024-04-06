@@ -2,6 +2,7 @@ package com.example.eventapp.organizer;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -12,14 +13,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 
 import com.example.eventapp.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,6 +34,7 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
     private static String qrCodeUrl;
     private static String eventId;
     private static String qrCodeId;
+    Button downloadButton, shareButton;
 
     /**
      * Creates a new instance of ShareQRCodeFragment with QR code URL and event ID.
@@ -58,6 +64,7 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
             eventId = getArguments().getString("eventId");
             qrCodeId = getArguments().getString("qrCodeId");
         }
+
     }
 
     /**
@@ -75,11 +82,27 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        view.findViewById(R.id.download_qrcode).setOnClickListener(v -> {
+        downloadButton = view.findViewById(R.id.download_qrcode);
+        shareButton = view.findViewById(R.id.share_qr_code);
+        downloadButton.setOnClickListener(v -> {
             if (qrCodeUrl != null && !qrCodeUrl.isEmpty()) {
                 downloadAndSaveQRCode(qrCodeUrl);
+            } else {
+                Toast.makeText(getContext(), "QR Code URL is not available.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        shareButton.setOnClickListener(v -> {
+            if (qrCodeUrl != null && !qrCodeUrl.isEmpty()) {
+                shareQRCode(qrCodeUrl);
+            } else {
+                Toast.makeText(getContext(), "QR Code URL is not available.", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+
+
+
     }
 
     /**
@@ -145,5 +168,61 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
             values.put(MediaStore.Images.Media.IS_PENDING, 0);
             resolver.update(uri, values, null, null);
         }
+
+
     }
+
+    private void shareQRCode(String qrCodeUrl) {
+        new Thread(() -> {
+            try {
+                InputStream in = new java.net.URL(qrCodeUrl).openStream();
+                Bitmap bitmap = BitmapFactory.decodeStream(in);
+
+                String filename = qrCodeId != null ? "QRCode_" + qrCodeId + ".png" :
+                        "QRCode" + qrCodeUrl.hashCode() + ".png";
+
+                Uri imageUri = saveImageToCache(bitmap, filename);
+
+                getActivity().runOnUiThread(() -> shareImage(imageUri));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("ShareQRCodeFragment", "Error sharing QR code directly", e);
+            }
+        }).start();
+    }
+
+    private Uri saveImageToCache(Bitmap bitmap, String filename) {
+
+        File cachePath = new File(getActivity().getCacheDir(), "images");
+        cachePath.mkdirs();
+
+        // Create the file to save the bitmap
+        File imageFile = new File(cachePath, filename);
+        try (FileOutputStream stream = new FileOutputStream(imageFile)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        } catch (IOException e) {
+            Log.e("ShareQRCodeFragment", "Error saving image to cache", e);
+            return null;
+        }
+
+        // Get the uri for the image file
+        Uri imageUri = FileProvider.getUriForFile(
+                getActivity(),
+                getActivity().getPackageName() + ".provider",
+                imageFile);
+
+        return imageUri;
+    }
+
+
+    private void shareImage(Uri imageUri) {
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+        shareIntent.setType("image/png");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(shareIntent, "Share QR Code"));
+    }
+
+
 }

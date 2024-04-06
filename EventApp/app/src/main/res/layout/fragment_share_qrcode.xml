@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="100dp"
+    android:paddingHorizontal="100dp"
+    android:paddingVertical="50dp"
     android:background="@drawable/bottom_sheet_background"
     android:layout_gravity="bottom">
 
@@ -74,7 +75,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/share_facebook" />
+        app:layout_constraintTop_toBottomOf="@+id/share_gmail" />
+
+    <Button
+        android:id="@+id/share_qr_code"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/rounded_button_background"
+        android:drawableStart="@drawable/ic_share"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:text="Share QR Code"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/download_qrcode" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

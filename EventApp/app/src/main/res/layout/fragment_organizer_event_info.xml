@@ -7,17 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".attendee.AttendeeEventInformation">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <TextView
         android:id="@+id/eventName_info"
-        android:layout_width="286dp"
-        android:layout_height="61dp"
-        android:layout_marginTop="60dp"
+        android:layout_width="286sp"
+        android:layout_height="61sp"
+        android:layout_marginTop="60sp"
         android:gravity="center"
         android:text="@string/hello_blank_fragment"
         android:textColor="@color/black"
-        android:textSize="27dp"
+        android:textSize="27sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,9 +23,9 @@
 
     <ImageView
         android:id="@+id/organizer_biggerEventImage"
-        android:layout_width="362dp"
-        android:layout_height="297dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="362sp"
+        android:layout_height="297sp"
+        android:layout_marginTop="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.53"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,9 +34,9 @@
 
     <TextView
         android:id="@+id/eventDescription_info"
-        android:layout_width="362dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="5dp"
+        android:layout_width="362sp"
+        android:layout_height="56sp"
+        android:layout_marginTop="5sp"
         android:text="@string/create_event_description"
         android:textColor="@color/black"
         android:textSize="16sp"
@@ -47,16 +45,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/event_date_time" />
 
-    <Button
-        android:id="@+id/button_editEvent_info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/rounded_button_background"
-        android:text="@string/edit_event"
-        android:textColor="#FFFFFF"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_biggerEventImage" />
 
     <TextView
         android:id="@+id/event_date_time"
@@ -70,15 +58,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/eventName_info" />
 
+    <!-- Reuse QR Code Button -->
+
+    <Button
+        android:id="@+id/button_editEvent_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:background="@drawable/rounded_button_background"
+        android:paddingHorizontal="16dp"
+        android:text="@string/edit_event"
+        android:textColor="#FFFFFF"
+        app:layout_constraintEnd_toStartOf="@+id/btn_reuse_qrcode"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_biggerEventImage"
+        app:layout_constraintWidth_percent="0.45" />
+
     <Button
         android:id="@+id/btn_reuse_qrcode"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="48dp"
         android:background="@drawable/rounded_button_background"
-        android:text="REUSE QR COde"
+        android:paddingHorizontal="16dp"
+        android:text="REUSE QR CODE"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/organizer_biggerEventImage" />
+        app:layout_constraintStart_toEndOf="@+id/button_editEvent_info"
+        app:layout_constraintTop_toBottomOf="@+id/organizer_biggerEventImage"
+        app:layout_constraintWidth_percent="0.45" /> <!-- Adjusted to 45% to leave space between buttons -->
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
