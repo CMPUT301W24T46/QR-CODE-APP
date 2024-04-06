@@ -134,6 +134,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/zxing_CaptureTheme"
+            tools:replace="android:screenOrientation"/>
+
         <service
             android:name=".firestoreservice.MyFirebaseMessagingService"
             android:exported="false">
