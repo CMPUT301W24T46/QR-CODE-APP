@@ -1,5 +1,6 @@
 package com.example.eventapp.organizer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -83,7 +85,21 @@ public class OrganizerEventInfo extends Fragment {
 //                Log.d("OrganizerEventInfo", "Navigating with Event ID: " + eventId);
                 navController.navigate(R.id.action_organizerEventInfo_to_organizer_edit_event_selection,newBundle);
             });
+            View reuseQRCodeButton = view.findViewById(R.id.btn_reuse_qrcode);
+            reuseQRCodeButton.setOnClickListener(v -> {
+                // Check if eventId is not null or empty
+                if (eventId != null && !eventId.isEmpty()) {
+                    Intent intent = new Intent(getContext(), QRCodeReuseActivity.class);
+                    intent.putExtra("eventId", eventId);
+                    startActivity(intent);
+                } else {
+                    // Log error or show a message if eventId is null or empty
+                    Log.e("OrganizerEventInfo", "Event ID is null or empty. Cannot navigate to QRCodeReuseActivity.");
+                    Toast.makeText(getContext(), "Error: No event ID found.", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
+
     }
 
 }

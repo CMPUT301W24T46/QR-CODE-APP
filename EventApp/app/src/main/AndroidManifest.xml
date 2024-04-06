@@ -119,6 +119,8 @@
             android:exported="false"/>
         <activity android:name=".organizer.OrganizerQRCode_EventInfo"
             android:exported="false" />
+        <activity android:name=".organizer.QRCodeReuseActivity"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
