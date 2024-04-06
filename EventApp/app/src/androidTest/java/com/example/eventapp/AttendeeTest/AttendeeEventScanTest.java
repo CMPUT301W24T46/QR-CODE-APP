@@ -73,7 +73,7 @@ public class AttendeeEventScanTest {
 
 
     @Test
-    public void testSelectImageFromGallery() {
+    public void testScanEvent() {
         onView(withId(R.id.join_event)).check(matches(isDisplayed())) ;
         onView(withId(R.id.join_event)).perform(click()) ;
 
