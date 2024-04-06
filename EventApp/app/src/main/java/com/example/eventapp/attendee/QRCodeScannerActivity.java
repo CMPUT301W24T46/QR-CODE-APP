@@ -184,23 +184,23 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                             } else {
                                 Toast.makeText(this, "Unable to retrieve location. Please ensure your location is on.", Toast.LENGTH_LONG).show();
                                 // Location is unavailable, proceed without it
-                                scanBitmapForQRCode(bitmap, bitmapUri, 0.0, 0.0);
+                                scanBitmapForQRCode(bitmap, bitmapUri, null, null);
                             }
                         });
                     }
                 } else {
                     // Geolocation is disabled
-                    scanBitmapForQRCode(bitmap, bitmapUri, 0.0, 0.0);
+                    scanBitmapForQRCode(bitmap, bitmapUri, null, null);
                 }
             } else {
                 Log.e("QRScanner", "Failed to fetch user preferences.");
                 // Fail to fetch user preferences
-                scanBitmapForQRCode(bitmap, bitmapUri, 0.0, 0.0);
+                scanBitmapForQRCode(bitmap, bitmapUri, null, null);
             }
         }).addOnFailureListener(e -> {
             Log.e("QRScanner", "Error accessing Firestore.", e);
             // FireStore failure
-            scanBitmapForQRCode(bitmap, bitmapUri, 0.0, 0.0);
+            scanBitmapForQRCode(bitmap, bitmapUri,null, null);
         });
     }
 
@@ -268,6 +268,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             if (allLocationPermissionsGranted()) {
                 updateUserGeolocationPreference(true);
                 // If location permission is now granted and a check-in was pending, proceed
+                fetchLastLocationAndProceed();
                 if (isCheckInPending && pendingCheckInUri != null) {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), pendingCheckInUri);
@@ -413,7 +414,7 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         }
     }
 
-    private void checkQRCodeInFirestore(String qrCodeInfo, double latitude, double longitude, Runnable onNotFound) {
+    private void checkQRCodeInFirestore(String qrCodeInfo, Double latitude, Double longitude, Runnable onNotFound) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("QRCode")
                 .whereEqualTo("qrCodeInfo", qrCodeInfo)
