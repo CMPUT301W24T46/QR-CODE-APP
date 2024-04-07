@@ -76,7 +76,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void updateUserInfo_Success() {
+    public void testUpdateUserInfo() {
         // Mock Task<Void> for the update operation to simulate success
         Task<Void> updateTaskSuccess = Mockito.mock(Task.class);
         when(documentReference.update(Mockito.anyMap())).thenReturn(updateTaskSuccess);

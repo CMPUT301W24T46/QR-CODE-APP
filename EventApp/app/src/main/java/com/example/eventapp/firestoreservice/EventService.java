@@ -55,16 +55,14 @@ public class EventService {
         eventMap.put("eventName", eventName);
         eventMap.put("eventDate", date);
         eventMap.put("imageURL", imageUrl);
-        eventMap.put("creatorId", userId);
+        eventMap.put("eventId", eventId);
         eventMap.put("eventDescription", eventDescription);
 
-        eventRef.add(eventMap)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        eventCallback.eventCreated();
-                    } else {
-                        // Task failed with an exception
-                        eventCallback.onError(task.getException());
-                    }});
+        eventRef.document(eventId).update(eventMap).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                eventCallback.eventCreated();
+            } else {
+                // Task failed with an exception
+                eventCallback.onError(task.getException());}});
     }
 }
