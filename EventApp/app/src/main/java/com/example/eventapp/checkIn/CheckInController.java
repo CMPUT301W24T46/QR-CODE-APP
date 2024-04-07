@@ -22,12 +22,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * CheckInController manages the retrieval and organization of check-in and registration data from Firestore.
+ * It provides functionality to subscribe to real-time updates for event check-ins and registrations,
+ * fetch detailed user information for each check-in or registration, and retrieve geolocation data for check-ins.
+ *
+ * <p>This controller is used to facilitate the interaction between the UI components, such as adapters,
+ * and the Firestore database, ensuring that check-in and registration data is accurately and efficiently
+ * displayed in the application.</p>
+ */
+
 public class CheckInController {
 
     private final CollectionReference eventRef;
     private final CollectionReference userRef;
     private final FirebaseFirestore db;
 
+    /**
+     * Constructs a CheckInController and initializes Firestore references.
+     */
 
 
     public CheckInController() {
@@ -39,7 +52,13 @@ public class CheckInController {
 
     }
 
-
+    /**
+     * Subscribes to real-time updates for check-ins of a specific event and updates the provided adapter
+     * with the aggregated check-in data, including detailed user information.
+     *
+     * @param eventId The ID of the event for which to retrieve check-in data.
+     * @param adapter The {@link AttendeeCheckInAdapter} to be updated with the check-in data.
+     */
 
     public void subscribeToEventCheckIns(String eventId, AttendeeCheckInAdapter adapter) {
         CollectionReference checkInRef = eventRef.document(eventId).collection("CheckIns");
@@ -76,6 +95,13 @@ public class CheckInController {
             }
         });
     }
+
+    /**
+     * Fetches detailed user information for each attendee in the check-in data and updates the provided adapter.
+     *
+     * @param attendeeMap A map containing attendee check-in views keyed by attendee IDs.
+     * @param adapter The {@link AttendeeCheckInAdapter} to be updated with detailed user information.
+     */
 
     private void fetchUserDetails(HashMap<String, AttendeeCheckInView> attendeeMap, AttendeeCheckInAdapter adapter) {
         List<Task<?>> tasks = new ArrayList<>();
@@ -127,6 +153,13 @@ public class CheckInController {
         void onFetched(Map<String, GeoPoint> locations);
     }
 
+    /**
+     * Retrieves the geolocation data for check-ins of a specific event and invokes the provided callback with the data.
+     *
+     * @param eventId The ID of the event for which to retrieve geolocation data.
+     * @param callback The callback to be invoked with the geolocation data.
+     */
+
     public void getCheckInLocations (String eventId, OnLocationsFetched callback){
         CollectionReference checkInRef = eventRef.document(eventId).collection("CheckIns");
 
@@ -144,6 +177,14 @@ public class CheckInController {
 
         }).addOnFailureListener(e -> Log.e("GeolocationController", "Error getting check-in locations: " + e));
     }
+
+    /**
+     * Subscribes to real-time updates for registrations of a specific event and updates the provided adapter
+     * with the registration data, including detailed user information.
+     *
+     * @param eventId The ID of the event for which to retrieve registration data.
+     * @param adapter The {@link RegistrationAdapter} to be updated with the registration data.
+     */
 
 //    Registrations
 public void subscribeToEventRegistrations(String eventId, RegistrationAdapter adapter) {
@@ -175,6 +216,14 @@ public void subscribeToEventRegistrations(String eventId, RegistrationAdapter ad
             }
         });
     }
+
+    /**
+     * Fetches detailed user information for each attendee in the registration data and updates the provided adapter.
+     *
+     * @param registrationMap A map containing registration data keyed by attendee IDs.
+     * @param adapter The {@link RegistrationAdapter} to be updated with detailed user information.
+     */
+
     private void fetchUserDetailsForRegistrations(HashMap<String, Registration> registrationMap, RegistrationAdapter adapter) {
         List<Task<?>> tasks = new ArrayList<>();
 
