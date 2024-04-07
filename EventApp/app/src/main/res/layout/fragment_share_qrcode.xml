@@ -3,9 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="100dp"
-    android:paddingVertical="50dp"
     android:background="@drawable/bottom_sheet_background"
+    android:padding="50dp"
     android:layout_gravity="bottom">
 
     <TextView
@@ -19,53 +18,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/share_facebook"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="40dp"
-        android:contentDescription="@string/share_to_facebook"
-        android:src="@drawable/ic_facebook"
-        app:layout_constraintBottom_toTopOf="@+id/download_qrcode"
-        app:layout_constraintEnd_toStartOf="@+id/share_google"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/share_qr_code_title" />
-
-    <ImageView
-        android:id="@+id/share_google"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="45dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="40dp"
-        android:contentDescription="@string/share_to_google"
-        android:src="@drawable/ic_google"
-        app:layout_constraintBottom_toTopOf="@+id/download_qrcode"
-        app:layout_constraintEnd_toStartOf="@+id/share_gmail"
-        app:layout_constraintStart_toEndOf="@+id/share_facebook"
-        app:layout_constraintTop_toBottomOf="@+id/share_qr_code_title" />
-
-    <ImageView
-        android:id="@+id/share_gmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="45dp"
-        android:layout_marginBottom="40dp"
-        android:src="@drawable/ic_gmail"
-        app:layout_constraintBottom_toTopOf="@+id/download_qrcode"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/share_google"
-        app:layout_constraintTop_toBottomOf="@+id/share_qr_code_title" />
-
     <Button
         android:id="@+id/download_qrcode"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/rounded_button_background"
         android:drawableStart="@drawable/ic_download"
         android:drawablePadding="8dp"
@@ -75,23 +32,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/share_gmail" />
+        app:layout_constraintTop_toBottomOf="@+id/share_qr_code_title" />
 
     <Button
         android:id="@+id/share_qr_code"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/rounded_button_background"
         android:drawableStart="@drawable/ic_share"
         android:drawablePadding="8dp"
         android:padding="12dp"
-        android:text="Share QR Code"
+        android:text="@string/share_qr_code"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/download_qrcode" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

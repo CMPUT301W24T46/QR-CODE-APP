@@ -20,6 +20,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Objects;
+
 public class EventServiceTest{
     @Mock
     private CollectionReference eventRef;
@@ -54,7 +56,7 @@ public class EventServiceTest{
     }
 
     @Test
-    public void testGetUserInfo() {
+    public void testGetEventInfo() {
         // Setup the mock to return a specific name
         when(documentSnapshot.exists()).thenReturn(true);
         when(documentSnapshot.getString("name")).thenReturn("John Doe");
@@ -81,15 +83,24 @@ public class EventServiceTest{
     }
 
     @Test
-    public void updateUserInfo_Success() {
+    public void testUpdateEventSuccess() {
         // Mock Task<Void> for the update operation to simulate success
         Task<Void> updateTaskSuccess = Mockito.mock(Task.class);
         when(documentReference.update(Mockito.anyMap())).thenReturn(updateTaskSuccess);
         when(updateTaskSuccess.isSuccessful()).thenReturn(true);
 
         // Mock callback
-        UserNameCallback mockCallback = Mockito.mock(UserNameCallback.class);
+        EventCallback mockCallback = Mockito.mock(EventCallback.class);
+        eventService.updateEventInformation(mockCallback);
 
+        // Verify that the update methof was called
+        verify(documentReference).update(Mockito.argThat(argument ->
+                Objects.equals(argument.get("eventName"), eventName) &&
+                        Objects.equals(argument.get("eventDate"), date) &&
+                        Objects.equals(argument.get("imageURL"), imageUrl) &&
+                        Objects.equals(argument.get("eventId"), eventId) &&
+                        Objects.equals(argument.get("eventDescription"), eventDescription)
+        ));
     }
 
 }

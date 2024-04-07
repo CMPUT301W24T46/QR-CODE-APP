@@ -6,13 +6,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.example.eventapp.R;
+
 
 /**
  * AttendedEventInformationActivity is an {@link AppCompatActivity} that presents detailed information about an event
@@ -32,13 +30,13 @@ import com.example.eventapp.R;
  * </ul>
  */
 
-public class AttendedEventInformationActivity extends AppCompatActivity {
+import com.example.eventapp.R;
+import com.bumptech.glide.Glide;
 
-    private ImageView bigEventImageView;
+
+public class AttendedEventInformationActivity extends AppCompatActivity {
     private TextView eventNameView;
-    private TextView eventDescriptionView;
     private TextView eventDateView;
-    private TextView alreadySignedUpTextView;
 
     /**
      * Sets up the activity's UI by inflating the layout, initializing UI components, and populating them with event
@@ -53,7 +51,7 @@ public class AttendedEventInformationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_attendee_event_information);
+        setContentView(R.layout.attended_event_list_information);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -65,24 +63,16 @@ public class AttendedEventInformationActivity extends AppCompatActivity {
         if (args != null) {
             // Extract information from the bundle
             String eventName = args.getString("eventName");
-            String URL = args.getString("imageURL");
             String eventDate = args.getString("eventDate");
-            String eventDescription = args.getString("eventDescription");
 
             eventNameView = findViewById(R.id.eventTitleDescrip);
-            bigEventImageView = findViewById(R.id.biggerEventImage);
-            eventDescriptionView = findViewById(R.id.eventFullDescription);
             eventDateView = findViewById(R.id.attendee_event_date_time);
 
             eventNameView.setText(eventName);
             eventDateView.setText(eventDate);
-            eventDescriptionView.setText(eventDescription);
 
-            Glide.with(this).load(URL).centerCrop().into(bigEventImageView);
         }
 
-        alreadySignedUpTextView = findViewById(R.id.alreadySigneUpTextView);
-        alreadySignedUpTextView.setVisibility(View.GONE);
     }
 
     /**

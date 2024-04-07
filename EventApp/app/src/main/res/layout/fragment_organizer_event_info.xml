@@ -23,8 +23,8 @@
 
     <ImageView
         android:id="@+id/organizer_biggerEventImage"
-        android:layout_width="362sp"
-        android:layout_height="297sp"
+        android:layout_width="319dp"
+        android:layout_height="224dp"
         android:layout_marginTop="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.53"
@@ -86,7 +86,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/button_editEvent_info"
         app:layout_constraintTop_toBottomOf="@+id/organizer_biggerEventImage"
-        app:layout_constraintWidth_percent="0.45" /> <!-- Adjusted to 45% to leave space between buttons -->
+        app:layout_constraintWidth_percent="0.45" />
+
+    <Button
+        android:id="@+id/realTimeScanBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="152dp"
+        android:layout_marginTop="576dp"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" /> <!-- Adjusted to 45% to leave space between buttons -->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

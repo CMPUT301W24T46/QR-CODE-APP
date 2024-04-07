@@ -14,6 +14,7 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
@@ -47,7 +48,9 @@ public class OrganizerCustomizeProfile extends AppCompatActivity{
     private EditText description;
     private Button btnOrganizerSave;
     private Context context;
+
     private ImageView profilePhtView;
+    private SwitchCompat geolocationToggle;
 
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia ;
     StorageReference storageReference;

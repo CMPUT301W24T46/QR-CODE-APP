@@ -93,6 +93,8 @@ public class CustomizeProfile extends AppCompatActivity {
     private GeolocationController geoController;
     private String userId;
     private Context context ;
+    private Boolean isOrganizer, isImageUpload;
+
     /**
      * Called when the activity is first created. Responsible for initializing the activity's UI components,
      * setting up action bar title and back button, registering click listeners for buttons,
@@ -112,6 +114,16 @@ public class CustomizeProfile extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         context = this ;
+        isOrganizer = false;
+        isImageUpload = false;
+
+        if (getIntent().hasExtra("caller")) {
+            // If the "caller" extra exists, retrieve its value
+
+            // if a bundle is passed, then switch role to organizer
+            isOrganizer = true;
+        }
+
 
         username = findViewById(R.id.editTextTextEmailAddress);
         contact = findViewById(R.id.editTextPhone);
@@ -125,6 +137,7 @@ public class CustomizeProfile extends AppCompatActivity {
         geoController = new GeolocationController(this);
 
         storageReference = FirebaseStorage.getInstance().getReference() ;
+
 
         fetchDataFromFirestore();
         btnAttendeeSave.setOnClickListener(new View.OnClickListener() {
@@ -151,6 +164,11 @@ public class CustomizeProfile extends AppCompatActivity {
         // Geolocation toggle listener
         geolocationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!buttonView.isPressed()) return;
+
+            if(FirebaseAuth.getInstance().getUid() == null){
+                geolocationToggle.setChecked(true);
+                return ;
+            }
 
             if (isChecked) {
                 // Trying to enable geolocation tracking
@@ -247,6 +265,7 @@ public class CustomizeProfile extends AppCompatActivity {
                     if(FirebaseAuth.getInstance().getCurrentUser() != null){
                         uploadImage.uploadToFireStore();
                     }
+                    isImageUpload = true;
                 }
             }
 
@@ -264,6 +283,7 @@ public class CustomizeProfile extends AppCompatActivity {
         DocumentReference docRef = firestore.collection("defaultImage").document("NoImage") ;
         HashMap<String, Object> data = new HashMap<>();
         data.put("imageUrl", docRef);
+        data.put("hasCustomImage", false);
 
         usersRef.document(user.getUid())
                 .update(data)
@@ -298,6 +318,9 @@ public class CustomizeProfile extends AppCompatActivity {
 
                         Boolean isGeolocationEnabled = false;
 
+                        // Retrieve the hasCustomImage field, default to false if not present
+                        isImageUpload = documentSnapshot.getBoolean("hasCustomImage") != null ? documentSnapshot.getBoolean("hasCustomImage") : false;
+
                         // Check if isGeolocationEnable field is present
                         if (documentSnapshot.contains("isGeolocationEnabled")) {
                             isGeolocationEnabled = documentSnapshot.getBoolean("isGeolocationEnabled");
@@ -312,7 +335,7 @@ public class CustomizeProfile extends AppCompatActivity {
                             });
                         }
 
-                        attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
+                        attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", isOrganizer ? "Organizer" : "Attendee");
 
                         // Set data to EditText views
                         username.setText(attendeeUser.getName());
@@ -381,7 +404,13 @@ public class CustomizeProfile extends AppCompatActivity {
         attendeeUser.setName(usernameText);
         attendeeUser.setContactInformation(contactText);
         attendeeUser.setHomepage(descriptionText);
-        attendeeUser.setTypeOfUser("Attendee");
+        if (isOrganizer) {
+            attendeeUser.setTypeOfUser("Organizer");
+        } else {
+            attendeeUser.setTypeOfUser("Attendee");
+        }
+
+
 
         if (usernameText.isEmpty() || contactText.isEmpty() || descriptionText.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
@@ -414,6 +443,11 @@ public class CustomizeProfile extends AppCompatActivity {
             updates.put("contactInformation", contact);
             updates.put("homepage", description);
             updates.put("typeOfUser", attendeeUser.getTypeOfUser());
+
+            if(isImageUpload) {
+                updates.put("hasCustomImage", true);
+            }
+
             userRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
@@ -428,7 +462,9 @@ public class CustomizeProfile extends AppCompatActivity {
                                     String updatedName = document.getString("name");
                                     DocumentReference imageRef = document.getDocumentReference("imageUrl") ;
                                     // Do something with the updated value
-                                    automatedProfilePicture(updatedName);
+                                    if (!isImageUpload) {
+                                        automatedProfilePicture(updatedName);
+                                    }
                                     Log.d("Document Reference Collected" , "Yes");
                                 } else {
                                     Log.d("FirestoreExample", "No such document");
@@ -472,12 +508,12 @@ public class CustomizeProfile extends AppCompatActivity {
                     // Retrieve the URL field from the image document
                     String imageURL = imageDocumentSnapshot.getString("URL");
                     // Now you have the imageURL
-                    attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, imageURL, "Attendee");
+                    attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, imageURL, isOrganizer ? "Organizer" : "Attendee");
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                     Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
                 } else {
                     documentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
-                    attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
+                    attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", isOrganizer ? "Organizer" : "Attendee");
                     RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                     Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
                     Log.d("CustomizeProfile", "Image document doesn't exist");
@@ -487,7 +523,7 @@ public class CustomizeProfile extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 documentReferenceChecker.emptyDocumentReferenceWrite(user.getUid());
-                attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", "Attendee");
+                attendeeUser = new User(user.getUid(), usernameText, contactText, descriptionText, "", isOrganizer ? "Organizer" : "Attendee");
                 RequestOptions requestOptions = RequestOptions.bitmapTransform(new CircleCrop());
                 Glide.with(context).load(attendeeUser.getImageURL()).apply(requestOptions).into(profilePhotView);
                 Log.e("CustomizeProfile", "Error getting image document", e);

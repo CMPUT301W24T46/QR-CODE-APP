@@ -1,12 +1,14 @@
 package com.example.eventapp.organizer;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,8 +25,24 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
+import com.example.eventapp.attendee.QRCodeScanFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import com.journeyapps.barcodescanner.CaptureActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * OrganizerEventInfo is a Fragment that displays detailed information about a specific event.
@@ -41,6 +59,9 @@ public class OrganizerEventInfo extends Fragment {
      *
      * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
      */
+
+
+    private String eventId ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,7 +111,7 @@ public class OrganizerEventInfo extends Fragment {
             String eventDate = bundle.getString("eventDate");
             String imageUrl = bundle.getString("imageURL");
             String eventDescription = bundle.getString("eventDescription");
-            String eventId = bundle.getString("eventId");
+            eventId = bundle.getString("eventId");
 //            Log.d("OrganizerEventInfo", "Event ID: " + eventId);
 
             TextView eventNameView = view.findViewById(R.id.eventName_info);
@@ -109,6 +130,14 @@ public class OrganizerEventInfo extends Fragment {
 
             navController = Navigation.findNavController(view);
             View editEventButton = view.findViewById(R.id.button_editEvent_info);
+            Button realTimeScanButton = view.findViewById(R.id.realTimeScanBtn) ;
+
+            realTimeScanButton.setOnClickListener(v -> {
+                IntentIntegrator.forSupportFragment(OrganizerEventInfo.this)
+                        .setCaptureActivity(CaptureActivity.class)
+                        .initiateScan();
+            });
+
             editEventButton.setOnClickListener(v -> {
                 Bundle newBundle = new Bundle();
                 newBundle.putString("eventId", eventId);
@@ -130,6 +159,78 @@ public class OrganizerEventInfo extends Fragment {
             });
         }
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(FirebaseAuth.getInstance().getUid() == null){
+            Log.d("Enteredfor" , "Testing") ;
+            return ;
+        }
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(getContext(), "Cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getContext(), "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                saveQRCodeDetails(eventId , "CheckIn" , result.getContents())  ;
+                // Parse the QR code data
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+//    private void uploadAndSaveQRCode(Bitmap bitmap, String qrCodeInfo) {
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+//        byte[] data = baos.toByteArray();
+//
+//        String path = "qr_codes/" + UUID.randomUUID() + ".png";
+//        StorageReference qrCodeRef = FirebaseStorage.getInstance().getReference(path);
+//
+//        UploadTask uploadTask = qrCodeRef.putBytes(data);
+//        uploadTask.addOnSuccessListener(taskSnapshot -> qrCodeRef.getDownloadUrl().addOnSuccessListener(uri -> {
+//                    String qrCodeImageUrl = uri.toString();
+//                    saveQRCodeDetails(eventId, "CheckIn", qrCodeInfo);
+//                }))
+//                .addOnFailureListener(e -> Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+//    }
+
+    private void saveQRCodeDetails(String eventId, String type, String qrCodeInfo) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Check if a QR code with this info already exists.
+        db.collection("QRCode")
+                .whereEqualTo("qrCodeInfo", qrCodeInfo)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        // QR code already exists, so delete the old one
+                        String documentId = queryDocumentSnapshots.getDocuments().get(0).getId();
+                        db.collection("QRCode").document(documentId).delete()
+                                .addOnSuccessListener(aVoid -> Log.d("TAG", "Existing QR code document deleted."))
+                                .addOnFailureListener(e -> Log.e("TAG", "Error deleting existing QR code document", e));
+                    }
+
+                    // Proceed to add the new QR code info
+                    Map<String, Object> qrCodeData = new HashMap<>();
+                    qrCodeData.put("eventId", eventId);
+                    qrCodeData.put("type", type);
+                    qrCodeData.put("qrCodeInfo", qrCodeInfo);
+
+                    db.collection("QRCode").add(qrCodeData)
+                            .addOnSuccessListener(documentReference -> {
+//                                Toast.makeText(QRCodeReuseActivity.this, "Saved QR code info successfully!", Toast.LENGTH_SHORT).show();
+                                Log.d("TAG", "QR code data saved successfully.");
+                            })
+                            .addOnFailureListener(e -> {
+//                                Toast.makeText(QRCodeReuseActivity.this, "Error saving QR code info: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Log.e("TAG", "Error saving QR code data", e);
+                            });
+                })
+                .addOnFailureListener(e -> Log.e("TAG", "Error fetching QR code documents", e));
     }
 
 }
