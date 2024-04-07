@@ -65,6 +65,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * A fragment that handles QR code scanning functionality for event attendees within the application.
+ * This fragment is responsible for initiating the QR code scan process, handling the scan results,
+ * and performing actions based on the scanned QR code, such as checking in to an event or navigating
+ * to event information. It also handles location permissions and retrieves the last known location of
+ * the device to include with event check-ins if available and permitted by the user.
+ */
+
 public class QRCodeScanFragment extends Fragment {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
@@ -79,10 +87,22 @@ public class QRCodeScanFragment extends Fragment {
     private Button buttonScan;
     private CameraSelector cameraSelector;
 
+
+
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_qr_code_scan, container, false);
     }
+
+    /**
+     * Called to have the fragment instantiate its user interface view. This is optional for fragments
+     * that use {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} to create their view.
+     * This method sets up the scan button click listeners and initializes the location services.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -110,6 +130,8 @@ public class QRCodeScanFragment extends Fragment {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity()) ;
     }
 
+
+
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 //        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -121,9 +143,25 @@ public class QRCodeScanFragment extends Fragment {
 //        }
 //    }
 
+
+    /**
+     * Requests the necessary location permissions from the user. This method should be called
+     * when the fragment is created to ensure the app has the required permissions to access the device's location.
+     */
+
     private void requestLocationPermission() {
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
     }
+
+    /**
+     * Callback for the result from requesting permissions. This method is invoked for every call on
+     * {@link #requestPermissions(String[], int)}.
+     *
+     * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
+     * @param permissions  The requested permissions. Never null.
+     * @param grantResults The grant results for the corresponding permissions which is either
+     *                     {@link PackageManager#PERMISSION_GRANTED} or {@link PackageManager#PERMISSION_DENIED}. Never null.
+     */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -154,6 +192,16 @@ public class QRCodeScanFragment extends Fragment {
 //            }
 //        }
 //    }
+
+    /**
+     * Receives the result from a previous call to {@link #startActivityForResult(Intent, int)}.
+     * This method is used to process the result of a QR code scan initiated by this fragment.
+     *
+     * @param requestCode The integer request code originally supplied to startActivityForResult(),
+     *                    allowing you to identify who this result came from.
+     * @param resultCode  The integer result code returned by the child activity through its setResult().
+     * @param data        An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -203,6 +251,7 @@ public class QRCodeScanFragment extends Fragment {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 
 
     private void checkQRCodeInFirestore(String qrCodeInfo, Double latitude, Double longitude, Runnable onNotFound) {
@@ -505,6 +554,12 @@ public class QRCodeScanFragment extends Fragment {
                 });
     }
 
+    /**
+     * Attempts to retrieve the last known location of the device and uses it to check in to an event
+     * if location access is granted and enabled by the user. If the location cannot be retrieved or
+     * location permissions are not granted, the check-in may proceed without location data.
+     */
+
     private void getLastLocationAndCheckIn() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -563,6 +618,12 @@ public class QRCodeScanFragment extends Fragment {
                     .initiateScan();
         });
     }
+
+    /**
+     * Checks if all required location permissions have been granted to the application.
+     *
+     * @return true if both ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION permissions are granted, false otherwise.
+     */
 
     private boolean allLocationPermissionsGranted() {
         // Assuming this method checks for both FINE and COARSE location permissions

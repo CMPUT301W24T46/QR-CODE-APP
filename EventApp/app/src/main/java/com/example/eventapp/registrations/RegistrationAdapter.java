@@ -23,10 +23,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+/**
+ * An adapter for displaying a list of registration entries in a ListView. Each registration entry is represented by
+ * {@link Registration} and includes details such as the attendee's ID, the registration date, and an attendee image.
+ */
+
 public class RegistrationAdapter extends ArrayAdapter<Registration> {
 
     private ArrayList<Registration> registrations;
     private Context context;
+
+    /**
+     * Constructs a new {@link RegistrationAdapter}.
+     *
+     * @param context The current context.
+     * @param registrations The list of registration entries to display.
+     */
 
     public RegistrationAdapter(Context context, ArrayList<Registration> registrations) {
         super(context, 0, registrations);
@@ -34,11 +47,24 @@ public class RegistrationAdapter extends ArrayAdapter<Registration> {
         this.registrations = registrations;
     }
 
+    /**
+     * Provides a holder for the views for each registration entry.
+     */
+
     private static class ViewHolder {
         TextView attendeeName;
         TextView registrationDate;
         ImageView attendeeImage;
     }
+
+    /**
+     * Gets a view that displays the data at the specified position in the data set.
+     *
+     * @param position The position of the item within the adapter's data set.
+     * @param convertView The old view to reuse, if possible.
+     * @param parent The parent that this view will eventually be attached to.
+     * @return A View corresponding to the data at the specified position.
+     */
 
     @NonNull
     @Override
@@ -75,6 +101,12 @@ public class RegistrationAdapter extends ArrayAdapter<Registration> {
 
         return convertView;
     }
+
+    /**
+     * Updates the list of registrations within the adapter and refreshes the attached view.
+     *
+     * @param registrationDataList The new list of registrations to display.
+     */
 
     public void setFilter(ArrayList<Registration> registrationDataList) {
         registrations.clear();

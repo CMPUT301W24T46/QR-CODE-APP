@@ -22,9 +22,29 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * MyFirebaseMessagingService extends {@link FirebaseMessagingService} to handle incoming
+ * Firebase Cloud Messaging (FCM) messages for the application. This service is responsible
+ * for processing FCM messages and displaying notifications to the user.
+ *
+ * <p>When an FCM message is received, this service extracts the notification details and
+ * displays a notification using the system's {@link NotificationManager}. The notification
+ * directs the user to the application's {@link MainActivity} when tapped.</p>
+ */
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService{
     private String eventId ;
     private String userId ;
+
+    /**
+     * Called when a message is received.
+     *
+     * <p>This method is called on the application's main thread, so long-running operations
+     * should be performed asynchronously or in the context of a separate thread.</p>
+     *
+     * @param remoteMessage An instance of {@link RemoteMessage} representing the message received.
+     */
+
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -38,6 +58,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
             displayNotification(remoteMessage);
         }
     }
+
+    /**
+     * Constructs and displays a system notification based on the contents of the received FCM message.
+     * The notification includes a title and body text extracted from the {@link RemoteMessage} and
+     * an intent that opens {@link MainActivity} when the notification is tapped.
+     *
+     * @param remoteMessage The {@link RemoteMessage} containing the notification data.
+     */
 
     private void displayNotification(RemoteMessage remoteMessage) {
         //Assuming your app's main activity is MainActivity

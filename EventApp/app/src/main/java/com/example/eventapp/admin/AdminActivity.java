@@ -19,6 +19,17 @@ import java.util.Set;
  *  {@link androidx.appcompat.app.AppCompatActivity}
  * Displays bottom navigation and fragments for each navigation item
  * Sets up up navigation using NavController and BottomNavigationView for switching between admin-related fragments.
+ *
+ * <p>Navigation is managed by a {@link NavController} that is attached to a {@link BottomNavigationView}. The
+ * NavController orchestrates fragment transactions to display the appropriate admin pages. The activity also
+ * handles savedInstanceState to restore previous states if the activity has been reinitialized.</p>
+ *
+ * <p>Important: The ActionBar titles for different destinations are hardcoded as "Home" and "Account" for the
+ * respective fragments. These values should be externalized in string resources for localization.</p>
+ *
+ * <p>Usage: This activity is intended to be used as part of the app's admin module. It should be declared in the
+ * AndroidManifest.xml file with the appropriate intent-filters if it's intended to be an entry point from other
+ * parts of the app or external applications.</p>
  */
 
 //This class is attached to activity_admin
@@ -30,6 +41,8 @@ public class AdminActivity extends AppCompatActivity {
      *
      * @param savedInstanceState A previously saved state if the activity has been run before
      */
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

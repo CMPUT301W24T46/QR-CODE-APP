@@ -29,6 +29,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+
 /**
  * Fragment for the organizer's home screen, displaying welcome messages and navigation options.
  */

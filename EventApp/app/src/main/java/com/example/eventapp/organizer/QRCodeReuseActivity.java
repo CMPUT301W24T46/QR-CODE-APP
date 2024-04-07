@@ -54,6 +54,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+/**
+ * An activity that allows scanning and reusing QR codes. It enables the user to either scan a QR code using the camera
+ * or choose a QR code image from the gallery. Once a QR code is scanned or selected, it decodes the QR code to extract
+ * information and uploads the QR code image to Firebase Storage. Finally, it saves the QR code details in Firestore.
+ */
+
 public class QRCodeReuseActivity extends AppCompatActivity {
 
     private static final String TAG = "QRCodeReuseActivity";
@@ -64,6 +70,15 @@ public class QRCodeReuseActivity extends AppCompatActivity {
     private PreviewView previewView;
     private FusedLocationProviderClient fusedLocationClient;
     private String eventId;
+
+    /**
+     * Initializes the activity, sets the content view, and retrieves the event ID. It checks for camera permissions
+     * and starts the camera if permissions are granted. Also, it animates a scanning line over the camera preview.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this
+     *                           Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
+     *                           Note: Otherwise it is null.
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +95,11 @@ public class QRCodeReuseActivity extends AppCompatActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
+    /**
+     * Initializes view components like the selected image view, preview view, and buttons. Sets up onClick listeners
+     * for the back and gallery buttons.
+     */
+
     private void initializeViews() {
         selectedImageView = findViewById(R.id.selected_image_view);
         previewView = findViewById(R.id.scanner_previewView);
@@ -90,13 +110,27 @@ public class QRCodeReuseActivity extends AppCompatActivity {
         galleryButton.setOnClickListener(v -> openGallery());
     }
 
+    /**
+     * Requests camera permissions from the user.
+     */
+
     private void requestCameraPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CODE_PERMISSIONS);
     }
 
+    /**
+     * Checks if all required permissions are granted.
+     *
+     * @return true if all permissions are granted, false otherwise.
+     */
+
     private boolean allPermissionsGranted() {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
     }
+
+    /**
+     * Starts the camera and sets up image analysis for scanning QR codes.
+     */
 
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -136,6 +170,15 @@ public class QRCodeReuseActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Handles the result of permission requests. If permissions are granted, the camera starts; otherwise, a toast
+     * message is displayed and the activity finishes.
+     *
+     * @param requestCode  The request code passed in requestPermissions(android.app.Activity, String[], int).
+     * @param permissions  The requested permissions.
+     * @param grantResults The grant results for the corresponding permissions.
+     */
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -147,10 +190,23 @@ public class QRCodeReuseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Opens the device's gallery for the user to select a QR code image.
+     */
+
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_CODE_GALLERY);
     }
+
+    /**
+     * Handles the result of the gallery intent. If a QR code image is selected, processes the image URI.
+     *
+     * @param requestCode The integer request code originally supplied to startActivityForResult(),
+     *                    allowing you to identify who this result came from.
+     * @param resultCode  The integer result code returned by the child activity through its setResult().
+     * @param data        An Intent, which can return result data to the caller.
+     */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -160,6 +216,12 @@ public class QRCodeReuseActivity extends AppCompatActivity {
             processImageUri(imageUri);
         }
     }
+
+    /**
+     * Processes the selected image URI by decoding the QR code and uploading the details upon successful decoding.
+     *
+     * @param imageUri The URI of the selected image.
+     */
 
     private void processImageUri(Uri imageUri) {
         try {
@@ -180,6 +242,13 @@ public class QRCodeReuseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Decodes a QR code from a Bitmap and executes a callback with the decoded information.
+     *
+     * @param bitmap   The Bitmap of the QR code image.
+     * @param callback A Consumer that accepts the decoded QR code information.
+     */
+
     private void decodeQRCodeFromBitmap(Bitmap bitmap, Consumer<String> callback) {
         new Thread(() -> {
             try {
@@ -196,6 +265,13 @@ public class QRCodeReuseActivity extends AppCompatActivity {
         }).start();
     }
 
+    /**
+     * Uploads the QR code image to Firebase Storage and saves the QR code details in Firestore.
+     *
+     * @param bitmap     The Bitmap of the QR code image.
+     * @param qrCodeInfo The decoded information from the QR code.
+     */
+
     private void uploadAndSaveQRCode(Bitmap bitmap, String qrCodeInfo) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -211,6 +287,16 @@ public class QRCodeReuseActivity extends AppCompatActivity {
                 }))
                 .addOnFailureListener(e -> Toast.makeText(QRCodeReuseActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
+    /**
+     * Saves the QR code details to Firestore. If a QR code with the same information already exists, it deletes
+     * the old QR code before saving the new one.
+     *
+     * @param eventId        The ID of the event associated with the QR code.
+     * @param type           The type of QR code (e.g., "CheckIn").
+     * @param qrCodeImageUrl The URL of the uploaded QR code image in Firebase Storage.
+     * @param qrCodeInfo     The decoded information from the QR code.
+     */
 
     private void saveQRCodeDetails(String eventId, String type, String qrCodeImageUrl, String qrCodeInfo) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -250,6 +336,9 @@ public class QRCodeReuseActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e(TAG, "Error fetching QR code documents", e));
     }
 
+    /**
+     * Animates a line moving over the camera preview to simulate scanning.
+     */
 
     private void animateScanningLine() {
         View scanningLine = findViewById(R.id.scanning_line);
