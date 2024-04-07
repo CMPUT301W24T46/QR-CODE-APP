@@ -76,6 +76,7 @@ public class UploadImage {
         // Update the user's document with the reference to the image document
         Map<String, Object> userData = new HashMap<>();
         userData.put("imageUrl", imageRef);
+        userData.put("hasCustomImage", true);
 
         db.collection("Users").document(userId)
                 .update(userData)

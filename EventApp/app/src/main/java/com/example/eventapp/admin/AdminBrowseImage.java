@@ -129,7 +129,6 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         uid = FirebaseAuth.getInstance().getUid();
 
-
         if(uid != null){
             adminController.subscribeToImageDB(imageGridAdapter, selectedFilter);
         }else{
