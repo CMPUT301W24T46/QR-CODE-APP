@@ -287,8 +287,6 @@ public class QRCodeScanFragment extends Fragment {
                 //                checkInData.put("checkInTimes", checkInTimes);
                 if (latitude != null && longitude != null) {
                     checkInData.put("checkInLocation", new GeoPoint(latitude, longitude));
-                }else{
-                    checkInData.put("checkInLocation", new GeoPoint(0.0, 0.0));
                 }
                 // Update the document with the new data
                 transaction.set(checkInDocRef, checkInData);
