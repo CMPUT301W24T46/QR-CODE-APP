@@ -101,8 +101,6 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
 
         });
 
-
-
     }
 
     /**
