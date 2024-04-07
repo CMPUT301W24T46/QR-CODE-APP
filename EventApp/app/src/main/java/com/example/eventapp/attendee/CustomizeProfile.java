@@ -152,6 +152,11 @@ public class CustomizeProfile extends AppCompatActivity {
         geolocationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (!buttonView.isPressed()) return;
 
+            if(FirebaseAuth.getInstance().getUid() == null){
+                geolocationToggle.setChecked(true);
+                return ;
+            }
+
             if (isChecked) {
                 // Trying to enable geolocation tracking
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
