@@ -91,7 +91,8 @@ public class OrganizerAccount extends Fragment {
             @Override
             public void onClick(View v) {
                 // Change this to navigate to the OrganizerCustomizeProfile activity
-                Intent intent = new Intent(getActivity(), OrganizerCustomizeProfile.class);
+                Intent intent = new Intent(getActivity(), CustomizeProfile.class);
+                intent.putExtra("caller", "OrganizerAccountActivity");
                 startActivity(intent);
             }
         });
