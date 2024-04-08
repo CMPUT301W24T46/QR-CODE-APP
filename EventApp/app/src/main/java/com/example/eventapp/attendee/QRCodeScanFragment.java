@@ -281,7 +281,6 @@ public class QRCodeScanFragment extends Fragment {
 
 
 
-    private void checkQRCodeInFirestore(String qrCodeInfo, Double latitude, Double longitude, Runnable onNotFound) {
 
     private void checkQRCodeInFirestore(String qrCodeInfo, Double latitude, Double longitude) {
 
