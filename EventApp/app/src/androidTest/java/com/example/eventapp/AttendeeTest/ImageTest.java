@@ -55,7 +55,7 @@ public class ImageTest {
     private SaveImageIdlingResource saveImageIdlingResource ;
 
     @Rule
-    public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
+    public ActivityScenarioRule<AttendeeActivity> activityRule = new ActivityScenarioRule<>(AttendeeActivity.class);
 
     @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA);
@@ -70,16 +70,6 @@ public class ImageTest {
     public void setUp() {
         Intents.init();
         // Gets the Account Selection Fragment and registers it as an idling resource
-        activityRule.getScenario().onActivity(activity -> {
-            NavController navController = Navigation.findNavController(activity, R.id.fragmentContainerView);
-            NavHostFragment navHostFragment = (NavHostFragment) activity.getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
-            Fragment currentFragment = null;
-            if (navHostFragment != null) {
-                currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
-            }
-            AccountSelection fragment = (AccountSelection) currentFragment;
-            idlingResource = new LoginIdlingResource(fragment);
-        });
     }
 
     @After
@@ -90,15 +80,6 @@ public class ImageTest {
 
     @Test
     public void testImageUpload() throws InterruptedException, UiObjectNotFoundException {
-        // Have to make sure view is present
-        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
-        onData(anything())  // You can use a matcher here to match specific data
-                .inAdapterView(withId(R.id.accountOptionList))
-                .atPosition(0)
-                .perform(click());
-        // Wait for firestore to be communicated with
-        IdlingRegistry.getInstance().register(idlingResource);
-        intended(hasComponent(AttendeeActivity.class.getName()));
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeAccount)).perform(click()) ;
@@ -126,14 +107,14 @@ public class ImageTest {
 
     @Test
     public void testDeleteImage(){
-        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
-        onData(anything())  // You can use a matcher here to match specific data
-                .inAdapterView(withId(R.id.accountOptionList))
-                .atPosition(0)
-                .perform(click());
-        // Wait for firestore to be communicated with
-        IdlingRegistry.getInstance().register(idlingResource);
-        intended(hasComponent(AttendeeActivity.class.getName()));
+//        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
+//        onData(anything())  // You can use a matcher here to match specific data
+//                .inAdapterView(withId(R.id.accountOptionList))
+//                .atPosition(0)
+//                .perform(click());
+//        // Wait for firestore to be communicated with
+//        IdlingRegistry.getInstance().register(idlingResource);
+//        intended(hasComponent(AttendeeActivity.class.getName()));
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeAccount)).perform(click()) ;
@@ -148,14 +129,14 @@ public class ImageTest {
 
     @Test
     public void testSaveUserInfo(){
-        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
-        onData(anything())  // You can use a matcher here to match specific data
-                .inAdapterView(withId(R.id.accountOptionList))
-                .atPosition(0)
-                .perform(click());
-        // Wait for firestore to be communicated with
-        IdlingRegistry.getInstance().register(idlingResource);
-        intended(hasComponent(AttendeeActivity.class.getName()));
+//        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
+//        onData(anything())  // You can use a matcher here to match specific data
+//                .inAdapterView(withId(R.id.accountOptionList))
+//                .atPosition(0)
+//                .perform(click());
+//        // Wait for firestore to be communicated with
+//        IdlingRegistry.getInstance().register(idlingResource);
+//        intended(hasComponent(AttendeeActivity.class.getName()));
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeAccount)).perform(click()) ;

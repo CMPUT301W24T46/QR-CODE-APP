@@ -49,8 +49,12 @@ public class AttendeeNotification extends AppCompatActivity {
         notificationListView.setAdapter(notificationAdapter);
         spinner = findViewById(R.id.spinner);
         // Fetch notifications for the current user
-        fetchNotifications();
+
+        if(FirebaseAuth.getInstance().getUid() != null){
+            fetchNotifications();
+        }
     }
+
 
     /**
      * Fetches notifications from the "Notifications" collection in Firestore. Updates the list
@@ -157,4 +161,5 @@ public class AttendeeNotification extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

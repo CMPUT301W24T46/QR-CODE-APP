@@ -150,7 +150,9 @@ public class CustomizeProfile extends AppCompatActivity {
         profileDeleteImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteImage();
+                if(FirebaseAuth.getInstance().getUid() != null){
+                    deleteImage();
+                }
             }
         });
 

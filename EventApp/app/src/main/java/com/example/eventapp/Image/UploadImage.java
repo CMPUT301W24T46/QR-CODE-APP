@@ -24,7 +24,7 @@ public class UploadImage {
     public  UploadImage(Uri imageURI ){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         this.imageUri = imageURI ;
-        this.userId = user.getUid() ;
+        this.userId = FirebaseAuth.getInstance().getUid(); ;
     }
 
     public void uploadToFireStore() {
