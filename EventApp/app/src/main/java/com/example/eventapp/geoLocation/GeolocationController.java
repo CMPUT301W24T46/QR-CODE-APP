@@ -35,11 +35,6 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-/**
- * GeolocationController manages the geolocation features for users within the application. It leverages the FusedLocationProviderClient
- * to obtain location updates and updates the Firestore database with the current location of the users who have enabled geolocation
- * sharing in the application. The class provides methods to start and stop location updates for a user.
- */
 
 public class GeolocationController {
 
@@ -49,13 +44,6 @@ public class GeolocationController {
     private LocationCallback locationCallback;
     private Context context;
 
-
-    /**
-     * Constructor initializes the controller with the application context. It sets up the Firestore database references,
-     * initializes the FusedLocationProviderClient, and defines the behavior for handling location updates.
-     *
-     * @param context The application context.
-     */
 
     public GeolocationController(Context context) {
 
@@ -72,13 +60,6 @@ public class GeolocationController {
     }
 
 
-    /**
-     * Initiates location updates for the specified user. This method checks if the location permission has been granted,
-     * and if so, requests location updates at specified intervals. It updates the Firestore database with the user's
-     * current location and marks the user as sharing their location.
-     *
-     * @param userId The unique identifier of the user for whom to enable geolocation features.
-     */
 
 
     // Geolocation toggle for attendee
@@ -106,13 +87,6 @@ public class GeolocationController {
             // Depending on your app flow, you might notify the user here
         }
     }
-
-    /**
-     * Stops location updates for the specified user. This method removes the request for location updates for the user
-     * and updates the Firestore database to indicate that the user is no longer sharing their location.
-     *
-     * @param userId The unique identifier of the user for whom to disable geolocation features.
-     */
 
     // Method to disable geolocation features
     public void disableGeolocationFeatures(String userId) {

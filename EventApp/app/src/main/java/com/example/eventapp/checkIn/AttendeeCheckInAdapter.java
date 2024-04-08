@@ -23,35 +23,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * AttendeeCheckInAdapter is an {@link ArrayAdapter} designed for adapting {@link AttendeeCheckInView} objects into
- * views within a ListView. This adapter is utilized to display a list of attendee check-ins, each with the attendee's name,
- * profile image, frequency of check-ins, and the date of the latest check-in.
- *
- * <p>The adapter inflates a custom layout for each item in the list, ensuring that the check-in details are presented
- * in a user-friendly format. The adapter expects a list of {@link AttendeeCheckInView} objects and uses the application
- * context to correctly inflate and populate the list item views.</p>
- *
- * <p>Key Features:</p>
- * <ul>
- *     <li>Inflates a custom layout for attendee check-in items.</li>
- *     <li>Populates the layout with data from {@link AttendeeCheckInView} objects, including styling parts of the text for emphasis.</li>
- *     <li>Utilizes Glide for efficient and smooth loading of attendee profile images.</li>
- *     <li>Allows dynamic updates to the list of check-ins through {@link #setFilter(ArrayList)} method.</li>
- * </ul>
- */
-
 public class AttendeeCheckInAdapter extends ArrayAdapter<AttendeeCheckInView> {
 
     private ArrayList<AttendeeCheckInView> checkIns;
     private Context context;
-
-    /**
-     * Constructs a new AttendeeCheckInAdapter.
-     *
-     * @param context  The current context. Used to inflate the layout file.
-     * @param checkIns A list of {@link AttendeeCheckInView} objects to be displayed.
-     */
 
     public AttendeeCheckInAdapter(Context context, ArrayList<AttendeeCheckInView> checkIns) {
         super(context, 0, checkIns);

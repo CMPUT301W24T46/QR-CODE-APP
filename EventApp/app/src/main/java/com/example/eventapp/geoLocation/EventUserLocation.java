@@ -27,29 +27,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-/**
- * EventUserLocation is a Fragment responsible for displaying the current location of the user and
- * related geographic details. It uses the device's GPS to fetch the current location and displays
- * information such as latitude, longitude, address, city, and country. Users can trigger location fetching
- * by pressing a button, and the fragment handles permission requests as needed.
- */
-
 public class EventUserLocation extends Fragment {
 
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private TextView eventMapTitle, address, city, country, latitude, longitude, ipAddress;
     private Button buttonGetLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
-
-    /**
-     * Inflates the layout for this fragment and initializes UI components. Sets up the FusedLocationProviderClient
-     * for location services and button click listener for fetching the current location.
-     *
-     * @param inflater LayoutInflater object to inflate views in the fragment.
-     * @param container Parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return The View for the inflated layout of the fragment.
-     */
 
     @Nullable
     @Override
@@ -92,11 +75,6 @@ public class EventUserLocation extends Fragment {
         return view;
     }
 
-    /**
-     * Triggers the process of fetching and displaying the current location. Checks for location permission
-     * and requests it if not already granted. On permission grant, fetches the current location and updates the UI.
-     */
-
     private void getAndDisplayLocation() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
@@ -109,14 +87,6 @@ public class EventUserLocation extends Fragment {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
-
-    /**
-     * Updates the UI with location details including latitude, longitude, address, city, and country.
-     * Uses the Geocoder class to fetch address details from the latitude and longitude.
-     *
-     * @param location The current location object.
-     */
-
 
     private void updateLocationUI(Location location) {
         if (location != null) {
@@ -138,15 +108,6 @@ public class EventUserLocation extends Fragment {
         }
     }
 
-    /**
-     * Handles the result of the permission request. If location permission is granted, proceeds with fetching
-     * and displaying the location. Otherwise, logs the denial of permission.
-     *
-     * @param requestCode The integer request code passed in requestPermissions().
-     * @param permissions The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions. Never null.
-     */
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -160,10 +121,6 @@ public class EventUserLocation extends Fragment {
         }
     }
 
-    /**
-     * Generates and displays a random location for demonstration purposes. Sets the latitude, longitude, and other
-     * location details to random values.
-     */
     private void generateAndDisplayRandomLocation() {
         Random random = new Random();
         double lat = -90 + 180 * random.nextDouble();

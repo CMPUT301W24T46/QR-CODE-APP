@@ -22,38 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * AttendedEvents is an {@link AppCompatActivity} that displays a list of events an attendee has attended.
- * This activity fetches data from a Firestore collection named "AttendedEvents", where each document corresponds
- * to a user and contains a list of events they have attended. The events are displayed in a {@link ListView}
- * using an {@link EventAdapter}.
- *
- * <p>Key Features:</p>
- * <ul>
- *     <li>Displays a list of events the current user has attended.</li>
- *     <li>Each list item includes event details such as name, date, description, and an image URL.</li>
- *     <li>Clicking on an event in the list opens the {@link AttendedEventInformationActivity}, showing more
- *     detailed information about the event.</li>
- *     <li>Utilizes Firebase Firestore to fetch attended events data.</li>
- *     <li>Provides a back button in the ActionBar for easy navigation back to the previous screen.</li>
- * </ul>
- */
-
 public class AttendedEvents extends AppCompatActivity {
     private FirebaseFirestore db;
     private ArrayList<Event> attendedEventsList;
     private ListView eventList;
     private EventAdapter eventListAdapter;
-
-    /**
-     * Sets up the activity's UI by inflating the layout, initializing UI components, and configuring the ActionBar.
-     * It also initializes Firestore and the ListView adapter, and it starts the process of loading attended events
-     * from Firestore.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down, this
-     *                           Bundle contains the data most recently supplied in onSaveInstanceState(Bundle).
-     *                           Otherwise, it is null. This bundle can be used to recreate the activity's state.
-     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,12 +60,6 @@ public class AttendedEvents extends AppCompatActivity {
         loadAttendedEvents();
     }
 
-    /**
-     * Fetches the list of attended events for the current user from Firestore. It updates the ListView adapter
-     * with the fetched events to display them. If no events are found, or in case of an error, it logs the
-     * appropriate message.
-     */
-
     private void loadAttendedEvents() {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DocumentReference userDocRef = db.collection("AttendedEvents").document(currentUserId);
@@ -117,15 +84,6 @@ public class AttendedEvents extends AppCompatActivity {
             Log.e("AttendedEvents", "Error fetching attended events for user: " + currentUserId, e);
         });
     }
-
-    /**
-     * Handles the selection of items in the options menu. Specifically, it listens for the press of the home
-     * button in the ActionBar, triggering a back navigation when pressed.
-     *
-     * @param item The menu item that was selected.
-     * @return true to consume the menu selection here, false to allow normal menu processing to continue.
-     */
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

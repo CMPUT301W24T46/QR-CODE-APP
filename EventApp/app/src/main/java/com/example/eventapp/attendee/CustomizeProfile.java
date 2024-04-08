@@ -582,6 +582,7 @@ public class CustomizeProfile extends AppCompatActivity {
                                         // Store a reference to the image in Users collection
                                         Map<String, Object> userData = new HashMap<>();
                                         userData.put("imageUrl", profileImageDocRef);
+
                                         db.collection("Users").document(uid)
                                                 .update(userData)
                                                 .addOnSuccessListener(aVoid2 -> Log.d("ProfilePicture", "User document updated with image URL reference"))
