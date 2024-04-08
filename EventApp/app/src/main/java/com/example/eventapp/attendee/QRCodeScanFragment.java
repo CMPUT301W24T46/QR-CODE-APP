@@ -65,6 +65,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * QRCodeScanFragment is a Fragment subclass responsible for handling QR code scanning functionality within the app.
+ * It integrates camera permissions, location services, and QR code scanning logic to provide a seamless experience for users
+ * attempting to scan QR codes for event check-ins or accessing event information.
+ *
+ * Features include requesting necessary permissions, activating the device's camera for QR scanning, and handling the scanned
+ * QR code data to check in users to events or navigate to event information pages.
+ */
+
 public class QRCodeScanFragment extends Fragment {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;

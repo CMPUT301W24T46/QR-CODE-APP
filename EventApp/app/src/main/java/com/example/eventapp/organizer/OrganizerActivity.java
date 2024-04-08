@@ -130,6 +130,14 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
 
     }
 
+    /**
+     * Called when an item in the options menu is selected. Specifically handles the action for the home/up button
+     * by navigating back in the navigation hierarchy or closing the activity as appropriate.
+     *
+     * @param item The menu item that was selected.
+     * @return boolean Return false to allow normal menu processing to proceed, true to consume it here.
+     */
+
     // Navigation back
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -144,6 +152,13 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
         }
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * Handles back navigation for different destinations within the {@link NavController}. Depending on the current
+     * destination, it navigates to the appropriate fragment or performs the necessary action.
+     *
+     * @param eventId The ID of the event currently being interacted with, used for context-specific back navigation.
+     */
 
     private void handleBackActionWithEventId(String eventId) {
         NavDestination currentDestination = back_organizerNavigation.getCurrentDestination();
@@ -204,6 +219,11 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
         }
 
     }
+
+    /**
+     * Callback method from {@link CreateNotificationFragment.CreateNotificationListener} interface. Invoked when
+     * a new notification is created successfully. Displays a toast message indicating success.
+     */
 
     @Override
     public void onNotificationCreated() {

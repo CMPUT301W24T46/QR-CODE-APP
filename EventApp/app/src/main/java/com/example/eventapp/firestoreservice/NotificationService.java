@@ -6,6 +6,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * NotificationService is responsible for managing notifications within the application. It interacts with
+ * Firestore to retrieve existing notifications and to create new notifications. The service is initialized with
+ * a reference to the notifications collection in Firestore, allowing it to perform database operations related to notifications.
+ */
+
 public class NotificationService {
     private final CollectionReference notificationRef ;
 
@@ -15,12 +21,27 @@ public class NotificationService {
 
     private String message ;
 
+    /**
+     * Initializes a new instance of the NotificationService class with specific notification details.
+     *
+     * @param notificationRef   A reference to the Firestore collection that stores notifications.
+     * @param notificationId    The unique ID of the notification.
+     * @param notificationTitle The title of the notification.
+     * @param message           The message content of the notification.
+     */
+
     public NotificationService(CollectionReference notificationRef, String notificationId, String notificationTitle, String message) {
         this.notificationRef = notificationRef;
         this.notificationId = notificationId;
         this.notificationTitle = notificationTitle;
         this.message = message;
     }
+
+    /**
+     * Retrieves user information for a given notification and executes a callback method upon completion.
+     *
+     * @param callback An instance of NotificationCallback to handle the response or error.
+     */
 
     public void getUserInfo(NotificationCallback callback){
         notificationRef.document(notificationId).get().addOnCompleteListener(task -> {
@@ -40,6 +61,12 @@ public class NotificationService {
             }
         });
     }
+
+    /**
+     * Updates user information related to a specific notification and executes a callback method upon completion.
+     *
+     * @param callback An instance of NotificationCallback to handle the response or error.
+     */
 
     public void updateUserInfo(NotificationCallback callback){
         Map<String , Object > updateFields = new HashMap<>();

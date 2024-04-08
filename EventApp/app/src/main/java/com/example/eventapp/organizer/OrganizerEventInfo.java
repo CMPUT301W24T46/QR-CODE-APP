@@ -44,11 +44,24 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * OrganizerEventInfo is a Fragment that displays detailed information about a specific event.
+ * It shows the event's name, description, date, and image, and provides options to edit the event
+ * or reuse the event's QR code.
+ */
+
 public class OrganizerEventInfo extends Fragment {
 
     private NavController navController;
 
     private String eventId ;
+
+    /**
+     * Called when the fragment is first created. This method initializes the fragment.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
+     */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,11 +69,29 @@ public class OrganizerEventInfo extends Fragment {
 
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * This is optional, and non-graphical fragments can return null.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return Return the View for the fragment's UI, or null.
+     */
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_organizer_event_info, container, false);
     }
+
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned, but before any
+     * saved state has been restored into the view. This method initializes the fragment's content and event handlers.
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

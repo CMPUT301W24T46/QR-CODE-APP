@@ -23,16 +23,37 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Custom ArrayAdapter to display check-in information for attendees in a list view.
+ * Each list item shows an attendee's name, profile image, check-in frequency, and the latest check-in date.
+ */
+
 public class AttendeeCheckInAdapter extends ArrayAdapter<AttendeeCheckInView> {
 
     private ArrayList<AttendeeCheckInView> checkIns;
     private Context context;
+
+    /**
+     * Constructs a new AttendeeCheckInAdapter.
+     *
+     * @param context  The current context.
+     * @param checkIns The list of AttendeeCheckInView objects to represent in the ListView.
+     */
 
     public AttendeeCheckInAdapter(Context context, ArrayList<AttendeeCheckInView> checkIns) {
         super(context, 0, checkIns);
         this.context = context;
         this.checkIns = checkIns;
     }
+
+    /**
+     * Provides a view for an AdapterView (ListView, GridView, etc.).
+     *
+     * @param position    The position in the data set of the data item to display.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view is non-null and of an appropriate type before using.
+     * @param parent      The parent that this view will eventually be attached to.
+     * @return A View corresponding to the data at the specified position.
+     */
 
     @NonNull
     @Override
@@ -88,6 +109,12 @@ public class AttendeeCheckInAdapter extends ArrayAdapter<AttendeeCheckInView> {
 
         return convertView;
     }
+
+    /**
+     * Updates the data set used by the adapter and refreshes the ListView.
+     *
+     * @param checkInDataList The new set of AttendeeCheckInView data.
+     */
 
     public void setFilter(ArrayList<AttendeeCheckInView> checkInDataList) {
         checkIns.clear();
