@@ -23,9 +23,9 @@
 
     <Button
         android:id="@+id/button_createEvent"
-        android:layout_width="390dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="318dp"
+        android:layout_height="182dp"
+        android:layout_marginTop="56dp"
         android:background="@drawable/rounded_button_background"
         android:drawableEnd="@drawable/ic_plus"
         android:onClick="onCustomizeProfileClicked"
@@ -34,14 +34,14 @@
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/organizer_welcome_message" />
 
     <Button
         android:id="@+id/button_notification"
-        android:layout_width="390dp"
-        android:layout_height="220dp"
+        android:layout_width="318dp"
+        android:layout_height="182dp"
         android:layout_marginStart="15dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="15dp"

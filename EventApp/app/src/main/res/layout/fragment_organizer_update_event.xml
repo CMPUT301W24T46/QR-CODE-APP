@@ -109,12 +109,12 @@
 
     <ImageView
         android:id="@+id/update_event_image_view"
-        android:layout_width="0dp"
-        android:layout_height="118dp"
+        android:layout_width="391dp"
+        android:layout_height="86dp"
+        android:onClick="pickImage"
+        android:src="@drawable/ic_upload"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:onClick="pickImage"
-        app:layout_constraintTop_toBottomOf="@+id/update_event_description_input"
-        android:src="@drawable/ic_upload" />
+        app:layout_constraintTop_toBottomOf="@+id/update_event_description_input" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

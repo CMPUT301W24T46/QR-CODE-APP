@@ -188,6 +188,7 @@ public class QRCodeScanFragment extends Fragment {
                         Log.d("Location " ,  String.valueOf(latitude) + " " + String.valueOf(longitude));
                     }
                 } catch (JSONException e) {
+                    Log.d("Promotion Code" , qrCodeData) ;
                     checkQRCodeInFirestore(qrCodeData , latitude , longitude ) ;
                 }
 
@@ -228,12 +229,14 @@ public class QRCodeScanFragment extends Fragment {
                         // Found matching QR code info, proceed with event check-in
                         DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
                         String eventId = document.getString("eventId");
+                        Log.d("Event in firestore" ,"Test");
                         if (eventId != null) {
                             checkInUser(eventId, latitude, longitude);
                         }
                     } else {
                         // No direct match found, try JSON parsing
 //                        onNotFound.run();
+                        Log.d("Event Not in firestore" ,"Test");
                     }
                 })
                 .addOnFailureListener(e -> {

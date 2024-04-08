@@ -47,8 +47,9 @@ public class AttendeeActivity extends AppCompatActivity {
         topLevelDestinations.add(R.id.attendeeEventMenu) ;
         topLevelDestinations.add(R.id.attendeeHome) ;
         topLevelDestinations.add(R.id.attendeeAccount) ;
-
-
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         // Check if the location permission has been granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -79,7 +80,7 @@ public class AttendeeActivity extends AppCompatActivity {
             if (destinationId == R.id.attendeeHome) {
                 Log.d("Attendee Home" , "Clicked") ;
                 getSupportActionBar().setTitle("Home");
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             } else if (destinationId == R.id.attendeeAccount) {
                 Log.d("Attendee Account" , "Clicked") ;
                 getSupportActionBar().setTitle("Account");
@@ -133,6 +134,7 @@ public class AttendeeActivity extends AppCompatActivity {
                 backNavigation.navigate(R.id.action_attendeeEventInformation_to_attendeeEvent);
             }
             else{
+                finish() ;
                 Log.d("Navigation not possible" , "Add if statement") ;
             }
             return true; // Indicate that the event has been consumed

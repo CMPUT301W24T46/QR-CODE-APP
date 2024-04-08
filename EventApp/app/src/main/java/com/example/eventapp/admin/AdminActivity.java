@@ -39,7 +39,9 @@ public class AdminActivity extends AppCompatActivity {
         topLevelDestinations.add(R.id.adminHome) ;
         topLevelDestinations.add(R.id.adminAccount) ;
 
-
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         // Attaches the NavController to the Bottom Navigation Menu to enable navigation between the Fragments
         // Navigates between AdminHome and AdminAccount
@@ -58,10 +60,25 @@ public class AdminActivity extends AppCompatActivity {
 
             if (destinationId == R.id.adminHome) {
                 getSupportActionBar().setTitle("Home");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             } else if (destinationId == R.id.adminAccount) {
                 getSupportActionBar().setTitle("Account");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            // This ID represents the Up button. When it's tapped, we want to behave
+            // as if the back button was pressed, which means finishing the current
+            // activity and going back to the previous activity.
+
+            finish();
+            return true; // Indicate that we handled the click and no further action is necessary.
+        }
+        return super.onOptionsItemSelected(item); // Handle other menu item clicks here
     }
 
 }

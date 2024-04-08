@@ -49,7 +49,6 @@ public class OrganizerActivity extends AppCompatActivity implements CreateEventF
         topLevelDestinations.add(R.id.organizerHome);
         topLevelDestinations.add(R.id.organizerEvent);
         topLevelDestinations.add(R.id.organizerAccount);
-
 //        Attaches the NavController to the Bottom Navigation Menu to enable navigation between the Fragments
 //        Navigates between OrganizerAccount , OrganizerHome , and OrganizerEvent
 //        Note: It doesn't navigate to any other fragment related this should be handled by the Navigation Controller
