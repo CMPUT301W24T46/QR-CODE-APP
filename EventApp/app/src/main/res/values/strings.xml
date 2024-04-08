@@ -83,7 +83,7 @@
     <string name="select">Select</string>
 
     <string name="scan_your_qr_code">SCAN YOUR QR CODE</string>
-    <string name="scan">SCAN</string>
+    <string name="scan">SCAN STATIC QR</string>
     <string name="gallery">Gallery</string>
     <string name="check_in">Check In</string>
     <string name="scan_cancelled">Scan Cancelled</string>
@@ -163,4 +163,7 @@
     </string-array>
     <string name="default_notification_channel_id">my_notification_channel_id</string>
     <string name="button">Button</string>
+    <string name="real_time_scanner">Real Time Scanner</string>
+    <string name="real_time_reuse_qr_code">Real-Time Reuse Qr Code</string>
+    <string name="qr_code_for_checkin">QR CODE FOR CHECKIN</string>
 </resources>
