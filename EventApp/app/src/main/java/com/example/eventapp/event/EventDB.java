@@ -131,13 +131,6 @@ public class EventDB {
                 });
     }
 
-    /**
-     * Retrieves all events created by a specific user from the Firestore database, using the user's unique identifier.
-     *
-     * @param userId   The unique identifier of the user whose events are to be retrieved.
-     * @param listener A listener that will be notified with the retrieved events or an error message in case of failure.
-     */
-
     public void getAllEventsForUser(String userId, EventRetrievalListener listener) {
         db.collection("Events")
                 .whereEqualTo("creatorId", userId)
@@ -157,26 +150,9 @@ public class EventDB {
                 });
     }
 
-    /**
-     * Interface definition for a callback to be invoked when events are retrieved from Firestore.
-     */
 
     public interface EventRetrievalListener {
-
-        /**
-         * Called when a list of events is successfully retrieved from Firestore.
-         *
-         * @param events A list of {@link Event} objects representing the retrieved events.
-         */
-
         void onEventsRetrieved(List<Event> events);
-
-        /**
-         * Called when an error occurs during the event retrieval process.
-         *
-         * @param errorMessage A message describing the error that occurred.
-         */
-
         void onError(String errorMessage);
     }
 

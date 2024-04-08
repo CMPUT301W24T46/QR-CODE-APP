@@ -31,25 +31,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * A fragment for organizers to manage QR codes specifically for event information. This includes
- * generating new QR codes, displaying existing QR codes, and offering functionality to share or
- * regenerate QR codes for event information purposes. It utilizes Firebase Firestore to store QR
- * code details and Firebase Storage for QR code images.
- */
-
-
 public class OrganizerQRCode_EventInfo extends Fragment {
 
     private ImageView qrCodeImageView;
     private String eventId;
     private String qrCodeUrl;
-
-    /**
-     * Retrieves the event ID from the fragment's arguments and sets up the fragment's state.
-     *
-     * @param savedInstanceState Contains data supplied in onSaveInstanceState(Bundle) if the fragment is being re-initialized.
-     */
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,15 +46,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
         }
     }
 
-    /**
-     * Inflates the fragment's view and initializes UI components.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI will be attached to.
-     * @param savedInstanceState If non-null, the fragment is being re-constructed from a previous saved state.
-     * @return Returns the View for the fragment's UI.
-     */
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -76,14 +53,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
         qrCodeImageView = view.findViewById(R.id.organizer_qrcode_view_1);
         return view;
     }
-
-    /**
-     * Sets up event handlers for buttons and checks for an existing QR code to display. If an existing
-     * QR code is not found, it prompts for generating a new one.
-     *
-     * @param view The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
-     * @param savedInstanceState If non-null, the fragment is being re-constructed from a previous saved state.
-     */
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -112,13 +81,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
         });
     }
 
-    /**
-     * Checks Firestore for an existing QR code specifically for event information. If found, displays the QR code;
-     * otherwise, prompts for generating a new one.
-     *
-     * @param eventId The ID of the event to check for an existing QR code.
-     */
-
     private void checkAndDisplayExistingQRCode(String eventId) {
         FirebaseFirestore.getInstance().collection("QRCode")
                 .whereEqualTo("eventId", eventId)
@@ -141,12 +103,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
                 .addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error checking for existing QR code", e));
     }
 
-    /**
-     * Generates a new QR code with a unique identifier and event-specific content for event information purposes.
-     * Displays the QR code and saves it to Firebase Firestore and Firebase Storage.
-     *
-     * @param eventId The ID of the event for which to generate a new QR code.
-     */
 
     private void generateQRCode(String eventId) {
         String qrCodeId = UUID.randomUUID().toString(); // Generate unique QR code ID with 36 hex digit
@@ -163,15 +119,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
             Log.e("OrganizerQRCode_EventInfo", "Error generating QR code: ", e);
         }
     }
-
-    /**
-     * Saves the generated QR code image to Firebase Storage and stores its metadata in Firestore.
-     *
-     * @param qrCodeId The unique identifier for the QR code.
-     * @param eventId The ID of the event associated with the QR code.
-     * @param bitmap The bitmap of the generated QR code.
-     */
-
     private void saveQRCodeToFirebase(String qrCodeId, String eventId, Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
@@ -186,14 +133,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
         }).addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error saving QR code to Firebase Storage: ", e));
     }
 
-    /**
-     * Saves the metadata of the QR code to Firestore, including its URL, associated event ID, and type.
-     *
-     * @param qrCodeId The unique identifier for the QR code.
-     * @param eventId The ID of the event associated with the QR code.
-     * @param qrCodeUrl The URL of the QR code image in Firebase Storage.
-     */
-
     private void saveQrCodeDetailsToFirestore(String qrCodeId, String eventId, String qrCodeUrl) {
         Map<String, Object> qrCodeDetails = new HashMap<>();
         qrCodeDetails.put("eventId", eventId);
@@ -204,14 +143,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
                 .addOnSuccessListener(aVoid -> Log.d("OrganizerQRCode_EventInfo", "QR code details saved successfully"))
                 .addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error saving QR code details to Firestore", e));
     }
-
-    /**
-     * Attempts to delete an existing QR code specifically for event information associated with the specified event
-     * from Firestore and Firebase Storage.
-     *
-     * @param eventId The ID of the event for which to delete the QR code.
-     * @param onSuccess A runnable to execute on successful deletion of the QR code.
-     */
 
     private void deleteExistingQRCode(String eventId, Runnable onSuccess) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -242,13 +173,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
                 .addOnFailureListener(e -> Log.e("OrganizerQRCode_EventInfo", "Error finding existing QR code to delete", e));
     }
 
-    /**
-     * Extracts the file path of a QR code image from its download URL for deletion purposes.
-     *
-     * @param qrCodeUrl The download URL of the QR code image.
-     * @return The file path of the QR code image or null if extraction fails.
-     */
-
     private String extractFilePathFromUrl(String qrCodeUrl) {
         if (qrCodeUrl == null || qrCodeUrl.isEmpty()) {
             return null;
@@ -269,12 +193,6 @@ public class OrganizerQRCode_EventInfo extends Fragment {
         }
         return null;
     }
-
-    /**
-     * Displays the QR code image by loading it from its URL into the ImageView using Glide.
-     *
-     * @param imageUrl The URL of the QR code image to be displayed.
-     */
 
     private void displayQRCodeImageByUrl(String imageUrl) {
         if (getContext() == null) return;

@@ -17,12 +17,6 @@ import androidx.navigation.Navigation;
 
 import com.example.eventapp.R;
 
-/**
- * OrganizerEditEventSelection is a Fragment that provides various options for organizers to manage their events.
- * This includes viewing the list of attendees, generating and viewing QR codes, updating event details, and viewing
- * check-in locations. It receives an 'eventId' from its arguments to identify the event being edited.
- */
-
 public class OrganizerEditEventSelection extends Fragment {
 
     // TODO: event data is lost on back navigations to edit page
@@ -30,28 +24,12 @@ public class OrganizerEditEventSelection extends Fragment {
 
     private NavController navController;
 
-    /**
-     * Called when the fragment is first created. Sets up the fragment to have an options menu.
-     *
-     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
-     */
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
     }
-
-    /**
-     * Called to have the fragment instantiate its user interface view. Inflates the layout for this fragment.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return Return the View for the fragment's UI.
-     */
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -59,14 +37,6 @@ public class OrganizerEditEventSelection extends Fragment {
         return inflater.inflate(R.layout.fragment_organizer_edit_event_selection, container, false);
     }
 
-    /**
-     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned, but before any
-     * saved state has been restored in to the view. Sets up the navigation controller and button click listeners
-     * to navigate to different editing options for the selected event.
-     *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

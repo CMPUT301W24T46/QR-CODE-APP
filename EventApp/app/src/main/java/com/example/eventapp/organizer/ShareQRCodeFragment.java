@@ -30,11 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-/**
- * A bottom sheet dialog fragment that provides options to download and share a QR code associated with an event.
- * Users can download the QR code image to their device or share it through other applications.
- */
-
 public class ShareQRCodeFragment extends BottomSheetDialogFragment {
     private static String qrCodeUrl;
     private static String eventId;
@@ -175,12 +170,6 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
 
     }
 
-    /**
-     * Shares the QR code by downloading it from the provided URL and using an Intent to share the image.
-     *
-     * @param qrCodeUrl URL of the QR code image to share.
-     */
-
     private void shareQRCode(String qrCodeUrl) {
         new Thread(() -> {
             try {
@@ -199,14 +188,6 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
             }
         }).start();
     }
-
-    /**
-     * Saves the provided bitmap to the application's cache directory and returns the Uri.
-     *
-     * @param bitmap The bitmap to save.
-     * @param filename The name of the file to save the bitmap as.
-     * @return The Uri of the saved bitmap.
-     */
 
     private Uri saveImageToCache(Bitmap bitmap, String filename) {
 
@@ -231,12 +212,6 @@ public class ShareQRCodeFragment extends BottomSheetDialogFragment {
         return imageUri;
     }
 
-
-    /**
-     * Starts an intent to share the image located at the provided Uri.
-     *
-     * @param imageUri Uri of the image to share.
-     */
 
     private void shareImage(Uri imageUri) {
         Intent shareIntent = new Intent();

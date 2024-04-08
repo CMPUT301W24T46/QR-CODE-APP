@@ -5,27 +5,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-/**
- * ProfileImageGenerator is a utility class to generate profile images based on a given hash string.
- * It creates a symmetrical, avatar-like image using a simple algorithm that decides the presence and color of squares
- * based on the hash. The generated image is circular, with a pattern that mirrors across the vertical axis.
- */
-
 public class ProfileImageGenerator {
 
 
     private static final int IMAGE_SIZE = 256; // Size of the final image
     private static final int COLUMNS = 5; // Number of columns for half of the avatar
     private static final int ROWS = 10; // Total number of rows
-
-    /**
-     * Generates a profile image from a given hash string.
-     * The image is a circular, symmetrical pattern where the presence and color of each square
-     * are determined by the hash string.
-     *
-     * @param hash The hash string used to generate the image.
-     * @return A Bitmap object representing the generated profile image.
-     */
 
     public static Bitmap generateImageFromHash(String hash) {
         Bitmap bitmap = Bitmap.createBitmap(IMAGE_SIZE, IMAGE_SIZE, Bitmap.Config.ARGB_8888);
@@ -63,16 +48,6 @@ public class ProfileImageGenerator {
         return bitmap;
     }
 
-    /**
-     * Determines if a given square position should be included in the circular image.
-     *
-     * @param x The x-coordinate of the square (in square units, not pixels).
-     * @param y The y-coordinate of the square (in square units, not pixels).
-     * @param squareSize The size of each square in pixels.
-     * @param radius The radius of the circle in pixels.
-     * @return True if the square's center lies within the circle, false otherwise.
-     */
-
     private static boolean isWithinCircle(int x, int y, int squareSize, int radius) {
         // Calculate the center of the square
         float centerX = x * squareSize + squareSize / 2f;
@@ -84,26 +59,10 @@ public class ProfileImageGenerator {
         return Math.sqrt(Math.pow(centerX - imageCenterX, 2) + Math.pow(centerY - imageCenterY, 2)) <= radius;
     }
 
-    /**
-     * Converts a segment of the hash string into a color.
-     *
-     * @param hashSegment A substring of the hash, used to generate the color.
-     * @return An integer representing the color generated from the hash segment.
-     */
-
     private static int getColorFromHashSegment(String hashSegment) {
         long value = Long.parseLong(hashSegment, 16);
         return 0xFF000000 | (int) (value & 0xFFFFFF); // Ensure full opacity
     }
-
-    /**
-     * Interpolates between two colors based on a given ratio.
-     *
-     * @param startColor The starting color.
-     * @param endColor The ending color.
-     * @param ratio A float between 0 and 1 indicating the interpolation ratio.
-     * @return An integer representing the interpolated color.
-     */
 
     private static int interpolateColor(int startColor, int endColor, float ratio) {
         int alpha = (int) ((Color.alpha(endColor) - Color.alpha(startColor)) * ratio + Color.alpha(startColor));

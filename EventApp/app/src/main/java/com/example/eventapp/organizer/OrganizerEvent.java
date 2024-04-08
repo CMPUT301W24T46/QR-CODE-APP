@@ -26,10 +26,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-/**
- * OrganizerEvent is a Fragment that displays a list of events created by the current organizer. It provides
- * functionality to search through the events and navigate to detailed information for a selected event.
- */
 
 public class OrganizerEvent extends Fragment {
 
@@ -37,36 +33,16 @@ public class OrganizerEvent extends Fragment {
     private ArrayList<Event> allEvents = new ArrayList<>();
     private SearchView searchView;
 
-    /**
-     * Required empty public constructor.
-     */
-
     public OrganizerEvent() {
         // Required empty public constructor
     }
 
-    /**
-     * Called to have the fragment instantiate its user interface view. Inflates the layout for this fragment.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return Return the View for the fragment's UI.
-     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_organizer_event, container, false);
         return view;
     }
-
-    /**
-     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned, but before any
-     * saved state has been restored into the view. Initializes the SearchView and fetches events for the organizer.
-     *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     */
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -82,18 +58,11 @@ public class OrganizerEvent extends Fragment {
         setupSearchView();
     }
 
-
-
     private void loadStaticEvents() {
         allEvents.add(new Event("Event 1" , "EventUrl" , "123456" , "sjfbdfjbdfj", "ksdnfksd" , "sdcdscsdcds")) ;
         allEvents.add(new Event("Event 2" , "EventUrl" , "123456" , "sjfbdfjbdfj", "ksdnfksd" , "sdcdscsdcds")) ;
         updateUI(new ArrayList<>(allEvents));
     }
-
-    /**
-     * Fetches events created by the current organizer from the database and updates the UI.
-     * Filters the events to only show those created by the current user.
-     */
 
     private void fetchEvents() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -153,10 +122,6 @@ public class OrganizerEvent extends Fragment {
         Navigation.findNavController(getView()).navigate(R.id.action_organizerEvent_to_organizerEventInfo, bundle);
     }
 
-    /**
-     * Sets up the SearchView with a listener for text input to filter events based on the search query.
-     */
-
     private void setupSearchView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -179,13 +144,6 @@ public class OrganizerEvent extends Fragment {
             }
         });
     }
-
-    /**
-     * Filters the events list based on the search query and updates the UI with the filtered list.
-     *
-     * @param text The search query to filter events by.
-     */
-
     private void filterEvents(String text) {
         ArrayList<Event> filteredList = new ArrayList<>();
         for (Event event : allEvents) {

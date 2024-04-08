@@ -17,31 +17,15 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Handles the uploading of an image to Firebase Cloud Storage and updates the user's Firestore document
- * with a reference to the uploaded image.
- */
-
 public class UploadImage {
 
     private Uri imageUri ;
     private String userId ;
-
-    /**
-     * Constructs a new {@link UploadImage} instance.
-     *
-     * @param imageURI The URI of the image to upload.
-     */
-
     public  UploadImage(Uri imageURI ){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         this.imageUri = imageURI ;
         this.userId = user.getUid() ;
     }
-
-    /**
-     * Uploads the image to Firebase Cloud Storage and on successful upload, saves the image URL to Firestore.
-     */
 
     public void uploadToFireStore() {
         if (userId == null) {
@@ -64,12 +48,6 @@ public class UploadImage {
                 );
     }
 
-    /**
-     * Saves the download URL of the uploaded image to the 'profileImages' collection in Firestore.
-     *
-     * @param downloadUrl The download URL of the uploaded image.
-     */
-
     private void saveImageUrlToFirestore(Uri downloadUrl) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -88,10 +66,6 @@ public class UploadImage {
                         Log.e("UploadImage", "Error saving image URL", e)
                 );
     }
-
-    /**
-     * Updates the user's Firestore document with a reference to the image document in the 'profileImages' collection.
-     */
 
     private void addReferenceToUserDatabase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
