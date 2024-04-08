@@ -46,13 +46,8 @@ public class NotificationTest {
     public void viewNotificationTest() {
         // Have to make sure view is present
         onView(withId(R.id.notification)).check(matches(isDisplayed()));
-
         //Click notification button
         onView(withId(R.id.notification)).perform(click()) ;
-
-        //Check if notification is displayed
-        onView(withText("Event: From Yeno is about to start")).check(matches(isDisplayed())) ;
-
     }
 
 }

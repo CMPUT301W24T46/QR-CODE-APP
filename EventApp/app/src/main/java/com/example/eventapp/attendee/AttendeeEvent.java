@@ -257,7 +257,7 @@ public class AttendeeEvent extends Fragment {
             eventStaticName = eventDataList.get(i).getEventName() ;
             if (eventStaticName.toLowerCase().contains(searchText.toLowerCase())) {
                 searchResults.add(new Event(staticEvent.getEventName(),  staticEvent.getEventDate() , staticEvent.getImageURL() , staticEvent.getEventId() ,
-                        staticEvent.getEventDescription()));
+                        staticEvent.getEventDescription() , 50L , 12L));
             }
         }
         eventListArrayAdapter.setFilter(searchResults);
@@ -270,8 +270,8 @@ public class AttendeeEvent extends Fragment {
      */
     public void setStaticEventList(){
         ArrayList<Event> staticEvents = new ArrayList<>() ;
-        staticEvents.add(new Event("First Event" , "19/72/43" , "" , "Test Id" , "Event for the Young")) ;
-        staticEvents.add(new Event("Second Event" , "19/72/43" , "" , "Test Id" , "Event for the Young")) ;
+        staticEvents.add(new Event("First Event" , "19/72/43" , "" , "Test Id" , "Event for the Young" , 50L , 12L)) ;
+        staticEvents.add(new Event("Second Event" , "19/72/43" , "" , "Test Id" , "Event for the Young", 50L , 12L)) ;
         eventListArrayAdapter.setFilter(staticEvents);
         eventListArrayAdapter.notifyDataSetChanged();
     }
