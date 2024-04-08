@@ -40,6 +40,7 @@ import android.view.KeyEvent;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.example.eventapp.R;
 import com.example.eventapp.attendee.AttendeeActivity;
@@ -56,6 +57,14 @@ public class CreateEventTest {
     @Rule
     public ActivityScenarioRule<OrganizerActivity> activityRule = new ActivityScenarioRule<>(OrganizerActivity.class);
 
+    @Rule
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(android.Manifest.permission.CAMERA);
+
+    @Rule
+    public GrantPermissionRule permissionRuleFineLocation = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+    @Rule
+    public GrantPermissionRule permissionRuleCoarseLocation = GrantPermissionRule.grant(android.Manifest.permission.ACCESS_COARSE_LOCATION);
     @Before
     public void setUp() {
         // Initialize Espresso Intents before each test
