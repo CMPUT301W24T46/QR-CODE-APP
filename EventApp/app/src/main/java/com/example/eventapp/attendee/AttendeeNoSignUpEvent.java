@@ -19,16 +19,43 @@ import com.bumptech.glide.Glide;
 import com.example.eventapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * This displays detailed information about an event for attendees who have not signed up.
+ * It shows event details including the name, description, date, and an image associated with the event.
+ * This fragment is intended to be used within an application that manages events, providing a way for users
+ * to explore event details even if they haven't registered or signed up for the event.
+ * Layout File: R.layout.fragment_attendee_nosignup_event
+ */
+
 public class AttendeeNoSignUpEvent extends Fragment {
 
     private ImageView bigEventImageView;
     private TextView eventNameView, eventDescriptionView, eventDateView;
+
+    /**
+     * Called to have the fragment instantiate its user interface view. This is optional, and non-graphical fragments can return null.
+     * This will be called between onCreate(Bundle) and onActivityCreated(Bundle).
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to. The fragment should not add the view itself,
+     *                  but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
+     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_attendee_nosignup_event, container, false);
     }
+
+    /**
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle) has returned, but before any saved state has been restored in to the view.
+     * This gives subclasses a chance to initialize themselves once they know their view hierarchy has been completely created.
+     *
+     * @param view The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     */
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -55,6 +82,12 @@ public class AttendeeNoSignUpEvent extends Fragment {
             Toast.makeText(getContext(), "Error: No event information provided.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * Fetches event details from the Firestore database using the provided event ID and updates the UI with these details.
+     *
+     * @param eventId The ID of the event for which details are to be fetched.
+     */
 
     private void fetchEventDetails(String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

@@ -28,6 +28,12 @@ import java.util.List;
 import java.util.Map;
 //import com.example.eventapp.BuildConfig;
 
+/**
+ * EventMap is a Fragment that displays a map showing locations related to an event. This includes locations where attendees
+ * have checked in. The map provides a visual representation of where the event's participants are distributed geographically.
+ * This class uses Google Maps to display the map and markers for each check-in location.
+ */
+
 public class EventMap extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment mapFragment;
@@ -36,6 +42,16 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
     private CheckInController controller;
 
 //    private String apiKey = BuildConfig.GOOGLE_MAPS_API_KEY;
+
+    /**
+     * Inflates the layout for this fragment and initializes the map fragment.
+     * Retrieves the event ID from the fragment's arguments, if provided.
+     *
+     * @param inflater           LayoutInflater object to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, the fragment is being re-constructed from a previous saved state.
+     * @return The View for the inflated layout of the fragment.
+     */
 
     @Nullable
     @Override
@@ -63,6 +79,12 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
+    /**
+     * Called when the Google Map is ready to be used. Sets up map configurations and adds markers for each check-in location.
+     *
+     * @param googleMap The GoogleMap object representing the map to be displayed.
+     */
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -74,6 +96,11 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
     }
+
+    /**
+     * Adds markers to the map for each dense area where attendees have checked in. Aggregates check-in locations to identify
+     * areas with multiple check-ins and focuses the map on these dense areas.
+     */
 
     private void addAndFocusOnDenseAreaMarkers() {
         if (eventId != null) {
@@ -120,6 +147,13 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    /**
+     * Calculates the geographical center of the densest area based on the check-in locations. This is used to focus the map's
+     * camera on the area with the highest concentration of attendees.
+     *
+     * @param positions A list of LatLng objects representing the check-in locations.
+     * @return The LatLng object representing the center of the densest area.
+     */
 
     private LatLng calculateDenseCenter(List<LatLng> positions) {
         if (positions.isEmpty()) return null;
@@ -142,6 +176,14 @@ public class EventMap extends Fragment implements OnMapReadyCallback {
 
         return densestPoint;
     }
+
+    /**
+     * Calculates the distance between two geographical points.
+     *
+     * @param pos1 The first geographical point.
+     * @param pos2 The second geographical point.
+     * @return The distance in meters between the two points.
+     */
 
     private double distanceBetween(LatLng pos1, LatLng pos2) {
         double earthRadius = 6371000; // meters

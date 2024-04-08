@@ -129,6 +129,10 @@ public class CreateEventFragment extends DialogFragment {
         return dialog;
     }
 
+    /**
+     * Displays a DatePickerDialog to select the event date.
+     */
+
     // Date selection
     private void showDatePickerDialog() {
         final Calendar calendar = Calendar.getInstance();
@@ -155,6 +159,12 @@ public class CreateEventFragment extends DialogFragment {
 
         datePickerDialog.show();
     }
+
+    /**
+     * Displays a TimePickerDialog after a date has been selected, to select the event time.
+     *
+     * @param calendar The Calendar instance with the selected date to set the initial time.
+     */
 
     // Specific time selection
     private void showTimePickerDialog(final Calendar calendar) {
@@ -183,6 +193,10 @@ public class CreateEventFragment extends DialogFragment {
         timePickerDialog.show();
     }
 
+    /**
+     * Initiates an intent to pick an image from the device's gallery.
+     */
+
     // Image Selection
     private void pickImage() {
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -199,6 +213,17 @@ public class CreateEventFragment extends DialogFragment {
                 }
             }
     );
+
+    /**
+     * Gathers the entered event details from the input fields and calls {@link #saveEventToFirestore(Event)} to create the event.
+     *
+     * @param eventName        The name of the event.
+     * @param eventDate        The date and time of the event.
+     * @param creatorId        The ID of the event creator.
+     * @param eventDescription The description of the event.
+     * @param imageUri         The URI of the selected event image.
+     * @param attendeeLimit    The attendee limit for the event.
+     */
 
     private void createEvent(String eventName, String eventDate, String creatorId, String eventDescription, Uri imageUri, Integer attendeeLimit) {
         // If user decide to upload image at this time
@@ -226,6 +251,12 @@ public class CreateEventFragment extends DialogFragment {
             saveEventToFirestore(event);
         }
     }
+
+    /**
+     * Saves the created event to Firestore and notifies the listener upon success or failure.
+     *
+     * @param event The Event object to be saved.
+     */
 
     private void saveEventToFirestore(Event event) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

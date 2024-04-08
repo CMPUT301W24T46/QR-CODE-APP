@@ -85,7 +85,7 @@ public class EventDB {
     /**
      * Delete event from the firebase.
      *
-     * @param eventID        The ID of the event to be deleted.
+     * @param eventID The ID of the event to be deleted.
      */
     public void deleteEvent(String eventID) {
         db.collection("Events")
