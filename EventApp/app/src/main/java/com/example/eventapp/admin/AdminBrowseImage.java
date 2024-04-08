@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.eventapp.Image.Image;
 import com.example.eventapp.Image.ImageGridAdapter;
 import com.example.eventapp.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class AdminBrowseImage extends AppCompatActivity {
     private ImageGridAdapter imageGridAdapter;
     private SearchView searchView;
     private Spinner imageSpinner;
-
+    private String uid;
 
 
     /**
@@ -52,6 +53,7 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         adminController = new AdminController(this);
 
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels;
@@ -66,12 +68,16 @@ public class AdminBrowseImage extends AppCompatActivity {
         imageGridAdapter = new ImageGridAdapter(this, imageItems, columnWidth);
         imageGridView.setAdapter(imageGridAdapter);
 
+
+
         // set up spinner
         imageSpinner = findViewById(R.id.imageSpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.image_action_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         imageSpinner.setAdapter(adapter);
+
+
 
 
         ActionBar actionBar = getSupportActionBar();
@@ -85,14 +91,22 @@ public class AdminBrowseImage extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // Update gridview based on selected filter
                 String selectedFilter = parent.getItemAtPosition(position).toString();
-                adminController.getCurrentImageList("", false, imageGridAdapter, selectedFilter);
+                if(uid == null){
+                    testBrowseImage(); // Only use static data when UID is null
+                }else{
+                    adminController.getCurrentImageList("", false, imageGridAdapter, selectedFilter);
+                }
                 searchView.setQuery("", false);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // Default to event images when no filter is selected
-                adminController.getCurrentImageList("", false, imageGridAdapter, "Event Images");
+                if(uid != null){
+                    adminController.getCurrentImageList("", false, imageGridAdapter, "Event Images");
+                }else{
+                    testBrowseImage();
+                }
             }
         });
 
@@ -111,7 +125,16 @@ public class AdminBrowseImage extends AppCompatActivity {
 
         setUpSearchView();
         String selectedFilter = imageSpinner.getSelectedItem().toString();
-        adminController.subscribeToImageDB(imageGridAdapter, selectedFilter);
+
+
+        uid = FirebaseAuth.getInstance().getUid();
+
+        if(uid != null){
+            adminController.subscribeToImageDB(imageGridAdapter, selectedFilter);
+        }else{
+            testBrowseImage();
+        }
+
     }
 
     /**
@@ -121,18 +144,19 @@ public class AdminBrowseImage extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if(uid == null){
+                    filterStaticImageList(query);
+                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                String selectedFilter = imageSpinner.getSelectedItem().toString();
-                // Filter data based on search query
-                if(TextUtils.isEmpty(newText)){
-                    adminController.getCurrentImageList("", false, imageGridAdapter, selectedFilter);
+                if(uid == null){
+                    filterStaticImageList(newText); // Use static data filtering when UID is null
                 }else{
-                    adminController.getCurrentImageList(newText, true, imageGridAdapter, selectedFilter);
-
+                    String selectedFilter = imageSpinner.getSelectedItem().toString();
+                    adminController.getCurrentImageList(newText, !TextUtils.isEmpty(newText), imageGridAdapter, selectedFilter);
                 }
                 return true;
             }
@@ -170,8 +194,35 @@ public class AdminBrowseImage extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        String currentFilter = imageSpinner.getSelectedItem().toString();
-        adminController.subscribeToImageDB(imageGridAdapter, currentFilter);
+        if(uid == null){
+            testBrowseImage(); // Ensure static data is used on resume when UID is null
+        }else{
+            String currentFilter = imageSpinner.getSelectedItem().toString();
+            adminController.subscribeToImageDB(imageGridAdapter, currentFilter);
+        };
+    }
+
+    private void testBrowseImage(){
+        ArrayList<Image> staticImages = new ArrayList<>() ;
+        staticImages.add(new Image("https://firebasestorage.googleapis.com/v0/b/qr-code-app-6fe73.appspot.com/o/DALL%C2%B7E%202024-03-06%2015.04.40%20-%20An%20underwater%20scene%20with%20a%20coral%20reef%2C%20teeming%20with%20colorful%20tropical%20fish.%20Sunlight%20is%20filtering%20through%20the%20water%2C%20creating%20a%20dappled%20effect%20on%20the%20.webp?alt=media&token=d392fb5e-58b8-4a52-8273-74b0677e92a9", "TestImage1"));
+        staticImages.add(new Image("https://firebasestorage.googleapis.com/v0/b/qr-code-app-6fe73.appspot.com/o/defaultImages%2FScreen%20Shot%202024-03-31%20at%2011.48.45%20PM.png?alt=media&token=33e5f2f2-0b9a-4372-9c30-1a212c833a34", "TestImage2"));
+        imageGridAdapter.setFilter(staticImages);
+        imageGridAdapter.notifyDataSetChanged();
+    }
+
+    public void filterStaticImageList(String searchText){
+        String eventStaticName ;
+        Image staticImage ;
+        ArrayList<Image> searchResults = new ArrayList<>();
+        for(int i = 0 ; i < imageItems.size() ; i++){
+            staticImage = imageItems.get(i) ;
+            eventStaticName = imageItems.get(i).getId() ;
+            if (eventStaticName.toLowerCase().contains(searchText.toLowerCase())) {
+                searchResults.add(new Image(staticImage.getURL(),  staticImage.getId()));
+            }
+        }
+        imageGridAdapter.setFilter(searchResults);
+        imageGridAdapter.notifyDataSetChanged();
     }
 
 }
