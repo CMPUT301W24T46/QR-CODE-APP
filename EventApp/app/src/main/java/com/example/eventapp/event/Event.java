@@ -1,29 +1,5 @@
 package com.example.eventapp.event;
 
-/**
- * Event represents an event in the application, encapsulating details such as the event's name, date,
- * image URL, description, creator ID, attendee limit, and the number of sign-ups. This class provides
- * constructors for creating event instances with various combinations of these details, catering to different
- * use cases throughout the application.
- *
- * <p>This class is designed to be flexible, allowing for events to be created with minimal information
- * (e.g., just an event name) or more detailed information (e.g., event name, date, image, description, and attendee limits).</p>
- *
- * <p>Key Attributes:</p>
- * <ul>
- *     <li>Event Name: The name of the event.</li>
- *     <li>Event Date: The date on which the event is scheduled.</li>
- *     <li>Image URL: A URL pointing to an image associated with the event.</li>
- *     <li>Event Description: A detailed description of the event.</li>
- *     <li>Creator ID: The unique identifier of the user who created the event.</li>
- *     <li>Attendee Limit: The maximum number of attendees allowed for the event.</li>
- *     <li>Number of Sign-Ups: The current number of sign-ups for the event.</li>
- * </ul>
- *
- * <p>Additionally, the class includes getter and setter methods for each attribute, allowing for easy access
- * and modification of event details.</p>
- */
-
 public class Event {
     private Long eventLim;
     String eventName ;
@@ -113,10 +89,6 @@ public class Event {
         this.eventName = eventName;
     }
     // No-argument constructor required for Firebase
-
-    /**
-     * Default no-argument constructor required for Firebase and other serialization use cases.
-     */
     public Event() {
     }
 

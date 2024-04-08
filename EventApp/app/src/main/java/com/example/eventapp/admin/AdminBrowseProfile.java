@@ -150,11 +150,6 @@ public class AdminBrowseProfile extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A test method to simulate browsing users with static data. This method is called when the UID is not available,
-     * allowing for the functionality of the activity to be tested without a Firebase connection.
-     */
-
     private void testBrowseUsers(){
         ArrayList<User> staticUsers= new ArrayList<>() ;
         staticUsers.add(new User("TestProfile1", "TestProfile1", "imageURL", "","FakeUrl", "Admin"));
@@ -162,13 +157,6 @@ public class AdminBrowseProfile extends AppCompatActivity {
         userAdapter.setFilter(staticUsers);
         userAdapter.notifyDataSetChanged();
     }
-
-    /**
-     * Filters the static list of user profiles based on the search text entered. This method is utilized in the
-     * test mode where the list of users is not dynamically fetched from Firebase.
-     *
-     * @param searchText The text entered in the search view to filter the user profiles.
-     */
 
     public void filterStaticEventList(String searchText){
         String eventStaticName ;

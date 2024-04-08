@@ -264,13 +264,6 @@ public class AttendeeEventInformation extends Fragment {
         });
     }
 
-    /**
-     * Retrieves the current device's FCM token and stores it in Firestore associated with the event and attendee.
-     *
-     * @param userId The unique ID of the attendee.
-     * @param eventId The unique ID of the event.
-     */
-
     public void retrieveAndStoreToken(String userId, String eventId) {
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
@@ -278,7 +271,6 @@ public class AttendeeEventInformation extends Fragment {
                         Log.w("FCM", "Fetching FCM registration token failed", task.getException());
                         return;
                     }
-
 
                     // Get new FCM registration token
                     String token = task.getResult();
@@ -288,14 +280,6 @@ public class AttendeeEventInformation extends Fragment {
                     sendRegistrationToServer(token , eventId, userId) ;
                 });
     }
-
-    /**
-     * Sends the retrieved FCM token to the Firestore server for the specific event and attendee.
-     *
-     * @param token The FCM token to be sent to the server.
-     * @param eventId The unique ID of the event.
-     * @param userId The unique ID of the attendee.
-     */
 
     private void sendRegistrationToServer(String token , String eventId ,String userId) {
         // Assume you have a Firestore instance setup

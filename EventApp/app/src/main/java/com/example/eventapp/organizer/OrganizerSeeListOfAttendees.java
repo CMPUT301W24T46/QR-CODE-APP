@@ -29,12 +29,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * A fragment that displays a list of attendees for a specific event. The organizer can view either
- * the list of attendees who have checked in or the list of those who have registered for the event.
- * The organizer also has the ability to notify all attendees through an announcement.
- */
-
 public class OrganizerSeeListOfAttendees extends Fragment{
 
     private AttendeeCheckInAdapter checkInAdapter;
@@ -46,15 +40,6 @@ public class OrganizerSeeListOfAttendees extends Fragment{
 
     private NavController navController;
     private FirebaseFirestore db;
-
-    /**
-     * Inflates the fragment layout and retrieves the event ID passed to the fragment.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, the fragment is being re-constructed from a previous saved state.
-     * @return The View for the fragment's UI.
-     */
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -73,15 +58,6 @@ public class OrganizerSeeListOfAttendees extends Fragment{
 
         return view;
     }
-
-    /**
-     * Sets up the ListView and adapters for displaying attendees, initializes the CheckInController,
-     * and configures the spinner for selecting between check-ins and registrations. It also sets up
-     * the button for creating announcements for attendees.
-     *
-     * @param view The View returned by onCreateView(LayoutInflater, ViewGroup, Bundle).
-     * @param savedInstanceState If non-null, the fragment is being re-constructed from a previous saved state.
-     */
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

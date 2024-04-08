@@ -69,18 +69,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * An activity that allows attendees to scan QR codes for event check-ins or retrieving event information.
- * It uses the device's camera to continuously scan for QR codes. Once a QR code is detected and successfully
- * decoded, it performs a check-in operation or navigates to event information based on the QR code content.
- *
- * The activity also supports scanning QR codes from images selected from the device's gallery.
- *
- * Permissions:
- * - Camera: Required for scanning QR codes using the device's camera.
- * - Location: Optional, used for geolocation-based check-ins if enabled by the user.
- */
-
 public class QRCodeScannerActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_PERMISSIONS = 10;
@@ -99,14 +87,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
 
     private boolean isCheckInPending = false;
     private Uri pendingCheckInUri = null; // Store the URI of the pending check-in
-
-    /**
-     * Sets up the activity, requesting necessary permissions and initializing the camera and other UI elements.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
-     *                           this Bundle contains the data it most recently supplied in onSaveInstanceState(Bundle).
-     *                           Otherwise, it is null.
-     */
 
 
     @Override
@@ -132,19 +112,9 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
-    /**
-     * Requests camera permissions from the user.
-     */
-
     private void requestCameraPermissions() {
         ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
     }
-
-    /**
-     * Checks if all required permissions have been granted.
-     *
-     * @return true if all required permissions are granted, false otherwise.
-     */
 
     private boolean allPermissionsGranted() {
         for (String permission : REQUIRED_PERMISSIONS) {
@@ -155,20 +125,10 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         return true;
     }
 
-    /**
-     * Requests location permissions from the user to enable geolocation-based check-ins.
-     */
-
     // Request location permissions
     private void requestLocationPermissions() {
         ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSIONS);
     }
-
-    /**
-     * Checks if all location permissions have been granted.
-     *
-     * @return true if all location permissions are granted, false otherwise.
-     */
 
     private boolean allLocationPermissionsGranted() {
         for (String permission : LOCATION_PERMISSIONS) {
@@ -201,12 +161,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
 //                    }
 //                });
 //    }
-
-    /**
-     * Fetches the user's last known location and proceeds with the check-in process.
-     * This method is called if location permissions are granted after a check-in was initiated.
-     */
-
 
     private void getLastLocationAndCheckIn(Bitmap bitmap, String bitmapUri) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -251,10 +205,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Starts the camera and begins scanning for QR codes.
-     */
-
 
     private void startCamera() {
         ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -283,17 +233,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             }
         }, ContextCompat.getMainExecutor(this));
     }
-
-    /**
-     * Processes an {@link Image} from the camera feed, converts it into a {@link Bitmap}, and scans it for QR codes.
-     * After converting the image to a bitmap, it invokes {@link #scanBitmapForQRCode(Bitmap, String, Double, Double)}
-     * to look for QR codes within the image. Once the QR code is processed or if none is found, it closes the
-     * {@link ImageProxy} to allow processing of the next image.
-     *
-     * @param image      The image captured from the camera feed.
-     * @param imageProxy The proxy to allow for the closing of the image once it is processed.
-     */
-
     private void scanImage(Image image, ImageProxy imageProxy) {
         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
         byte[] data = new byte[buffer.capacity()];
@@ -306,14 +245,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         imageProxy.close();
     }
 
-    /**
-     * Updates the user's geolocation preference in the Firestore database. This method checks if the user is currently
-     * authenticated. If so, it retrieves the user's ID and updates the 'isGeolocationEnabled' field in the user's document
-     * within the 'Users' collection in Firestore. This method is useful for keeping track of user preferences regarding
-     * the usage of geolocation features within the app.
-     *
-     * @param isGeolocationEnabled The new value of the user's geolocation preference to be updated in the database.
-     */
 
     private void updateUserGeolocationPreference(boolean isGeolocationEnabled) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -329,14 +260,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Handles the result of permission request callbacks.
-     *
-     * @param requestCode The integer request code originally supplied to requestPermissions(android.app.Activity, String[], int),
-     *                    allowing you to identify who this result came from.
-     * @param permissions The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null.
-     */
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -371,18 +294,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Attempts to retrieve the device's last known location and logs the latitude and longitude.
-     * This method checks for location permissions before attempting to access the location. If permissions
-     * are not granted, a toast message informs the user. If permissions are granted, it tries to fetch the
-     * last known location. If successful, it logs the location; if not, it informs the user that the location
-     * could not be retrieved.
-     *
-     * This method could be used in scenarios where an app needs to fetch the user's current location for
-     * operations like check-ins or location-based filtering. The method ensures that all necessary permissions
-     * are checked before accessing the device's location services to adhere to privacy guidelines.
-     */
-
     private void fetchLastLocationAndProceed() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -401,10 +312,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    /**
-     * Animates a scanning line to simulate the scanning process visually.
-     */
 
     private void animateScanningLine() {
         View scanningLine = findViewById(R.id.scanning_line);
@@ -425,23 +332,10 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         animation.start();
     }
 
-    /**
-     * Opens the device's gallery for the user to select an image for QR code scanning.
-     */
-
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_CODE_GALLERY);
     }
-
-    /**
-     * Handles activity result callbacks, specifically for image selection from the gallery.
-     *
-     * @param requestCode The integer request code originally supplied to startActivityForResult(Intent, int),
-     *                    allowing you to identify who this result came from.
-     * @param resultCode The integer result code returned by the child activity through its setResult().
-     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
-     */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -468,16 +362,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
             }
         }
     }
-
-    /**
-     * Scans a given bitmap image for QR codes, attempts to decode any found QR code,
-     * and then processes the QR code data by either checking it in Firestore or parsing it if needed.
-     *
-     * @param bitmap The bitmap image to scan for QR codes.
-     * @param bitmapUri The URI of the bitmap image as a string, used for logging purposes.
-     * @param latitude The latitude part of the location where the QR code is being scanned (can be null).
-     * @param longitude The longitude part of the location where the QR code is being scanned (can be null).
-     */
 
     private void scanBitmapForQRCode(Bitmap bitmap, String bitmapUri, Double latitude, Double longitude) {
         int[] intArray = new int[bitmap.getWidth() * bitmap.getHeight()];
@@ -510,17 +394,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Validates the decoded QR code data by checking its type and then either performing a check-in
-     * or navigating to event information based on the QR code content.
-     *
-     * @param qrCodeId The ID extracted from the QR code, used to identify the QR code in Firestore.
-     * @param eventId The ID of the event associated with the QR code.
-     * @param type The type of action to be taken, e.g., "CheckIn" or "EventInfo".
-     * @param latitude Optional latitude for geolocation-based check-ins.
-     * @param longitude Optional longitude for geolocation-based check-ins.
-     */
-
     private void validateQRCode(String qrCodeId, String eventId, String type, Double latitude, Double longitude) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -534,26 +407,12 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Displays a message to the user indicating that the scanned QR code is invalid.
-     */
-
     private void showInvalidQRCodeMessage() {
         Toast.makeText(this, "Invalid QR Code. Please try another.", Toast.LENGTH_LONG).show();
         if(selectedImageView != null) {
             selectedImageView.setVisibility(View.INVISIBLE);
         }
     }
-
-    /**
-     * Checks Firestore for the existence of the scanned QR code information. If the QR code
-     * is found, proceeds with the check-in process. If not found, attempts to parse the QR code data.
-     *
-     * @param qrCodeInfo The information or data encoded within the QR code.
-     * @param latitude The latitude where the QR code was scanned (for geolocation-based check-ins).
-     * @param longitude The longitude where the QR code was scanned (for geolocation-based check-ins).
-     * @param onNotFound A runnable to execute if the QR code information is not found in Firestore.
-     */
 
     private void checkQRCodeInFirestore(String qrCodeInfo, Double latitude, Double longitude, Runnable onNotFound) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -579,14 +438,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 });
     }
 
-    /**
-     * Checks in the user for an event based on the event ID. This method updates Firestore
-     * with the user's check-in information, including geolocation if provided.
-     *
-     * @param eventId The ID of the event to check the user into.
-     * @param latitude Optional latitude for geolocation-based check-ins.
-     * @param longitude Optional longitude for geolocation-based check-ins.
-     */
 
     private void checkInUser(String eventId, Double latitude, Double longitude) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -780,15 +631,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Creates a new document in the "AttendedEvents" collection for a user, adding the current event
-     * to their attended events list.
-     *
-     * @param userId The ID of the user attending the event.
-     * @param db The instance of the Firestore database.
-     * @param eventId The ID of the event being attended.
-     */
-
     private void createNewAttendedEventsDocument(String userId, FirebaseFirestore db, String eventId) {
         db.collection("Events").document(eventId)
                 .get()
@@ -832,15 +674,6 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 });
     }
 
-    /**
-     * Updates an existing "AttendedEvents" document for a user with a new event,
-     * adding it to their list of attended events.
-     *
-     * @param db The instance of the Firestore database.
-     * @param attendedEventsRef A reference to the user's "AttendedEvents" document in Firestore.
-     * @param eventId The ID of the event being added to the user's attended events.
-     */
-
     private void updateAttendedEventsArray(FirebaseFirestore db, DocumentReference attendedEventsRef, String eventId) {
         db.collection("Events").document(eventId)
                 .get()
@@ -882,22 +715,11 @@ public class QRCodeScannerActivity extends AppCompatActivity {
                 });
     }
 
-    /**
-     * Resets the QR code scanner by hiding the image view used to display the selected image
-     * and clearing any bitmap set to it.
-     */
-
     private void resetScanner() {
         // Hide the selected image view and clear any bitmap set to it
         selectedImageView.setVisibility(View.GONE);
         selectedImageView.setImageDrawable(null);
     }
-
-    /**
-     * Navigates to the event information page for a given event ID.
-     *
-     * @param eventId The ID of the event for which information is to be displayed.
-     */
 
     private void navigateToEventInfoPage(String eventId) {
         Intent data = new Intent();

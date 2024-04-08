@@ -10,36 +10,15 @@ import com.example.eventapp.R;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An ArrayAdapter for displaying {@link Notification} objects in a ListView.
- * Each notification item layout includes a title, message, and timestamp.
- */
-
 public class NotificationAdapter extends ArrayAdapter<Notification> {
     private ArrayList<Notification> notifications;
     private Context context;
-
-    /**
-     * Constructs a new {@link NotificationAdapter} instance.
-     *
-     * @param context       The current context used to inflate layout files.
-     * @param notifications The list of {@link Notification} objects to be displayed in the ListView.
-     */
 
     public NotificationAdapter(Context context, ArrayList<Notification> notifications) {
         super(context, 0, notifications);
         this.context = context;
         this.notifications = notifications;
     }
-
-    /**
-     * Provides a view for an AdapterView (ListView, GridView, etc.)
-     *
-     * @param position    The position in the list of data that should be displayed in the list item view.
-     * @param convertView The recycled view to populate.
-     * @param parent      The parent ViewGroup that is used for inflation.
-     * @return The View for the position in the AdapterView.
-     */
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -65,22 +44,12 @@ public class NotificationAdapter extends ArrayAdapter<Notification> {
         return convertView;
     }
 
-    /**
-     * Static inner class used to hold references to the relevant views within a list item layout.
-     * This prevents unnecessary calls to findViewById, increasing performance.
-     */
-
     private static class ViewHolder {
         TextView titleTextView;
         TextView dateTextView;
         TextView messageTextView;
     }
 
-    /**
-     * Updates the list of notifications and refreshes the ListView.
-     *
-     * @param notifications The new list of {@link Notification} objects to display.
-     */
 
     public void setNotifications(List<Notification> notifications) {
         this.notifications.clear();

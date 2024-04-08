@@ -42,10 +42,7 @@ import org.w3c.dom.Document;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * A DialogFragment subclass for creating and sending a new notification to event attendees.
- * It provides a user interface for entering notification details and sends the notification to all attendees of a specific event.
- */
+
 
 public class CreateNotificationFragment extends DialogFragment {
 
@@ -56,27 +53,11 @@ public class CreateNotificationFragment extends DialogFragment {
     private FirebaseFirestore db;
     private String eventId;
 
-    /**
-     * Listener interface for notification creation actions. The host activity must implement this interface to handle notification creation.
-     */
-
     interface CreateNotificationListener {
-
-        /**
-         * Called when a notification is successfully created and sent.
-         */
-
         void onNotificationCreated();
     }
 
     private CreateNotificationListener listener;
-
-    /**
-     * Attaches the fragment to its host activity and sets up the listener for notification creation.
-     *
-     * @param context The activity context.
-     * @throws ClassCastException if the context does not implement CreateNotificationListener.
-     */
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -87,13 +68,6 @@ public class CreateNotificationFragment extends DialogFragment {
             throw new ClassCastException(context.toString() + " must implement CreateNotificationListener");
         }
     }
-
-    /**
-     * Creates the dialog view with input fields for notification details and sets up confirmation and cancellation actions.
-     *
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
-     * @return A Dialog instance to be displayed by the fragment.
-     */
 
     @NonNull
     @Override
@@ -136,10 +110,6 @@ public class CreateNotificationFragment extends DialogFragment {
 
         return builder.create();
     }
-
-    /**
-     * Gathers the entered notification details from the input fields, creates a notification, and sends it to all attendees of the event.
-     */
 
     private void createNotification() {
         String notificationDescription = notificationDescriptionEditText.getText().toString().trim();
@@ -234,13 +204,6 @@ public class CreateNotificationFragment extends DialogFragment {
                     Toast.makeText(getContext(), "Error retrieving event details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
-    /**
-     * Sends push notifications to all event attendees using the Firebase Cloud Messaging service.
-     *
-     * @param eventName    The name of the event for which the notification is sent.
-     * @param notification The notification message to be sent.
-     */
 
     public void sendPushNotifications(String eventName , String notification){
 //        Log.d("Push Notification" , "Called") ;
