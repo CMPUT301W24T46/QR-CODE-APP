@@ -107,14 +107,6 @@ public class ImageTest {
 
     @Test
     public void testDeleteImage(){
-//        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
-//        onData(anything())  // You can use a matcher here to match specific data
-//                .inAdapterView(withId(R.id.accountOptionList))
-//                .atPosition(0)
-//                .perform(click());
-//        // Wait for firestore to be communicated with
-//        IdlingRegistry.getInstance().register(idlingResource);
-//        intended(hasComponent(AttendeeActivity.class.getName()));
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeAccount)).perform(click()) ;
@@ -129,14 +121,6 @@ public class ImageTest {
 
     @Test
     public void testSaveUserInfo(){
-//        onView(withId(R.id.accountOptionList)).check(matches(isDisplayed()));
-//        onData(anything())  // You can use a matcher here to match specific data
-//                .inAdapterView(withId(R.id.accountOptionList))
-//                .atPosition(0)
-//                .perform(click());
-//        // Wait for firestore to be communicated with
-//        IdlingRegistry.getInstance().register(idlingResource);
-//        intended(hasComponent(AttendeeActivity.class.getName()));
 
         onView(withId(R.id.bottomNavigationAttendeeView)).check(matches(isDisplayed())) ;
         onView(withId(R.id.attendeeAccount)).perform(click()) ;
